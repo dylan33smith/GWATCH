@@ -1,4 +1,4 @@
-# Gwatch
+ Gwatch
 
 Full-stack web application built with Symfony 4 framework, featuring server-side rendering with Twig templates and Python data processing scripts.
 
