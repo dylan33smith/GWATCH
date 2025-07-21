@@ -1,0 +1,332 @@
+CREATE TABLE `constructor` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `options` varchar(255) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `vartype` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  `required` int(11) NOT NULL,
+  `value` varchar(35) NOT NULL,
+  `goto` varchar(255) NOT NULL,
+  PRIMARY KEY (`page`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `effect` (
+  `chr` varchar(2) DEFAULT NULL,
+  `pos` int(9) NOT NULL DEFAULT '0',
+  `alias` varchar(30) DEFAULT NULL,
+  `reported_genes` varchar(369) DEFAULT NULL,
+  `effect` varchar(640) DEFAULT NULL,
+  PRIMARY KEY (`pos`),
+  KEY `snp` (`alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `file` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner_id` int(11) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `localpath` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_8C9F36107E3C61F9` (`owner_id`),
+  CONSTRAINT `FK_8C9F36107E3C61F9` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `file_project` (
+  `file_id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `forms` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `title` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `defvalue` varchar(10) NOT NULL,
+  `goto` int(11) NOT NULL,
+  `path` varchar(50) NOT NULL,
+  PRIMARY KEY (`page`,`id`,`path`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `formsold` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `title` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `defvalue` varchar(10) NOT NULL,
+  `goto` int(11) NOT NULL,
+  PRIMARY KEY (`page`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `genes` (
+  `build` int(8) NOT NULL,
+  `chr` int(8) NOT NULL,
+  `posstart` int(11) NOT NULL,
+  `posend` int(11) NOT NULL,
+  `strand` int(11) NOT NULL,
+  `gene` varchar(255) CHARACTER SET latin1 NOT NULL,
+  KEY `chr` (`chr`,`posstart`,`posend`,`build`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `medtable` (
+  `build` varchar(20) NOT NULL,
+  `chr` int(11) NOT NULL,
+  `pos` int(11) NOT NULL,
+  `alias` varchar(35) NOT NULL,
+  `all` varchar(10) NOT NULL,
+  `dbn` varchar(255) NOT NULL,
+  `dsdb` varchar(255) NOT NULL,
+  `dbid` varchar(255) NOT NULL,
+  PRIMARY KEY (`chr`,`pos`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `new_tbl` (
+  `id` varchar(255) NOT NULL,
+  `posstart` int(11) NOT NULL,
+  `posend` int(11) NOT NULL,
+  `strand` int(11) NOT NULL,
+  `gene` varchar(255) NOT NULL,
+  `chr` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `newbquery` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `des_en` text,
+  `ans_en` text,
+  `des` text,
+  `ans` text,
+  `var` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `page` int(4) DEFAULT NULL,
+  `validator` varchar(255) DEFAULT NULL,
+  `layout` varchar(255) DEFAULT NULL,
+  `cros` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1104 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `options` varchar(255) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `vartype` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  `required` int(11) NOT NULL,
+  `value` varchar(35) NOT NULL,
+  `path` varchar(50) NOT NULL,
+  `goto` varchar(255) NOT NULL,
+  PRIMARY KEY (`page`,`id`,`path`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_calccsv` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_calcgds` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_calcplink` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_calcvcf` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_rawgds` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `projectname` varchar(255) DEFAULT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefile` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariatefile` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_rawplink` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `projectname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_swedish_ci DEFAULT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefile` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariatefile` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `path_rawvcf` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `projectname` varchar(255) DEFAULT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefile` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariatefile` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `pathnames` (
+  `path` varchar(25) NOT NULL,
+  `pathname` varchar(255) NOT NULL,
+  PRIMARY KEY (`path`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `project` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner_id` tinyint(1) DEFAULT NULL,
+  `build` varchar(10) NOT NULL,
+  `visible` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `deleted` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=171 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `projectstatus` (
+  `id` int(11) NOT NULL,
+  `pid` int(8) DEFAULT NULL,
+  `status` enum('created','running','done','failed') NOT NULL,
+  `progress` int(8) unsigned DEFAULT '0',
+  `total` int(8) unsigned DEFAULT '0',
+  `pid.adjp` int(8) DEFAULT NULL,
+  `status.adjp` enum('created','running','done','failed','skipped') DEFAULT NULL,
+  `progress.adjp` int(8) unsigned DEFAULT '0',
+  `total.adjp` int(8) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `tests` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `testnames` text,
+  `filenames` text,
+  `prefix` varchar(255) DEFAULT NULL,
+  `projectname` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `tmpgenes` (
+  `id` varchar(255) NOT NULL,
+  `posstart` int(11) NOT NULL,
+  `posend` int(11) NOT NULL,
+  `strand` int(11) NOT NULL,
+  `gene` varchar(255) NOT NULL,
+  `chr` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+

@@ -1,0 +1,15 @@
+<h1>Create Sample</h1>
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+{% endfor %}
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+{{ form_end(form) }}
+
+<div style="margin-top: 20px;">
+    <a href="{{ path('sample_list') }}" class="btn btn-secondary">Look at entries</a>
+</div>

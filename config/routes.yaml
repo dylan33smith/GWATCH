@@ -1,5 +1,8 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+
+# when /hello/{name} is requested, call the helloAction method of TestController
+# pass name as parameter
+hello:
+    path:   /hello/{name}
+    controller: 'App\Controller\TestController::helloAction'
+
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Main definition -->
+<RegionsMT log="stderr">
+	<Data.Load
+		logarithm="false"
+		path.chr="../files/101/tmp/chr.csv"
+		path.test="../files/101/tmp/tests.csv"
+		path.row="../files/101/tmp/row.csv"
+		path.val="../files/101/tmp/val.csv"
+		header="true">
+			<MySQL.Dispatch
+				login="gwatch"
+				password="gwatch"
+				schema="Module_101"
+				host="localhost"
+				temp.prefix="../files/101/tmp/tmp-" />
+	</Data.Load>
+</RegionsMT>
