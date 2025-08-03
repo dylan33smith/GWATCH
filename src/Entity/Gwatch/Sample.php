@@ -1,9 +1,10 @@
 <?php
-namespace App\Entity;
+namespace App\Entity\Gwatch;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[ORM\Table(name: 'sample')]
 class Sample
 {
     #[ORM\Id]
@@ -22,9 +23,10 @@ class Sample
     {
         return $this->id;
     }
-    public function setID(?int $id): self
+    public function setId(?int $id): self
     {
         $this->id = $id;
+        return $this;
     }
 
 

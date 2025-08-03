@@ -1,0 +1,46 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Features of GWATCH{% endblock %}
+
+{% block body %}
+    <h1 class="section-title">Features of GWATCH</h1>
+    
+    <div class="description-text">
+        <ol class="features-list">
+            <li>Unabridged Data Table*</li>
+            
+            <li>Manhattan Plots for each Association Test across all SNPs</li>
+            
+            <li>SNAPSHOTS of SNP rest results in a chromosome region of SNP chromosome coordinates, MAF**, P-value Plus QAS***
+                <ul class="sub-features">
+                    <li>2D Heat Plot Snapshot illustrating P-values and QAS of any selected chromosome region</li>
+                    <li>3D checkerboard Plot Snapshot illustrating P-values and QAS of selected chromosome region</li>
+                    <li>LD polarized 3D Checkerboard Snapshot illustrating P-values and QAS of any selected chromosome region</li>
+                    <li>Dynamic Highway View by Chromosome Browser illustrating P-value and QAS</li>
+                </ul>
+            </li>
+            
+            <li>TRAX Reports:
+                <ul class="sub-features">
+                    <li>TRAX Summary page-one page graphic summary of QAS, P-values values for a selected SNP</li>
+                    <li>TRAX analysis report- Full graphs, curves, tables and statistics for all association tests for one selected SNP</li>
+                </ul>
+            </li>
+            
+            <li>Top association hits
+                <ul class="sub-features">
+                    <li>ranked -log P-value</li>
+                    <li>ranked QAS**</li>
+                    <li>ranked Density of -log P-value within a SNP genomic region</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <h3 style="margin-top: 40px;">Abbreviations:</h3>
+        <ul class="sub-features">
+            <li>*TABLE - Unabridged Data Table of P-values vs. QAS for all SNPs genotyped</li>
+            <li>**MAF - minor allele frequency</li>
+            <li>***QAS - Quantitative Association Statistic (OR, RH, EZ2 depending on Tests)</li>
+        </ul>
+    </div>
+{% endblock %} 

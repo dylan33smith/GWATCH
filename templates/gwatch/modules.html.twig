@@ -1,0 +1,50 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Active Datasets{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+    .modules-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .module-box {
+        background-color: #fff3cd;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .module-box:hover {
+        background-color: #ffeaa7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .module-text {
+        font-family: "Trebuchet MS", Arial, sans-serif;
+        font-size: 16px;
+        color: #333;
+        font-weight: 500;
+    }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="page background-image">
+        <div class="modules-container">
+            {% for module in modules %}
+                <div class="module-box" onclick="window.location.href='{{ path('gwatch_module_detail', {moduleId: module.name}) }}'">
+                    <span class="module-text">Module {{ module.name }} - {{ module.title }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %} 

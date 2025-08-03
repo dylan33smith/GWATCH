@@ -1,0 +1,322 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}{{ module.id }} - {{ module.name }}{% endblock %}
+
+{% block body %}
+    <div class="module-card main-module" id="module-header" data-module-id="{{ module.id }}">
+        <h3>{{ module.id }} - {{ module.name }}</h3>
+        <p>
+            <strong>Type:</strong> {{ module.type }} | 
+            <strong>Location:</strong> {{ module.location }} | 
+            <strong>Data Type:</strong> {{ module.data_type }}
+            {% if module.sample_count %}
+                | <strong>Samples:</strong> {{ module.sample_count }}
+            {% endif %}
+            | <strong>Gender:</strong> {{ module.gender }}
+        </p>
+        
+        <div id="sub-options-{{ module.id }}" class="sub-options" style="display: none;">
+            <div class="sub-module-card" data-target="highway-browser-{{ module.id }}">
+                <h4>Highway browser</h4>
+                <div id="highway-browser-{{ module.id }}" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Click to navigate through chromosome data</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="tests-manhattan-{{ module.id }}">
+                <h4>List of tests & Manhattan plots</h4>
+                <div id="tests-manhattan-{{ module.id }}" class="sub-content" style="display: none;">
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        {% for test in tests %}
+                            <li>{{ test }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="top-hits-{{ module.id }}">
+                <h4>Top hits</h4>
+                <div id="top-hits-{{ module.id }}" class="sub-content" style="display: none;">
+                    <div style="margin-top: 15px;">
+                        <h3 style="margin-bottom: 15px;">Type of report</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>P-value</option>
+                                <option>QAS</option>
+                                <option>MAF</option>
+                            </select>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">Window size</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>+/- 50000 (pos)</option>
+                                <option>+/- 100000 (pos)</option>
+                                <option>+/- 250000 (pos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Get .csv file
+                            </label>
+                        </div>
+                        
+                        <button class="btn">Get report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="module-card main-module" data-module-id="ModuleYYY1">
+        <h3>ModuleYYY1 - HIV_Infection/Botswana/WGS/336/females</h3>
+        <div id="sub-options-ModuleYYY1" class="sub-options" style="display: none;">
+            <div class="sub-module-card" data-target="highway-browser-ModuleYYY1">
+                <h4>Highway browser</h4>
+                <div id="highway-browser-ModuleYYY1" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Click to navigate through chromosome data</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="tests-manhattan-ModuleYYY1">
+                <h4>List of tests & Manhattan plots</h4>
+                <div id="tests-manhattan-ModuleYYY1" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Test data for ModuleYYY1</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="top-hits-ModuleYYY1">
+                <h4>Top hits</h4>
+                <div id="top-hits-ModuleYYY1" class="sub-content" style="display: none;">
+                    <div style="margin-top: 15px;">
+                        <h3 style="margin-bottom: 15px;">Type of report</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>P-value</option>
+                                <option>QAS</option>
+                                <option>MAF</option>
+                            </select>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">Window size</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>+/- 50000 (pos)</option>
+                                <option>+/- 100000 (pos)</option>
+                                <option>+/- 250000 (pos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Get .csv file
+                            </label>
+                        </div>
+                        
+                        <button class="btn">Get report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="module-card main-module" data-module-id="ModuleZZZ1">
+        <h3>ModuleZZZ1 - HIV_Infection/Botswana/WGS+MA/sharedSNPs/762/females</h3>
+        <div id="sub-options-ModuleZZZ1" class="sub-options" style="display: none;">
+            <div class="sub-module-card" data-target="highway-browser-ModuleZZZ1">
+                <h4>Highway browser</h4>
+                <div id="highway-browser-ModuleZZZ1" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Click to navigate through chromosome data</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="tests-manhattan-ModuleZZZ1">
+                <h4>List of tests & Manhattan plots</h4>
+                <div id="tests-manhattan-ModuleZZZ1" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Test data for ModuleZZZ1</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="top-hits-ModuleZZZ1">
+                <h4>Top hits</h4>
+                <div id="top-hits-ModuleZZZ1" class="sub-content" style="display: none;">
+                    <div style="margin-top: 15px;">
+                        <h3 style="margin-bottom: 15px;">Type of report</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>P-value</option>
+                                <option>QAS</option>
+                                <option>MAF</option>
+                            </select>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">Window size</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>+/- 50000 (pos)</option>
+                                <option>+/- 100000 (pos)</option>
+                                <option>+/- 250000 (pos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Get .csv file
+                            </label>
+                        </div>
+                        
+                        <button class="btn">Get report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="module-card main-module" data-module-id="ModuleKKK">
+        <h3>ModuleKKK - HIV_Progression/Botswana/MA/556/Xie</h3>
+        <div id="sub-options-ModuleKKK" class="sub-options" style="display: none;">
+            <div class="sub-module-card" data-target="highway-browser-ModuleKKK">
+                <h4>Highway browser</h4>
+                <div id="highway-browser-ModuleKKK" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Click to navigate through chromosome data</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="tests-manhattan-ModuleKKK">
+                <h4>List of tests & Manhattan plots</h4>
+                <div id="tests-manhattan-ModuleKKK" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Test data for ModuleKKK</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="top-hits-ModuleKKK">
+                <h4>Top hits</h4>
+                <div id="top-hits-ModuleKKK" class="sub-content" style="display: none;">
+                    <div style="margin-top: 15px;">
+                        <h3 style="margin-bottom: 15px;">Type of report</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>P-value</option>
+                                <option>QAS</option>
+                                <option>MAF</option>
+                            </select>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">Window size</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>+/- 50000 (pos)</option>
+                                <option>+/- 100000 (pos)</option>
+                                <option>+/- 250000 (pos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Get .csv file
+                            </label>
+                        </div>
+                        
+                        <button class="btn">Get report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="module-card main-module" data-module-id="Module101">
+        <h3>Module101 - AIDS.USA.EA1 - PATIENT GROUP "A"</h3>
+        <div id="sub-options-Module101" class="sub-options" style="display: none;">
+            <div class="sub-module-card" data-target="highway-browser-Module101">
+                <h4>Highway browser</h4>
+                <div id="highway-browser-Module101" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Click to navigate through chromosome data</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="tests-manhattan-Module101">
+                <h4>List of tests & Manhattan plots</h4>
+                <div id="tests-manhattan-Module101" class="sub-content" style="display: none;">
+                    <p style="margin-top: 10px; color: #666;">Test data for Module101</p>
+                </div>
+            </div>
+            
+            <div class="sub-module-card" data-target="top-hits-Module101">
+                <h4>Top hits</h4>
+                <div id="top-hits-Module101" class="sub-content" style="display: none;">
+                    <div style="margin-top: 15px;">
+                        <h3 style="margin-bottom: 15px;">Type of report</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>P-value</option>
+                                <option>QAS</option>
+                                <option>MAF</option>
+                            </select>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">Window size</h3>
+                        <div class="form-group">
+                            <select>
+                                <option selected>+/- 50000 (pos)</option>
+                                <option>+/- 100000 (pos)</option>
+                                <option>+/- 250000 (pos)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox"> Get .csv file
+                            </label>
+                        </div>
+                        
+                        <button class="btn">Get report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Main module click handlers
+            const mainModules = document.querySelectorAll('.main-module');
+            
+            mainModules.forEach(function(module) {
+                module.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on sub-content
+                    if (e.target.closest('.sub-module-card')) {
+                        return;
+                    }
+                    
+                    const moduleId = this.getAttribute('data-module-id');
+                    const subOptions = document.getElementById('sub-options-' + moduleId);
+                    
+                    if (subOptions.style.display === 'none') {
+                        subOptions.style.display = 'block';
+                    } else {
+                        subOptions.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Sub-module card click handlers
+            const subModuleCards = document.querySelectorAll('.sub-module-card');
+            
+            subModuleCards.forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering parent click
+                    
+                    const targetId = this.getAttribute('data-target');
+                    const subContent = document.getElementById(targetId);
+                    
+                    if (subContent.style.display === 'none') {
+                        subContent.style.display = 'block';
+                    } else {
+                        subContent.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %} 

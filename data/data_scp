@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for file in $(ssh gwatch "ls /var/www/dev5/Gwatch/files/186/tmp/*.csv"); do
+    base=$(basename "$file")
+    rm -rf "Module_186/$base"
+    # Using >> to append instead of > to avoid overwriting
+    ssh gwatch "head -n 10 \"$file\"" > "Module_186/$base"
+    ssh gwatch "tail -n 10 \"$file\"" >> "Module_186/$base"
+done
