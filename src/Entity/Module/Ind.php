@@ -6,13 +6,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="ind")
+ * @ORM\Table(name="ind", indexes={
+ *     @ORM\Index(name="idx_ind", columns={"ind"})
+ * })
  */
 class Ind
 {
     /**
-     * @ORM\ManyToOne(targetEntity="Chr")
-     * @ORM\JoinColumn(name="chr", referencedColumnName="chr")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     private $chr;
 
@@ -32,12 +34,12 @@ class Ind
      */
     private $moduleId;
 
-    public function getChr()
+    public function getChr(): ?int
     {
         return $this->chr;
     }
 
-    public function setChr($chr): self
+    public function setChr(int $chr): self
     {
         $this->chr = $chr;
         return $this;

@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\ModuleTracking;
+use App\Entity\Gwatch\ModuleTracking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

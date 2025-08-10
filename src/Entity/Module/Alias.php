@@ -4,20 +4,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="alias")
+ * @ORM\Table(name="alias", indexes={
+ *     @ORM\Index(name="idx_alias", columns={"alias"})
+ * })
  */
 class Alias
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Ind")
-     * @ORM\JoinColumn(name="ind", referencedColumnName="ind")
      */
     private $ind;
 
@@ -31,17 +26,12 @@ class Alias
      */
     private $moduleId;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getInd()
+    public function getInd(): ?int
     {
         return $this->ind;
     }
 
-    public function setInd($ind): self
+    public function setInd(int $ind): self
     {
         $this->ind = $ind;
         return $this;

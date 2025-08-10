@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Gwatch\ModuleTracking;
+use App\Entity\Gwatch\User;
 use App\Form\DataUploadType;
-use App\Service\DataUploadService;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UploadController extends AbstractController
 {
     #[Route('/upload', name: 'app_upload')]
-    public function upload(Request $request, SessionInterface $session, DataUploadService $uploadService): Response
+    public function upload(Request $request, SessionInterface $session, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
         // Check if user is logged in
         if (!$session->has('user_id')) {
@@ -27,50 +30,35 @@ class UploadController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             
-            // Prepare files array for the service
-            $files = [
-                'chr.csv' => $data['chrFile'],
-                'chrsupp.csv' => $data['chrsuppFile'],
-                'col.csv' => $data['colFile'],
-                'ind.csv' => $data['indFile'],
-                'r_pval.csv' => $data['rPvalFile'],
-                'r_ratio.csv' => $data['rRatioFile'],
-                'v_ind.csv' => $data['vIndFile'],
-                'row.csv' => $data['rowFile'],
-                'val.csv' => $data['valFile'],
-            ];
-
             try {
-                $result = $uploadService->processUpload(
-                    $files,
-                    $data['moduleName'],
-                    $data['description'],
-                    $data['makePublic'] ?? false,
-                    $session->get('user_id')
-                );
-
-                if (isset($result['success'])) {
-                    $this->addFlash('upload_success', 'Module "' . $data['moduleName'] . '" uploaded successfully! Module ID: ' . $result['moduleId']);
-                    
-                    if (!empty($result['warnings'])) {
-                        foreach ($result['warnings'] as $warning) {
-                            $this->addFlash('warning', $warning);
-                        }
-                    }
-                    
-                    return $this->redirectToRoute('app_upload');
-                } else {
-                    foreach ($result['errors'] as $error) {
-                        $this->addFlash('error', $error);
-                    }
-                    if (!empty($result['warnings'])) {
-                        foreach ($result['warnings'] as $warning) {
-                            $this->addFlash('warning', $warning);
-                        }
-                    }
+                // Fetch the current user entity
+                $currentUser = $userRepository->find($session->get('user_id'));
+                if (!$currentUser) {
+                    throw new \Exception('User not found');
                 }
+                
+                // Generate a unique module ID using module name and timestamp
+                $timestamp = date('YmdHis');
+                $moduleId = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $data['moduleName'])) . '_' . $timestamp;
+                
+                // Create new module tracking entry
+                $moduleTracking = new ModuleTracking();
+                $moduleTracking->setModuleId($moduleId);
+                $moduleTracking->setName($data['moduleName']);
+                $moduleTracking->setOwner($currentUser);
+                $moduleTracking->setPublic($data['makePublic'] ?? false);
+                $moduleTracking->setDescription($data['description']);
+                
+                // Persist to database
+                $entityManager->persist($moduleTracking);
+                $entityManager->flush();
+                
+                $this->addFlash('upload_success', 'Module "' . $data['moduleName'] . '" created successfully! Module ID: ' . $moduleId);
+                
+                return $this->redirectToRoute('app_upload');
+                
             } catch (\Exception $e) {
-                $this->addFlash('error', 'An error occurred during upload: ' . $e->getMessage());
+                $this->addFlash('error', 'An error occurred while creating the module: ' . $e->getMessage());
             }
         }
 

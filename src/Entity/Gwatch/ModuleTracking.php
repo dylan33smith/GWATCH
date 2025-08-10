@@ -17,8 +17,12 @@ class ModuleTracking
     #[ORM\Column(length: 50, unique: true)]
     private ?string $moduleId = null;
 
-    #[ORM\Column]
-    private ?int $ownerId = null;
+    #[ORM\Column(length: 100)]
+    private ?string $name = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'owner_id', referencedColumnName: 'user_id')]
+    private ?User $owner = null;
 
     #[ORM\Column]
     private ?bool $public = true;
@@ -50,15 +54,36 @@ class ModuleTracking
         return $this;
     }
 
-    public function getOwnerId(): ?int
+    public function getName(): ?string
     {
-        return $this->ownerId;
+        return $this->name;
     }
 
-    public function setOwnerId(int $ownerId): static
+    public function setName(string $name): static
     {
-        $this->ownerId = $ownerId;
+        $this->name = $name;
         return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    public function getOwnerId(): ?int
+    {
+        return $this->owner?->getId();
+    }
+
+    public function getOwnerUsername(): ?string
+    {
+        return $this->owner?->getUsername();
     }
 
     public function isPublic(): ?bool

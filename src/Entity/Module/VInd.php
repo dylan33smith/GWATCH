@@ -4,26 +4,21 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="v_ind")
+ * @ORM\Table(name="v_ind", indexes={
+ *     @ORM\Index(name="idx_v_ind", columns={"v_ind"})
+ * })
  */
 class VInd
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Ind")
-     * @ORM\JoinColumn(name="ind", referencedColumnName="ind")
      */
     private $ind;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Col")
-     * @ORM\JoinColumn(name="col", referencedColumnName="col")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     private $col;
 
@@ -37,28 +32,23 @@ class VInd
      */
     private $moduleId;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getInd()
+    public function getInd(): ?int
     {
         return $this->ind;
     }
 
-    public function setInd($ind): self
+    public function setInd(int $ind): self
     {
         $this->ind = $ind;
         return $this;
     }
 
-    public function getCol()
+    public function getCol(): ?int
     {
         return $this->col;
     }
 
-    public function setCol($col): self
+    public function setCol(int $col): self
     {
         $this->col = $col;
         return $this;

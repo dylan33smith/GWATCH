@@ -6,7 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="chrsupp")
+ * @ORM\Table(name="chrsupp", indexes={
+ *     @ORM\Index(name="idx_chr", columns={"chr"})
+ * })
  */
 class Chrsupp
 {

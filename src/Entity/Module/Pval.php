@@ -10,14 +10,7 @@ class Pval
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="VInd")
-     * @ORM\JoinColumn(name="v_ind", referencedColumnName="v_ind")
      */
     private $vInd;
 
@@ -31,17 +24,12 @@ class Pval
      */
     private $moduleId;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getVInd()
+    public function getVInd(): ?int
     {
         return $this->vInd;
     }
 
-    public function setVInd($vInd): self
+    public function setVInd(int $vInd): self
     {
         $this->vInd = $vInd;
         return $this;

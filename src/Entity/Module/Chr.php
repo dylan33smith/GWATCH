@@ -6,13 +6,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="chr")
+ * @ORM\Table(name="chr", indexes={
+ *     @ORM\Index(name="idx_chrname", columns={"chrname"})
+ * })
  */
 class Chr
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
     private $chr;
