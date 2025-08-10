@@ -21,25 +21,41 @@ class GwatchController extends AbstractController
     #[Route('/', name: 'gwatch_home')]
     public function home(): Response
     {
-        return $this->render('gwatch/home.html.twig');
+        $response = $this->render('gwatch/home.html.twig');
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->setSharedMaxAge(3600);
+        return $response;
     }
 
     #[Route('/description', name: 'gwatch_description')]
     public function description(): Response
     {
-        return $this->render('gwatch/description.html.twig');
+        $response = $this->render('gwatch/description.html.twig');
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->setSharedMaxAge(3600);
+        return $response;
     }
 
     #[Route('/features', name: 'gwatch_features')]
     public function features(): Response
     {
-        return $this->render('gwatch/features.html.twig');
+        $response = $this->render('gwatch/features.html.twig');
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->setSharedMaxAge(3600);
+        return $response;
     }
 
     #[Route('/tutorial', name: 'gwatch_tutorial')]
     public function tutorial(): Response
     {
-        return $this->render('gwatch/tutorial.html.twig');
+        $response = $this->render('gwatch/tutorial.html.twig');
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->setSharedMaxAge(3600);
+        return $response;
     }
 
     #[Route('/modules', name: 'gwatch_modules')]
@@ -48,9 +64,13 @@ class GwatchController extends AbstractController
         // Get list of available modules (databases)
         $modules = $this->getAvailableModules();
         
-        return $this->render('gwatch/modules.html.twig', [
+        $response = $this->render('gwatch/modules.html.twig', [
             'modules' => $modules
         ]);
+        $response->setPublic();
+        $response->setMaxAge(600);
+        $response->setSharedMaxAge(600);
+        return $response;
     }
 
     #[Route('/modules/{moduleId}', name: 'gwatch_module_detail')]
@@ -65,10 +85,14 @@ class GwatchController extends AbstractController
         $module = $this->getModuleData($moduleId);
         $tests = $this->getModuleTests($moduleId);
 
-        return $this->render('gwatch/module_detail.html.twig', [
+        $response = $this->render('gwatch/module_detail.html.twig', [
             'module' => $module,
             'tests' => $tests
         ]);
+        $response->setPublic();
+        $response->setMaxAge(300);
+        $response->setSharedMaxAge(300);
+        return $response;
     }
 
     #[Route('/modules/{moduleId}/browser', name: 'gwatch_module_browser')]
@@ -78,9 +102,13 @@ class GwatchController extends AbstractController
             throw $this->createNotFoundException("Module $moduleId not found");
         }
 
-        return $this->render('gwatch/browser.html.twig', [
+        $response = $this->render('gwatch/browser.html.twig', [
             'moduleId' => $moduleId
         ]);
+        $response->setPublic();
+        $response->setMaxAge(600);
+        $response->setSharedMaxAge(600);
+        return $response;
     }
 
     #[Route('/modules/{moduleId}/report', name: 'gwatch_module_report', methods: ['GET', 'POST'])]
@@ -100,9 +128,13 @@ class GwatchController extends AbstractController
             return $this->json(['status' => 'success', 'message' => 'Report generated']);
         }
 
-        return $this->render('gwatch/report.html.twig', [
+        $response = $this->render('gwatch/report.html.twig', [
             'moduleId' => $moduleId
         ]);
+        $response->setPublic();
+        $response->setMaxAge(600);
+        $response->setSharedMaxAge(600);
+        return $response;
     }
 
     /**

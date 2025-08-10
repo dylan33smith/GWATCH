@@ -13,6 +13,7 @@ class DatabaseManager
     private $params;
     private $currentModuleId = null;
     private $originalConnection = null;
+    private $moduleExistsCache = [];
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -72,6 +73,10 @@ class DatabaseManager
      */
     private function moduleExists(string $moduleId): bool
     {
+        if (array_key_exists($moduleId, $this->moduleExistsCache)) {
+            return $this->moduleExistsCache[$moduleId];
+        }
+
         $connection = $this->entityManager->getConnection();
         
         try {
@@ -80,7 +85,9 @@ class DatabaseManager
             $stmt->executeQuery([$moduleId]);
             $count = $stmt->fetchOne();
             
-            return $count > 0;
+            $exists = $count > 0;
+            $this->moduleExistsCache[$moduleId] = $exists;
+            return $exists;
         } catch (\Exception $e) {
             return false;
         }
