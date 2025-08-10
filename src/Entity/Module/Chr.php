@@ -23,6 +23,11 @@ class Chr
     private $chrname;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $len;
+
+    /**
      * @ORM\Column(type="string", length=50)
      */
     private $moduleId;
@@ -46,6 +51,17 @@ class Chr
     public function setChrname(string $chrname): self
     {
         $this->chrname = $chrname;
+        return $this;
+    }
+
+    public function getLen(): ?int
+    {
+        return $this->len;
+    }
+
+    public function setLen(int $len): self
+    {
+        $this->len = $len;
         return $this;
     }
 

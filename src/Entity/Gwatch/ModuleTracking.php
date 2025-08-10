@@ -21,7 +21,10 @@ class ModuleTracking
     private ?int $ownerId = null;
 
     #[ORM\Column]
-    private ?bool $visible = true;
+    private ?bool $public = true;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
@@ -58,14 +61,25 @@ class ModuleTracking
         return $this;
     }
 
-    public function isVisible(): ?bool
+    public function isPublic(): ?bool
     {
-        return $this->visible;
+        return $this->public;
     }
 
-    public function setVisible(bool $visible): static
+    public function setPublic(bool $public): static
     {
-        $this->visible = $visible;
+        $this->public = $public;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 

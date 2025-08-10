@@ -11,6 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Pos
 {
     /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Ind")
      * @ORM\JoinColumn(name="ind", referencedColumnName="ind")
      */
@@ -20,6 +27,16 @@ class Pos
      * @ORM\Column(type="integer")
      */
     private $pos;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $moduleId;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getInd()
     {
@@ -40,6 +57,17 @@ class Pos
     public function setPos(int $pos): self
     {
         $this->pos = $pos;
+        return $this;
+    }
+
+    public function getModuleId(): ?string
+    {
+        return $this->moduleId;
+    }
+
+    public function setModuleId(string $moduleId): self
+    {
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

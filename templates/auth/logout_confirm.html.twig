@@ -1,0 +1,86 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Confirm Logout - GWATCH{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h3>Confirm Logout</h3>
+                </div>
+                <div class="card-body text-center">
+                    <p class="mb-4">Are you sure you want to logout, <strong>{{ username }}</strong>?</p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('app_logout') }}" class="btn btn-danger">Yes, Logout</a>
+                        <a href="{{ path('gwatch_home') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: white;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+</style>
+{% endblock %}

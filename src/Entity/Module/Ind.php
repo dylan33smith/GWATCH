@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="tab_c")
+ * @ORM\Table(name="ind")
  */
 class Ind
 {

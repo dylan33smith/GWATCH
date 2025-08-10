@@ -26,6 +26,11 @@ class Chrsupp
      */
     private $chrlen;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $moduleId;
+
     public function getChr(): ?int
     {
         return $this->chr;
@@ -56,6 +61,17 @@ class Chrsupp
     public function setChrlen(int $chrlen): self
     {
         $this->chrlen = $chrlen;
+        return $this;
+    }
+
+    public function getModuleId(): ?string
+    {
+        return $this->moduleId;
+    }
+
+    public function setModuleId(string $moduleId): self
+    {
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

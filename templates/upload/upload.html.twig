@@ -1,0 +1,150 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Upload Data - GWATCH{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card mt-5">
+                <div class="card-header text-center">
+                    <h3>Upload Data to GWATCH</h3>
+                    <p class="text-muted mb-0">Welcome, {{ username }}!</p>
+                </div>
+                <div class="card-body">
+                    {% for message in app.flashes('upload_success') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+                    
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('warning') %}
+                        <div class="alert alert-warning">{{ message }}</div>
+                    {% endfor %}
+
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.moduleName, 'Module Name', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.moduleName) }}
+                            {{ form_errors(form.moduleName) }}
+                            <small class="form-text text-muted">Choose a unique name for your module (e.g., Module186, HIV_Study_2024)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.description) }}
+                            {{ form_errors(form.description) }}
+                            <small class="form-text text-muted">Optional description of your dataset</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form_widget(form.makePublic) }}
+                                {{ form_label(form.makePublic, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                {{ form_errors(form.makePublic) }}
+                            </div>
+                        </div>
+
+                        <!-- TODO: Add file upload fields here step by step for testing -->
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create Module</button>
+                        </div>
+                    {{ form_end(form) }}
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">
+                            <strong>Module Creation:</strong><br>
+                            • Enter a unique module name<br>
+                            • Add an optional description<br>
+                            • Choose visibility settings<br>
+                            • File upload functionality coming soon
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.form-control {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.alert {
+    border-radius: 4px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+</style>
+{% endblock %}

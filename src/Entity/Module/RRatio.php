@@ -6,40 +6,68 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="rratio")
+ * @ORM\Table(name="r_ratio")
  */
 class RRatio
 {
     /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
      * @ORM\ManyToOne(targetEntity="VInd")
      * @ORM\JoinColumn(name="v_ind", referencedColumnName="v_ind")
      */
-    private $v_ind;
+    private $vInd;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $r_ratio;
+    private $rRatio;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $moduleId;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getVInd()
     {
-        return $this->v_ind;
+        return $this->vInd;
     }
 
-    public function setVInd($v_ind): self
+    public function setVInd($vInd): self
     {
-        $this->v_ind = $v_ind;
+        $this->vInd = $vInd;
         return $this;
     }
 
     public function getRRatio(): ?int
     {
-        return $this->r_ratio;
+        return $this->rRatio;
     }
 
-    public function setRRatio(int $r_ratio): self
+    public function setRRatio(int $rRatio): self
     {
-        $this->r_ratio = $r_ratio;
+        $this->rRatio = $rRatio;
+        return $this;
+    }
+
+    public function getModuleId(): ?string
+    {
+        return $this->moduleId;
+    }
+
+    public function setModuleId(string $moduleId): self
+    {
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

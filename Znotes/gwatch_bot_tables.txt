@@ -1,0 +1,106 @@
+GWATCH_BOT
+
+--- TABLE: `effect` ---
+('chr', 'varchar(2)', 'YES', '', None, '')
+('pos', 'int(9)', 'NO', 'PRI', '0', '')
+('alias', 'varchar(30)', 'YES', 'MUL', None, '')
+('reported_genes', 'varchar(369)', 'YES', '', None, '')
+('effect', 'varchar(640)', 'YES', '', None, '')
+
+--- TABLE: `file` ---
+('id', 'int(11)', 'NO', 'PRI', None, 'auto_increment')
+('owner_id', 'int(11)', 'YES', 'MUL', None, '')
+('name', 'varchar(255)', 'NO', '', None, '')
+('localpath', 'varchar(255)', 'NO', '', None, '')
+
+--- TABLE: `file_project` ---
+('file_id', 'int(11)', 'NO', 'PRI', None, '')
+('project_id', 'int(11)', 'NO', 'PRI', None, '')
+
+--- TABLE: `forms` ---
+('page', 'int(11)', 'NO', 'PRI', None, '')
+('id', 'int(11)', 'NO', 'PRI', None, '')
+('title', 'text', 'NO', '', None, '')
+('description', 'text', 'NO', '', None, '')
+('type', 'varchar(25)', 'NO', '', None, '')
+('var', 'varchar(25)', 'NO', '', None, '')
+('defvalue', 'varchar(10)', 'NO', '', None, '')
+('goto', 'int(11)', 'NO', '', None, '')
+('path', 'varchar(50)', 'NO', 'PRI', None, '')
+
+--- TABLE: `forms-old` ---
+('id', 'int(11)', 'NO', 'PRI', None, '')
+('page', 'int(11)', 'NO', '', None, '')
+('title', 'text', 'NO', '', None, '')
+('description', 'text', 'NO', '', None, '')
+('type', 'varchar(25)', 'NO', '', None, '')
+('var', 'varchar(25)', 'NO', '', None, '')
+('defvalue', 'varchar(10)', 'NO', '', None, '')
+('goto', 'int(11)', 'NO', '', None, '')
+
+--- TABLE: `genes` ---
+('build', 'int(8)', 'NO', '', None, '')
+('chr', 'int(8)', 'NO', 'MUL', None, '')
+('posstart', 'int(11)', 'NO', '', None, '')
+('posend', 'int(11)', 'NO', '', None, '')
+('strand', 'int(11)', 'NO', '', None, '')
+('gene', 'varchar(255)', 'NO', '', None, '')
+
+--- TABLE: `medtable` ---
+('build', 'varchar(20)', 'NO', '', None, '')
+('chr', 'int(11)', 'NO', 'PRI', None, '')
+('pos', 'int(11)', 'NO', 'PRI', None, '')
+('alias', 'varchar(35)', 'NO', '', None, '')
+('all', 'varchar(10)', 'NO', '', None, '')
+('dbn', 'varchar(255)', 'NO', '', None, '')
+('dsdb', 'varchar(255)', 'NO', '', None, '')
+('dbid', 'varchar(255)', 'NO', '', None, '')
+
+--- TABLE: `module` ---
+('id', 'int(11)', 'NO', 'PRI', None, 'auto_increment')
+('title', 'varchar(255)', 'NO', '', "''", '')
+('description', 'varchar(255)', 'NO', '', "''", '')
+('name', 'varchar(10)', 'NO', 'UNI', "''", '')
+('public', 'tinyint(4)', 'YES', '', None, '')
+('demo', 'tinyint(4)', 'YES', '', None, '')
+('owner', 'int(11)', 'YES', '', None, '')
+('descriptionPage', 'text', 'NO', '', None, '')
+('link', 'varchar(255)', 'NO', '', None, '')
+('build', 'varchar(255)', 'NO', '', "''", '')
+('platform', 'varchar(255)', 'NO', '', "''", '')
+('compare', 'varchar(5)', 'NO', '', "''", '')
+
+--- TABLE: `project` ---
+('id', 'int(11)', 'NO', 'PRI', None, 'auto_increment')
+('owner_id', 'int(11)', 'YES', 'MUL', None, '')
+('title', 'varchar(255)', 'NO', '', None, '')
+('description', 'varchar(255)', 'NO', '', None, '')
+('created_at', 'datetime', 'NO', '', None, '')
+
+--- TABLE: `projectstatus` ---
+('id', 'int(11)', 'NO', 'PRI', None, '')
+('json', 'text', 'NO', '', None, '')
+('status', 'varchar(255)', 'NO', '', None, '')
+
+--- TABLE: `tests` ---
+('project_id', 'int(11)', 'NO', 'PRI', None, '')
+('col', 'int(11)', 'NO', 'PRI', None, '')
+('test', 'varchar(255)', 'NO', '', None, '')
+('json', 'text', 'NO', '', None, '')
+('file', 'varchar(255)', 'YES', '', None, '')
+
+--- TABLE: `userold` ---
+('id', 'int(11)', 'NO', 'PRI', None, 'auto_increment')
+('name', 'varchar(255)', 'NO', '', None, '')
+('email', 'varchar(255)', 'NO', '', None, '')
+('user_name', 'varchar(255)', 'NO', '', None, '')
+
+--- TABLE: `users` ---
+('user_id', 'int(11)', 'NO', 'PRI', None, 'auto_increment')
+('username', 'varchar(255)', 'NO', 'UNI', None, '')
+('salt', 'varchar(23)', 'NO', '', None, '')
+('password', 'varchar(88)', 'NO', '', None, '')
+('mail', 'varchar(255)', 'NO', '', None, '')
+('role', 'varchar(255)', 'NO', '', None, '')
+('created_at', 'int(11)', 'NO', '', None, '')
+('image', 'varchar(255)', 'YES', '', None, '')

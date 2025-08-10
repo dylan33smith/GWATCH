@@ -2,8 +2,6 @@
 namespace App\Entity\Module;
 use Doctrine\ORM\Mapping as ORM;
 
-# P-value table
-
 /**
  * @ORM\Entity
  * @ORM\Table(name="pval")
@@ -11,24 +9,41 @@ use Doctrine\ORM\Mapping as ORM;
 class Pval
 {
     /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
      * @ORM\ManyToOne(targetEntity="VInd")
      * @ORM\JoinColumn(name="v_ind", referencedColumnName="v_ind")
      */
-    private $v_ind;
+    private $vInd;
 
     /**
      * @ORM\Column(type="float")
      */
     private $pval;
 
-    public function getVInd()
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $moduleId;
+
+    public function getId(): ?int
     {
-        return $this->v_ind;
+        return $this->id;
     }
 
-    public function setVInd($v_ind): self
+    public function getVInd()
     {
-        $this->v_ind = $v_ind;
+        return $this->vInd;
+    }
+
+    public function setVInd($vInd): self
+    {
+        $this->vInd = $vInd;
         return $this;
     }
 
@@ -40,6 +55,17 @@ class Pval
     public function setPval(float $pval): self
     {
         $this->pval = $pval;
+        return $this;
+    }
+
+    public function getModuleId(): ?string
+    {
+        return $this->moduleId;
+    }
+
+    public function setModuleId(string $moduleId): self
+    {
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

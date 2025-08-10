@@ -4,7 +4,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="tests")
+ * @ORM\Table(name="col")
  */
 class Col
 {
@@ -21,34 +21,19 @@ class Col
     private $test;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string")
      */
-    private $description;
+    private $refTable;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $stattest;
+    private $refCol;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $model;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $statname;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $qss;
-
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $object;
+    private $moduleId;
 
     public function getCol(): ?int
     {
@@ -72,69 +57,36 @@ class Col
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getRefTable(): ?string
     {
-        return $this->description;
+        return $this->refTable;
     }
 
-    public function setDescription(string $description): self
+    public function setRefTable(string $refTable): self
     {
-        $this->description = $description;
+        $this->refTable = $refTable;
         return $this;
     }
 
-    public function getStattest(): ?string
+    public function getRefCol(): ?string
     {
-        return $this->stattest;
+        return $this->refCol;
     }
 
-    public function setStattest(string $stattest): self
+    public function setRefCol(string $refCol): self
     {
-        $this->stattest = $stattest;
+        $this->refCol = $refCol;
         return $this;
     }
 
-    public function getModel(): ?string
+    public function getModuleId(): ?string
     {
-        return $this->model;
+        return $this->moduleId;
     }
 
-    public function setModel(string $model): self
+    public function setModuleId(string $moduleId): self
     {
-        $this->model = $model;
-        return $this;
-    }
-
-    public function getStatname(): ?string
-    {
-        return $this->statname;
-    }
-
-    public function setStatname(string $statname): self
-    {
-        $this->statname = $statname;
-        return $this;
-    }
-
-    public function getQss(): ?string
-    {
-        return $this->qss;
-    }
-
-    public function setQss(string $qss): self
-    {
-        $this->qss = $qss;
-        return $this;
-    }
-
-    public function getObject(): ?string
-    {
-        return $this->object;
-    }
-
-    public function setObject(string $object): self
-    {
-        $this->object = $object;
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

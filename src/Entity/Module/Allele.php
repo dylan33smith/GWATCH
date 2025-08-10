@@ -2,11 +2,13 @@
 namespace App\Entity\Module;
 use Doctrine\ORM\Mapping as ORM;
 
+# Allele information
+
 /**
  * @ORM\Entity
- * @ORM\Table(name="ratio")
+ * @ORM\Table(name="allele")
  */
-class Ratio
+class Allele
 {
     /**
      * @ORM\Id
@@ -16,15 +18,15 @@ class Ratio
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="VInd")
-     * @ORM\JoinColumn(name="v_ind", referencedColumnName="v_ind")
+     * @ORM\ManyToOne(targetEntity="Ind")
+     * @ORM\JoinColumn(name="ind", referencedColumnName="ind")
      */
-    private $vInd;
+    private $ind;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="string")
      */
-    private $ratio;
+    private $allele;
 
     /**
      * @ORM\Column(type="string")
@@ -36,25 +38,25 @@ class Ratio
         return $this->id;
     }
 
-    public function getVInd()
+    public function getInd()
     {
-        return $this->vInd;
+        return $this->ind;
     }
 
-    public function setVInd($vInd): self
+    public function setInd($ind): self
     {
-        $this->vInd = $vInd;
+        $this->ind = $ind;
         return $this;
     }
 
-    public function getRatio(): ?float
+    public function getAllele(): ?string
     {
-        return $this->ratio;
+        return $this->allele;
     }
 
-    public function setRatio(float $ratio): self
+    public function setAllele(string $allele): self
     {
-        $this->ratio = $ratio;
+        $this->allele = $allele;
         return $this;
     }
 

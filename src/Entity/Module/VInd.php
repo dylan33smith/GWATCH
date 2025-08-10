@@ -2,14 +2,19 @@
 namespace App\Entity\Module;
 use Doctrine\ORM\Mapping as ORM;
 
-# Variant index (links SNPs to tests)
-
 /**
  * @ORM\Entity
- * @ORM\Table(name="val")
+ * @ORM\Table(name="v_ind")
  */
 class VInd
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
     /**
      * @ORM\ManyToOne(targetEntity="Ind")
      * @ORM\JoinColumn(name="ind", referencedColumnName="ind")
@@ -23,11 +28,19 @@ class VInd
     private $col;
 
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $v_ind;
+    private $vInd;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $moduleId;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getInd()
     {
@@ -53,12 +66,23 @@ class VInd
 
     public function getVInd(): ?int
     {
-        return $this->v_ind;
+        return $this->vInd;
     }
 
-    public function setVInd(int $v_ind): self
+    public function setVInd(int $vInd): self
     {
-        $this->v_ind = $v_ind;
+        $this->vInd = $vInd;
+        return $this;
+    }
+
+    public function getModuleId(): ?string
+    {
+        return $this->moduleId;
+    }
+
+    public function setModuleId(string $moduleId): self
+    {
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

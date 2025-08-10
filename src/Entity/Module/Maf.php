@@ -11,7 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Maf
 {
     /**
-     * @ORM\OneToOne(targetEntity="Ind")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Ind")
      * @ORM\JoinColumn(name="ind", referencedColumnName="ind")
      */
     private $ind;
@@ -20,6 +27,16 @@ class Maf
      * @ORM\Column(type="float")
      */
     private $maf;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $moduleId;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getInd()
     {
@@ -40,6 +57,17 @@ class Maf
     public function setMaf(float $maf): self
     {
         $this->maf = $maf;
+        return $this;
+    }
+
+    public function getModuleId(): ?string
+    {
+        return $this->moduleId;
+    }
+
+    public function setModuleId(string $moduleId): self
+    {
+        $this->moduleId = $moduleId;
         return $this;
     }
 }

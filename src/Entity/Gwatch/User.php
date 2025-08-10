@@ -17,9 +17,6 @@ class User
     #[ORM\Column(length: 255, unique: true)]
     private ?string $username = null;
 
-    #[ORM\Column(length: 23)]
-    private ?string $salt = null;
-
     #[ORM\Column(length: 88)]
     private ?string $password = null;
 
@@ -31,9 +28,6 @@ class User
 
     #[ORM\Column(name: 'created_at')]
     private ?int $createdAt = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
 
     public function __construct()
     {
@@ -53,17 +47,6 @@ class User
     public function setUsername(string $username): static
     {
         $this->username = $username;
-        return $this;
-    }
-
-    public function getSalt(): ?string
-    {
-        return $this->salt;
-    }
-
-    public function setSalt(string $salt): static
-    {
-        $this->salt = $salt;
         return $this;
     }
 
@@ -108,17 +91,6 @@ class User
     public function setCreatedAt(int $createdAt): static
     {
         $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): static
-    {
-        $this->image = $image;
         return $this;
     }
 } 

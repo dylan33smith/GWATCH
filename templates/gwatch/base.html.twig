@@ -452,8 +452,13 @@
                 <a href="{{ path('gwatch_description') }}">What GWATCH does</a>
                 <a href="{{ path('gwatch_features') }}">Features of GWATCH</a>
                 <a href="{{ path('gwatch_tutorial') }}">Tutorial</a>
-                <a href="{{ path('gwatch_modules') }}">Active Datasets</a>
-                <a href="#">Login</a>
+                <a href="{{ path('gwatch_datasets') }}">Active Datasets</a>
+                {% if is_logged_in() %}
+                    <a href="{{ path('app_upload') }}">Upload</a>
+                    <a href="{{ path('app_logout_confirm') }}">Logout ({{ get_username() }})</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}">Login</a>
+                {% endif %}
             </nav>
         </div>
     </header>

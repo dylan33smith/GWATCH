@@ -42,99 +42,11 @@ class GwatchController extends AbstractController
         return $this->render('gwatch/tutorial.html.twig');
     }
 
-    #[Route('/modules', name: 'gwatch_modules')]
-    public function modules(): Response
+    #[Route('/datasets', name: 'gwatch_datasets')]
+    public function datasets(): Response
     {
-        // Get list of available modules (databases)
-        $modules = $this->getAvailableModules();
-        
-        return $this->render('gwatch/modules.html.twig', [
-            'modules' => $modules
-        ]);
+        return $this->render('gwatch/datasets.html.twig');
     }
 
-    #[Route('/modules/{moduleId}', name: 'gwatch_module_detail')]
-    public function moduleDetail(string $moduleId): Response
-    {
-        // Switch to module database
-        if (!$this->databaseManager->switchToModuleDatabase($moduleId)) {
-            throw $this->createNotFoundException("Module $moduleId not found");
-        }
 
-        // Get module data
-        $module = $this->getModuleData($moduleId);
-        $tests = $this->getModuleTests($moduleId);
-
-        return $this->render('gwatch/module_detail.html.twig', [
-            'module' => $module,
-            'tests' => $tests
-        ]);
-    }
-
-    #[Route('/modules/{moduleId}/browser', name: 'gwatch_module_browser')]
-    public function moduleBrowser(string $moduleId): Response
-    {
-        if (!$this->databaseManager->switchToModuleDatabase($moduleId)) {
-            throw $this->createNotFoundException("Module $moduleId not found");
-        }
-
-        return $this->render('gwatch/browser.html.twig', [
-            'moduleId' => $moduleId
-        ]);
-    }
-
-    #[Route('/modules/{moduleId}/report', name: 'gwatch_module_report', methods: ['GET', 'POST'])]
-    public function moduleReport(Request $request, string $moduleId): Response
-    {
-        if (!$this->databaseManager->switchToModuleDatabase($moduleId)) {
-            throw $this->createNotFoundException("Module $moduleId not found");
-        }
-
-        if ($request->isMethod('POST')) {
-            // Handle report generation
-            $reportType = $request->request->get('report_type');
-            $windowSize = $request->request->get('window_size');
-            $getCsv = $request->request->get('get_csv', false);
-
-            // Generate report logic here
-            return $this->json(['status' => 'success', 'message' => 'Report generated']);
-        }
-
-        return $this->render('gwatch/report.html.twig', [
-            'moduleId' => $moduleId
-        ]);
-    }
-
-    /**
-     * Get available modules (databases)
-     */
-    private function getAvailableModules(): array
-    {
-        return $this->databaseManager->getAvailableModules();
-    }
-
-    /**
-     * Get module data
-     */
-    private function getModuleData(string $moduleId): array
-    {
-        return [
-            'id' => $moduleId,
-            'name' => "Module $moduleId",
-            'description' => "Data for module $moduleId"
-        ];
-    }
-
-    /**
-     * Get module tests
-     */
-    private function getModuleTests(string $moduleId): array
-    {
-        // This would query the module's database
-        return [
-            'Test 1',
-            'Test 2', 
-            'Test 3'
-        ];
-    }
 } 
