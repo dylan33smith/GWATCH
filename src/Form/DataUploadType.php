@@ -36,12 +36,9 @@ class DataUploadType extends AbstractType
                 ],
             ])
             ->add('chrFile', FileType::class, [
-                'label' => 'CHR File (CSV)',
+                'label' => 'Chromosome File (CSV)',
                 'required' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'CHR file is required.',
-                    ]),
                     new File([
                         'maxSize' => '10M',
                         'mimeTypes' => [
@@ -53,8 +50,8 @@ class DataUploadType extends AbstractType
                 ],
             ])
             ->add('chrsuppFile', FileType::class, [
-                'label' => 'CHR Support File (CSV)',
-                'required' => false,
+                'label' => 'Chromosome Supplement File (CSV)',
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -68,7 +65,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('colFile', FileType::class, [
                 'label' => 'Column File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -82,7 +79,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('indFile', FileType::class, [
                 'label' => 'Index File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -96,7 +93,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('rPvalFile', FileType::class, [
                 'label' => 'R P-value File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -110,7 +107,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('rRatioFile', FileType::class, [
                 'label' => 'R Ratio File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -124,7 +121,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('vIndFile', FileType::class, [
                 'label' => 'Variant Index File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -138,7 +135,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('rowFile', FileType::class, [
                 'label' => 'Row Data File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -152,7 +149,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('valFile', FileType::class, [
                 'label' => 'Value Data File (CSV)',
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',

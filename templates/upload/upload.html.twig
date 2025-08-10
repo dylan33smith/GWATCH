@@ -3,7 +3,27 @@
 {% block title %}Upload Data - GWATCH{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
+<div class="container mt-4">
+    <h2>Upload Module Data</h2>
+    
+    {% for message in app.flashes('upload_success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('upload_error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -11,20 +31,6 @@
                     <h3 class="mb-0">Create New Module</h3>
                 </div>
                 <div class="card-body">
-                    {% for message in app.flashes('upload_success') %}
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-
-                    {% for message in app.flashes('error') %}
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-
                     {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
                         <div class="mb-3">
                             {{ form_label(form.moduleName, null, {'label_attr': {'class': 'form-label'}}) }}
@@ -42,55 +48,55 @@
                             {{ form_label(form.chrFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.chrFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.chrFile) }}
-                            <div class="form-text">Upload a CSV file containing chromosome data. Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing chromosome data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.chrsuppFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.chrsuppFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.chrsuppFile) }}
-                            <div class="form-text">Upload a CSV file containing chromosome support data (optional). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing chromosome supplement data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.colFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.colFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.colFile) }}
-                            <div class="form-text">Upload a CSV file containing column definitions (optional). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing column data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.indFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.indFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.indFile) }}
-                            <div class="form-text">Upload a CSV file containing SNP index data (optional). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing index data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.rPvalFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.rPvalFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.rPvalFile) }}
-                            <div class="form-text">Upload a CSV file containing ranked p-values (optional). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing R p-value data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.rRatioFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.rRatioFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.rRatioFile) }}
-                            <div class="form-text">Upload a CSV file containing ranked ratios (optional). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing R ratio data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.vIndFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.vIndFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.vIndFile) }}
-                            <div class="form-text">Upload a CSV file containing variant index data (optional). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing variant index data (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.rowFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.rowFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.rowFile) }}
-                            <div class="form-text">Upload a CSV file containing row data (creates pos, alias, allele, and maf tables). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing row data (creates pos, alias, allele, and maf tables) (required). Maximum file size: 10MB.</div>
                         </div>
                         <div class="mb-3">
                             {{ form_label(form.valFile, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.valFile, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.valFile) }}
-                            <div class="form-text">Upload a CSV file containing value data (creates pval and ratio tables). Maximum file size: 10MB.</div>
+                            <div class="form-text">Upload a CSV file containing value data (creates pval and ratio tables) (required). Maximum file size: 10MB.</div>
                         </div>
 
                         <div class="mb-3 form-check">

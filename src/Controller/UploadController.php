@@ -7,6 +7,7 @@ use App\Entity\Gwatch\User;
 use App\Form\DataUploadType;
 use App\Repository\UserRepository;
 use App\Service\ModuleCreationService;
+use App\Service\CsvValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,12 +36,30 @@ class UploadController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            $currentUser = $this->getUser();
             
             try {
-                // Fetch the current user entity
-                $currentUser = $userRepository->find($session->get('user_id'));
-                if (!$currentUser) {
-                    throw new \Exception('User not found');
+                // Validate CSV files before creating module
+                $csvValidationService = new CsvValidationService();
+                $validationErrors = $csvValidationService->validateAllFiles(
+                    $data['chrFile'],
+                    $data['chrsuppFile'],
+                    $data['colFile'],
+                    $data['indFile'],
+                    $data['rPvalFile'],
+                    $data['rRatioFile'],
+                    $data['vIndFile'],
+                    $data['rowFile'],
+                    $data['valFile']
+                );
+                
+                if (!empty($validationErrors)) {
+                    foreach ($validationErrors as $error) {
+                        $this->addFlash('upload_error', $error);
+                    }
+                    return $this->render('upload/upload.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
                 }
                 
                 // Create module using the service
@@ -50,14 +69,14 @@ class UploadController extends AbstractController
                     $data['makePublic'] ?? false,
                     $currentUser,
                     $data['chrFile'],
-                    $data['chrsuppFile'] ?? null,
-                    $data['colFile'] ?? null,
-                    $data['indFile'] ?? null,
-                    $data['rPvalFile'] ?? null,
-                    $data['rRatioFile'] ?? null,
-                    $data['vIndFile'] ?? null,
-                    $data['rowFile'] ?? null,
-                    $data['valFile'] ?? null
+                    $data['chrsuppFile'],
+                    $data['colFile'],
+                    $data['indFile'],
+                    $data['rPvalFile'],
+                    $data['rRatioFile'],
+                    $data['vIndFile'],
+                    $data['rowFile'],
+                    $data['valFile']
                 );
                 
                 $this->addFlash('upload_success', 'Module "' . $data['moduleName'] . '" created successfully! Module ID: Module_' . $moduleTracking->getId());

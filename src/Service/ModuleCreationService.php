@@ -29,14 +29,14 @@ class ModuleCreationService
         bool $isPublic,
         $owner,
         UploadedFile $chrFile,
-        ?UploadedFile $chrsuppFile = null,
-        ?UploadedFile $colFile = null,
-        ?UploadedFile $indFile = null,
-        ?UploadedFile $rPvalFile = null,
-        ?UploadedFile $rRatioFile = null,
-        ?UploadedFile $vIndFile = null,
-        ?UploadedFile $rowFile = null,
-        ?UploadedFile $valFile = null
+        UploadedFile $chrsuppFile,
+        UploadedFile $colFile,
+        UploadedFile $indFile,
+        UploadedFile $rPvalFile,
+        UploadedFile $rRatioFile,
+        UploadedFile $vIndFile,
+        UploadedFile $rowFile,
+        UploadedFile $valFile
     ): ModuleTracking {
         // Create the module tracking entry first
         $moduleTracking = new ModuleTracking();
@@ -53,46 +53,14 @@ class ModuleCreationService
         $moduleId = 'Module_' . $moduleTracking->getId();
         $this->createModuleDatabase($moduleId);
         $this->createChrTable($moduleId, $chrFile);
-        
-        // Create chrsupp table if file is provided
-        if ($chrsuppFile) {
-            $this->createChrSuppTable($moduleId, $chrsuppFile);
-        }
-        
-        // Create col table if file is provided
-        if ($colFile) {
-            $this->createColTable($moduleId, $colFile);
-        }
-        
-        // Create ind table if file is provided
-        if ($indFile) {
-            $this->createIndTable($moduleId, $indFile);
-        }
-        
-        // Create r_pval table if file is provided
-        if ($rPvalFile) {
-            $this->createRPvalTable($moduleId, $rPvalFile);
-        }
-        
-        // Create r_ratio table if file is provided
-        if ($rRatioFile) {
-            $this->createRRatioTable($moduleId, $rRatioFile);
-        }
-        
-        // Create v_ind table if file is provided
-        if ($vIndFile) {
-            $this->createVIndTable($moduleId, $vIndFile);
-        }
-        
-        // Create row-based tables if file is provided
-        if ($rowFile) {
-            $this->createRowBasedTables($moduleId, $rowFile);
-        }
-        
-        // Create value-based tables if file is provided
-        if ($valFile) {
-            $this->createValueBasedTables($moduleId, $valFile);
-        }
+        $this->createChrSuppTable($moduleId, $chrsuppFile);
+        $this->createColTable($moduleId, $colFile);
+        $this->createIndTable($moduleId, $indFile);
+        $this->createRPvalTable($moduleId, $rPvalFile);
+        $this->createRRatioTable($moduleId, $rRatioFile);
+        $this->createVIndTable($moduleId, $vIndFile);
+        $this->createRowBasedTables($moduleId, $rowFile);
+        $this->createValueBasedTables($moduleId, $valFile);
 
         return $moduleTracking;
     }
