@@ -1,0 +1,5 @@
+chromosome,position,value,description
+chr1,1000,0.5,Test position 1
+chr1,2000,0.8,Test position 2
+chr2,1500,0.3,Test position 3
+chr2,2500,0.9,Test position 4

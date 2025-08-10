@@ -3,154 +3,125 @@
 {% block title %}Upload Data - GWATCH{% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card mt-5">
-                <div class="card-header text-center">
-                    <h3>Upload Data to GWATCH</h3>
-                    <p class="text-muted mb-0">Welcome, {{ username }}!</p>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Create New Module</h3>
                 </div>
                 <div class="card-body">
                     {% for message in app.flashes('upload_success') %}
-                        <div class="alert alert-success">{{ message }}</div>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     {% endfor %}
-                    
+
                     {% for message in app.flashes('error') %}
-                        <div class="alert alert-danger">{{ message }}</div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     {% endfor %}
 
-                    {% for message in app.flashes('warning') %}
-                        <div class="alert alert-warning">{{ message }}</div>
-                    {% endfor %}
-
-                    {{ form_start(form) }}
+                    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
                         <div class="mb-3">
-                            {{ form_label(form.moduleName, 'Module Name', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.moduleName) }}
+                            {{ form_label(form.moduleName, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.moduleName, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.moduleName) }}
-                            <small class="form-text text-muted">Choose a unique name for your module (e.g., Module186, HIV_Study_2024)</small>
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.description) }}
+                            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
                             {{ form_errors(form.description) }}
-                            <small class="form-text text-muted">Optional description of your dataset</small>
                         </div>
 
                         <div class="mb-3">
-                            <div class="form-check">
-                                {{ form_widget(form.makePublic) }}
-                                {{ form_label(form.makePublic, null, {'label_attr': {'class': 'form-check-label'}}) }}
-                                {{ form_errors(form.makePublic) }}
-                            </div>
+                            {{ form_label(form.chrFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.chrFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.chrFile) }}
+                            <div class="form-text">Upload a CSV file containing chromosome data. Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.chrsuppFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.chrsuppFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.chrsuppFile) }}
+                            <div class="form-text">Upload a CSV file containing chromosome support data (optional). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.colFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.colFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.colFile) }}
+                            <div class="form-text">Upload a CSV file containing column definitions (optional). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.indFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.indFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.indFile) }}
+                            <div class="form-text">Upload a CSV file containing SNP index data (optional). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.rPvalFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.rPvalFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.rPvalFile) }}
+                            <div class="form-text">Upload a CSV file containing ranked p-values (optional). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.rRatioFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.rRatioFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.rRatioFile) }}
+                            <div class="form-text">Upload a CSV file containing ranked ratios (optional). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.vIndFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.vIndFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.vIndFile) }}
+                            <div class="form-text">Upload a CSV file containing variant index data (optional). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.rowFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.rowFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.rowFile) }}
+                            <div class="form-text">Upload a CSV file containing row data (creates pos, alias, allele, and maf tables). Maximum file size: 10MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.valFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.valFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.valFile) }}
+                            <div class="form-text">Upload a CSV file containing value data (creates pval and ratio tables). Maximum file size: 10MB.</div>
                         </div>
 
-                        <!-- TODO: Add file upload fields here step by step for testing -->
+                        <div class="mb-3 form-check">
+                            {{ form_widget(form.makePublic, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.makePublic, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                            {{ form_errors(form.makePublic) }}
+                        </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Create Module</button>
+                            <button type="submit" class="btn btn-primary btn-lg">Create Module</button>
                         </div>
                     {{ form_end(form) }}
 
-                    <div class="text-center mt-4">
-                        <p class="text-muted">
-                            <strong>Module Creation:</strong><br>
-                            • Enter a unique module name<br>
-                            • Add an optional description<br>
-                            • Choose visibility settings<br>
-                            • File upload functionality coming soon
-                        </p>
-                        
-                        <div class="mt-3">
-                            <a href="{{ path('gwatch_datasets') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-eye"></i> View Active Datasets
-                            </a>
-                        </div>
+                    <div class="mt-4">
+                        <h5>Guidelines:</h5>
+                        <ul class="list-unstyled">
+                            <li>✓ Module name and description are required</li>
+                            <li>✓ CHR file (CSV format) is required</li>
+                            <li>✓ File size limit: 10MB</li>
+                            <li>✓ Choose whether to make the module public or private</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-3">
+                        <a href="{{ path('gwatch_datasets') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-eye"></i> View Active Datasets
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-    padding: 1.5rem;
-}
-
-.card-body {
-    padding: 2rem;
-}
-
-.form-control {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 0.5rem 0.75rem;
-}
-
-.form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-.alert {
-    border-radius: 4px;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
-
-.alert-warning {
-    background-color: #fff3cd;
-    border-color: #ffeaa7;
-    color: #856404;
-}
-
-.form-text {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-
-.text-muted {
-    color: #6c757d !important;
-}
-</style>
 {% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Gwatch\ModuleTracking;
 use App\Entity\Gwatch\User;
 use App\Form\DataUploadType;
 use App\Repository\UserRepository;
+use App\Service\ModuleCreationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,8 +17,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class UploadController extends AbstractController
 {
     #[Route('/upload', name: 'app_upload')]
-    public function upload(Request $request, SessionInterface $session, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
-    {
+    public function upload(
+        Request $request, 
+        SessionInterface $session, 
+        EntityManagerInterface $entityManager, 
+        UserRepository $userRepository,
+        ModuleCreationService $moduleCreationService
+    ): Response {
         // Check if user is logged in
         if (!$session->has('user_id')) {
             $this->addFlash('error', 'Please login to access the upload page.');
@@ -37,23 +43,24 @@ class UploadController extends AbstractController
                     throw new \Exception('User not found');
                 }
                 
-                // Generate a unique module ID using module name and timestamp
-                $timestamp = date('YmdHis');
-                $moduleId = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $data['moduleName'])) . '_' . $timestamp;
+                // Create module using the service
+                $moduleTracking = $moduleCreationService->createModule(
+                    $data['moduleName'],
+                    $data['description'],
+                    $data['makePublic'] ?? false,
+                    $currentUser,
+                    $data['chrFile'],
+                    $data['chrsuppFile'] ?? null,
+                    $data['colFile'] ?? null,
+                    $data['indFile'] ?? null,
+                    $data['rPvalFile'] ?? null,
+                    $data['rRatioFile'] ?? null,
+                    $data['vIndFile'] ?? null,
+                    $data['rowFile'] ?? null,
+                    $data['valFile'] ?? null
+                );
                 
-                // Create new module tracking entry
-                $moduleTracking = new ModuleTracking();
-                $moduleTracking->setModuleId($moduleId);
-                $moduleTracking->setName($data['moduleName']);
-                $moduleTracking->setOwner($currentUser);
-                $moduleTracking->setPublic($data['makePublic'] ?? false);
-                $moduleTracking->setDescription($data['description']);
-                
-                // Persist to database
-                $entityManager->persist($moduleTracking);
-                $entityManager->flush();
-                
-                $this->addFlash('upload_success', 'Module "' . $data['moduleName'] . '" created successfully! Module ID: ' . $moduleId);
+                $this->addFlash('upload_success', 'Module "' . $data['moduleName'] . '" created successfully! Module ID: Module_' . $moduleTracking->getId());
                 
                 return $this->redirectToRoute('app_upload');
                 

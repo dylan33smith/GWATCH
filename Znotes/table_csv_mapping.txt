@@ -7,7 +7,7 @@
 | r_pval         | r_pval.csv  | v_ind, r_pval                 | 1, 2        | v_ind→1, r_pval→2                     |
 | r_ratio        | r_ratio.csv | v_ind, r_ratio                | 1, 2        | v_ind→1, r_ratio→2                    |
 | v_ind          | v_ind.csv   | ind, col, v_ind               | 1, 2, 3     | ind→1, col→2, v_ind→3                 |
-| pos            | row.csv     | in, pos                       | 1, 3        | ind→1, pos→3                          |
+| pos            | row.csv     | ind, pos                       | 1, 3        | ind→1, pos→3                          |
 | alias          | row.csv     | ind, alias                    | 1, 2        | ind→1, alias→2                        |
 | allele         | row.csv     | ind, allele                   | 1, 4        | ind→1, allele→4                       |
 | maf            | row.csv     | ind, maf                      | 1, 5        | ind→1, maf→5                          |

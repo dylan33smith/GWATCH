@@ -14,9 +14,6 @@ class ModuleTracking
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50, unique: true)]
-    private ?string $moduleId = null;
-
     #[ORM\Column(length: 100)]
     private ?string $name = null;
 
@@ -24,7 +21,7 @@ class ModuleTracking
     #[ORM\JoinColumn(name: 'owner_id', referencedColumnName: 'user_id')]
     private ?User $owner = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: false)]
     private ?bool $public = true;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -41,17 +38,6 @@ class ModuleTracking
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getModuleId(): ?string
-    {
-        return $this->moduleId;
-    }
-
-    public function setModuleId(string $moduleId): static
-    {
-        $this->moduleId = $moduleId;
-        return $this;
     }
 
     public function getName(): ?string
