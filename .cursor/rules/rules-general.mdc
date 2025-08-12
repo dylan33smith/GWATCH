@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+
+General: 
+- Don't make changes to webpage styling unless requested. Keep changes as simple as possible.
+- Controllers: src/Controller/*Controller.php - thin. no business logic or direct EM access.
+- Repositories: src/Repository/*Repository.php -  query logic. intent-revealing methods. no direct controller queries
+- Services:  src/Service/*/* - phpapplication/business orchestration, transactions, domain events
+- Security: src/Security/* — voters, authenticators; use Symfony Security (not manual sessions).
+- Migrations: migrations/* — the only way schema changes land.
+- Templates: templates/* — extend templates/gwatch/base.html.twig; avoid inline styles; put CSS in public/css/.
+
+Database Related:
+- mysql username is gwatch_user and password is 123457. Don't make changes to the database schema, only use this to check structure and verify things. 
+- database structure and file upload mapping is stored in Znotes/databaseStructure.txt. Everything should conform to that. Ask permission if something in there doesn't fit with what changes need to be made.
+- data to test database integration is stored in data/upload_data/*csv
+- Module DBs follow Module_{id}. No cross-module joins. Aggregate in service layer if needed. 
+- Never drop/alter module tables from web requests (except for data upload functionality)
+- Configure Doctrine for:
+    - One primary connection (management DB).
+    - One module-scoped connection selected at runtime (e.g., Module_{id}) via a ConnectionProvider service or a decorated ManagerRegistry.
+- Repositories must not hardcode a connection; they should obtain the right EntityManager through a ModuleContext service that knows the current module.
+- Any CLI/ingest task must accept --module-id (or similar) and switch the connection before any ORM operation.
+- When touching schema, migrations only. Never use schema:update --force outside dev.
+
+
+

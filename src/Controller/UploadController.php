@@ -8,7 +8,7 @@ use App\Form\DataUploadType;
 use App\Repository\UserRepository;
 use App\Service\ModuleCreationService;
 use App\Service\CsvValidationService;
-use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,11 +17,26 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UploadController extends AbstractController
 {
+    private CsvValidationService $csvValidationService;
+
+    public function __construct(CsvValidationService $csvValidationService)
+    {
+        $this->csvValidationService = $csvValidationService;
+    }
+
+    /**
+     * Handle data upload form submission and module creation
+     * 
+     * @param Request $request The HTTP request
+     * @param SessionInterface $session User session for authentication
+     * @param UserRepository $userRepository Repository for user operations
+     * @param ModuleCreationService $moduleCreationService Service for creating modules
+     * @return Response Rendered upload page or redirect
+     */
     #[Route('/upload', name: 'app_upload')]
     public function upload(
         Request $request, 
         SessionInterface $session, 
-        EntityManagerInterface $entityManager, 
         UserRepository $userRepository,
         ModuleCreationService $moduleCreationService
     ): Response {
@@ -36,12 +51,16 @@ class UploadController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $currentUser = $this->getUser();
+            $currentUser = $userRepository->find($session->get('user_id'));
+            
+            if (!$currentUser) {
+                $this->addFlash('error', 'User session expired. Please login again.');
+                return $this->redirectToRoute('app_login');
+            }
             
             try {
                 // Validate CSV files before creating module
-                $csvValidationService = new CsvValidationService();
-                $validationErrors = $csvValidationService->validateAllFiles(
+                $validationErrors = $this->csvValidationService->validateAllFiles(
                     $data['chrFile'],
                     $data['chrsuppFile'],
                     $data['colFile'],
@@ -84,7 +103,9 @@ class UploadController extends AbstractController
                 return $this->redirectToRoute('app_upload');
                 
             } catch (\Exception $e) {
-                $this->addFlash('error', 'An error occurred while creating the module: ' . $e->getMessage());
+                // Log technical error for debugging
+                error_log('Module creation error: ' . $e->getMessage());
+                $this->addFlash('error', 'An error occurred while creating the module. Please try again or contact support if the problem persists.');
             }
         }
 

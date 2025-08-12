@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Gwatch\ModuleTracking;
+use App\Entity\Gwatch\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -23,11 +24,30 @@ class ModuleCreationService
         $this->uploadDir = $uploadDir;
     }
 
+    /**
+     * Create a new module with all associated tables and data
+     * 
+     * @param string $moduleName Name of the module
+     * @param string $description Module description
+     * @param bool $isPublic Whether the module is public
+     * @param User $owner User who owns the module
+     * @param UploadedFile $chrFile Chromosome CSV file
+     * @param UploadedFile $chrsuppFile Chromosome supplement CSV file
+     * @param UploadedFile $colFile Column reference CSV file
+     * @param UploadedFile $indFile Index CSV file
+     * @param UploadedFile $rPvalFile R p-value CSV file
+     * @param UploadedFile $rRatioFile R ratio CSV file
+     * @param UploadedFile $vIndFile Value index CSV file
+     * @param UploadedFile $rowFile Row-based data CSV file
+     * @param UploadedFile $valFile Value-based data CSV file
+     * @return ModuleTracking The created module tracking entity
+     * @throws \Exception If module creation fails
+     */
     public function createModule(
         string $moduleName,
         string $description,
         bool $isPublic,
-        $owner,
+        User $owner,
         UploadedFile $chrFile,
         UploadedFile $chrsuppFile,
         UploadedFile $colFile,
@@ -38,31 +58,44 @@ class ModuleCreationService
         UploadedFile $rowFile,
         UploadedFile $valFile
     ): ModuleTracking {
-        // Create the module tracking entry first
-        $moduleTracking = new ModuleTracking();
-        $moduleTracking->setName($moduleName);
-        $moduleTracking->setDescription($description);
-        $moduleTracking->setPublic($isPublic);
-        $moduleTracking->setOwner($owner);
+        // Use database transaction for data integrity
+        $this->entityManager->beginTransaction();
+        
+        try {
+            // Create the module tracking entry first
+            $moduleTracking = new ModuleTracking();
+            $moduleTracking->setName($moduleName);
+            $moduleTracking->setDescription($description);
+            $moduleTracking->setPublic($isPublic);
+            $moduleTracking->setOwner($owner);
 
-        // Persist to get the ID
-        $this->entityManager->persist($moduleTracking);
-        $this->entityManager->flush();
+            // Persist to get the ID
+            $this->entityManager->persist($moduleTracking);
+            $this->entityManager->flush();
 
-        // Now create the module database and table using the ID
-        $moduleId = 'Module_' . $moduleTracking->getId();
-        $this->createModuleDatabase($moduleId);
-        $this->createChrTable($moduleId, $chrFile);
-        $this->createChrSuppTable($moduleId, $chrsuppFile);
-        $this->createColTable($moduleId, $colFile);
-        $this->createIndTable($moduleId, $indFile);
-        $this->createRPvalTable($moduleId, $rPvalFile);
-        $this->createRRatioTable($moduleId, $rRatioFile);
-        $this->createVIndTable($moduleId, $vIndFile);
-        $this->createRowBasedTables($moduleId, $rowFile);
-        $this->createValueBasedTables($moduleId, $valFile);
+            // Now create the module database and table using the ID
+            $moduleId = 'Module_' . $moduleTracking->getId();
+            $this->createModuleDatabase($moduleId);
+            $this->createChrTable($moduleId, $chrFile);
+            $this->createChrSuppTable($moduleId, $chrsuppFile);
+            $this->createColTable($moduleId, $colFile);
+            $this->createIndTable($moduleId, $indFile);
+            $this->createRPvalTable($moduleId, $rPvalFile);
+            $this->createRRatioTable($moduleId, $rRatioFile);
+            $this->createVIndTable($moduleId, $vIndFile);
+            $this->createRowBasedTables($moduleId, $rowFile);
+            $this->createValueBasedTables($moduleId, $valFile);
 
-        return $moduleTracking;
+            // Commit transaction if everything succeeds
+            $this->entityManager->commit();
+            
+            return $moduleTracking;
+            
+        } catch (\Exception $e) {
+            // Rollback transaction on error
+            $this->entityManager->rollback();
+            throw $e;
+        }
     }
 
     private function createModuleDatabase(string $moduleId): void

@@ -4,6 +4,7 @@
 
 {% block body %}
 <div class="datasets-container">
+
     {% if isLoggedIn and userModules is not empty %}
         <div class="datasets-header">
             <h2 class="section-title">User Datasets</h2>
@@ -49,117 +50,4 @@
         </div>
     {% endif %}
 </div>
-
-<style>
-.datasets-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.datasets-header {
-    text-align: center;
-    margin: 40px 0;
-}
-
-.datasets-header:first-child {
-    margin-top: 20px;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 20px;
-}
-
-.text-muted {
-    color: #7f8c8d;
-    font-size: 1.1rem;
-}
-
-.modules-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 40px;
-    margin-bottom: 40px;
-}
-
-.module-item {
-    width: 100%;
-}
-
-.module-box {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border: 2px solid #fdcb6e;
-    border-radius: 15px;
-    padding: 20px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.module-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    border-color: #f39c12;
-}
-
-.module-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.module-title {
-    color: #2c3e50;
-    font-weight: 600;
-    font-size: 1.2rem;
-    line-height: 1.3;
-    margin: 0;
-}
-
-.module-status {
-    display: flex;
-    align-items: center;
-}
-
-.status-text {
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-text.public {
-    color:rgb(0, 0, 0);
-}
-
-.status-text.private {
-    color:rgb(0, 0, 0);
-}
-
-@media (max-width: 768px) {
-    .datasets-container {
-        padding: 15px;
-    }
-    
-    .module-box {
-        padding: 15px;
-    }
-    
-    .module-title {
-        font-size: 1.1rem;
-    }
-    
-    .module-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .status-text {
-        font-size: 0.8rem;
-    }
-}
-</style>
 {% endblock %}

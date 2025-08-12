@@ -17,6 +17,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthController extends AbstractController
 {
+    /**
+     * Handle user login form submission
+     * 
+     * @param Request $request The HTTP request
+     * @param UserRepository $userRepository Repository for user operations
+     * @param SessionInterface $session User session for authentication
+     * @return Response Rendered login page or redirect
+     */
     #[Route('/login', name: 'app_login')]
     public function login(Request $request, UserRepository $userRepository, SessionInterface $session): Response
     {
@@ -44,6 +52,8 @@ class AuthController extends AbstractController
                 $this->addFlash('success', 'Login successful!');
                 return $this->redirectToRoute('gwatch_home');
             } else {
+                // Log failed login attempt for security monitoring
+                error_log('Failed login attempt for username: ' . $username);
                 $this->addFlash('error', 'Invalid username or password.');
             }
         }
@@ -53,6 +63,14 @@ class AuthController extends AbstractController
         ]);
     }
 
+    /**
+     * Handle user registration form submission
+     * 
+     * @param Request $request The HTTP request
+     * @param EntityManagerInterface $entityManager Entity manager for database operations
+     * @param UserRepository $userRepository Repository for user operations
+     * @return Response Rendered registration page or redirect
+     */
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request, 

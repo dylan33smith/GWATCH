@@ -47,6 +47,14 @@ class GwatchController extends AbstractController
         return $this->render('gwatch/tutorial.html.twig');
     }
 
+    /**
+     * Display datasets page with user-specific and public modules
+     * 
+     * @param ModuleTrackingRepository $moduleTrackingRepository Repository for module operations
+     * @param UserRepository $userRepository Repository for user operations
+     * @param SessionInterface $session User session for authentication
+     * @return Response Rendered datasets page
+     */
     #[Route('/datasets', name: 'gwatch_datasets')]
     public function datasets(ModuleTrackingRepository $moduleTrackingRepository, UserRepository $userRepository, SessionInterface $session): Response
     {
@@ -59,16 +67,39 @@ class GwatchController extends AbstractController
             $currentUser = $userRepository->find($session->get('user_id'));
             if ($currentUser) {
                 // Fetch modules owned by the current user
-                $userModules = $moduleTrackingRepository->createQueryBuilder('m')
-                    ->where('m.owner = :owner')
-                    ->setParameter('owner', $currentUser)
-                    ->orderBy('m.createdAt', 'DESC')
-                    ->getQuery()
-                    ->getResult();
+                $userModules = $this->fetchUserModules($moduleTrackingRepository, $currentUser);
             }
         }
         
         // Fetch all public modules, excluding those owned by the current user
+        $publicModules = $this->fetchPublicModules($moduleTrackingRepository, $isLoggedIn, $currentUser);
+
+        return $this->render('gwatch/datasets.html.twig', [
+            'isLoggedIn' => $isLoggedIn,
+            'currentUser' => $currentUser,
+            'userModules' => $userModules,
+            'publicModules' => $publicModules,
+        ]);
+    }
+
+    /**
+     * Fetch modules owned by the current user
+     */
+    private function fetchUserModules(ModuleTrackingRepository $moduleTrackingRepository, User $currentUser): array
+    {
+        return $moduleTrackingRepository->createQueryBuilder('m')
+            ->where('m.owner = :owner')
+            ->setParameter('owner', $currentUser)
+            ->orderBy('m.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Fetch public modules, excluding those owned by the current user
+     */
+    private function fetchPublicModules(ModuleTrackingRepository $moduleTrackingRepository, bool $isLoggedIn, ?User $currentUser): array
+    {
         $publicModulesQuery = $moduleTrackingRepository->createQueryBuilder('m')
             ->where('m.public = :public')
             ->setParameter('public', true);
@@ -78,16 +109,9 @@ class GwatchController extends AbstractController
                 ->setParameter('currentUser', $currentUser);
         }
         
-        $publicModules = $publicModulesQuery
+        return $publicModulesQuery
             ->orderBy('m.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
-
-        return $this->render('gwatch/datasets.html.twig', [
-            'isLoggedIn' => $isLoggedIn,
-            'currentUser' => $currentUser,
-            'userModules' => $userModules,
-            'publicModules' => $publicModules,
-        ]);
     }
 } 

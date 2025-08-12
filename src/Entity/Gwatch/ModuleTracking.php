@@ -17,8 +17,8 @@ class ModuleTracking
     #[ORM\Column(length: 100)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'owner_id', referencedColumnName: 'user_id')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'modules')]
+    #[ORM\JoinColumn(name: 'owner_id', referencedColumnName: 'user_id', nullable: false)]
     private ?User $owner = null;
 
     #[ORM\Column(nullable: false)]

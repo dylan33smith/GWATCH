@@ -1,4 +1,16 @@
-module_tracking table:
+# GWATCH Database Structure
+
+## gwatch_db (Main Database)
+
+### users table:
+├── user_id (int, auto-increment, primary key)
+├── username (varchar(255), unique)
+├── password (varchar(88))
+├── mail (varchar(255))
+├── role (varchar(255))
+└── created_at (int)
+
+### module_tracking table:
 ├── id (int, auto-increment, primary key)
 ├── name (varchar(100))
 ├── owner_id (int, foreign key to users.user_id)
@@ -6,3 +18,93 @@ module_tracking table:
 ├── description (longtext, nullable)
 └── createdAt (datetime)
 
+### doctrine_migration_versions table:
+├── version (varchar(191), primary key)
+└── executed_at (datetime, nullable)
+
+## Module Databases (Module_{id})
+
+Each module creates its own database with the following tables:
+
+### chr table:
+├── chr (int, primary key)
+├── chrname (varchar(255), indexed)
+└── len (int)
+
+### chrsupp table:
+├── chr (int, primary key)
+├── chroff (int)
+└── chrlen (int)
+
+### col table:
+├── col (int, primary key)
+├── test (varchar(255), nullable)
+├── refTable (varchar(255))
+└── refCol (varchar(255))
+
+### ind table:
+├── chr (int, part of composite primary key)
+├── nrow (int, part of composite primary key)
+└── ind (int, indexed)
+
+### v_ind table:
+├── ind (int, part of composite primary key)
+├── col (int, part of composite primary key)
+└── v_ind (int, indexed)
+
+### r_pval table:
+├── v_ind (int, primary key)
+└── r_pval (int)
+
+### r_ratio table:
+├── v_ind (int, primary key)
+└── r_ratio (int)
+
+### pval table:
+├── v_ind (int, primary key)
+└── pval (float)
+
+### ratio table:
+├── v_ind (int, primary key)
+└── ratio (float)
+
+### pos table:
+├── ind (int, primary key)
+└── pos (int, indexed)
+
+### alias table:
+├── ind (int, primary key)
+└── alias (varchar(255), indexed)
+
+### allele table:
+├── ind (int, primary key)
+└── allele (varchar(255), indexed)
+
+### maf table:
+├── ind (int, primary key)
+└── maf (float, indexed)
+
+## Notes:
+- Module databases follow naming convention: Module_{id} where id is the module_tracking.id
+- All tables use appropriate indexes for performance
+- Foreign key relationships exist between gwatch_db and module databases
+
+----------------------------------------------------------------------------------------------------------------------
+- CSV data is parsed and inserted according to:
+
+| Database Table | CSV File    | Database Columns              | CSV Columns | Mapping                               |
+| -------------- | ----------- | ----------------------------- | ----------- | ------------------------------------- |
+| chr            | chr.csv     | chr, chrname, len             | 1, 2, 3     | chr→1, chrname→2, len→3               |
+| chrsupp        | chrsupp.csv | chr, chroff, chrlen           | 1, 2, 3     | chr→1, chroff→2, chrlen→3             |
+| col            | col.csv     | col, test, ref.table, ref.col | 1, 2, 3, 4  | col→1, test→2, ref.table→3, ref.col→4 |
+| ind            | ind.csv     | chr, nrow, ind                | 1, 2, 3     | chr→1, nrow→2, ind→3                  |
+| r_pval         | r_pval.csv  | v_ind, r_pval                 | 1, 2        | v_ind→1, r_pval→2                     |
+| r_ratio        | r_ratio.csv | v_ind, r_ratio                | 1, 2        | v_ind→1, r_ratio→2                    |
+| v_ind          | v_ind.csv   | ind, col, v_ind               | 1, 2, 3     | ind→1, col→2, v_ind→3                 |
+| pos            | row.csv     | ind, pos                      | 1, 3        | ind→1, pos→3                          |
+| alias          | row.csv     | ind, alias                    | 1, 2        | ind→1, alias→2                        |
+| allele         | row.csv     | ind, allele                   | 1, 4        | ind→1, allele→4                       |
+| maf            | row.csv     | ind, maf                      | 1, 5        | ind→1, maf→5                          |
+| pval           | val.csv     | v_ind, pval                   | 1, 2        | v_ind→1, pval→2                       |
+| ratio          | val.csv     | v_ind, ratio                  | 1, 3        | v_ind→1, pval→2                       |
+----------------------------------------------------------------------------------------------------------------------

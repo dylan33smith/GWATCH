@@ -4,6 +4,8 @@ namespace App\Entity\Gwatch;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
@@ -29,9 +31,13 @@ class User
     #[ORM\Column(name: 'created_at')]
     private ?int $createdAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: ModuleTracking::class)]
+    private Collection $modules;
+
     public function __construct()
     {
         $this->createdAt = time();
+        $this->modules = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -91,6 +97,36 @@ class User
     public function setCreatedAt(int $createdAt): static
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ModuleTracking>
+     */
+    public function getModules(): Collection
+    {
+        return $this->modules;
+    }
+
+    public function addModule(ModuleTracking $module): static
+    {
+        if (!$this->modules->contains($module)) {
+            $this->modules->add($module);
+            $module->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeModule(ModuleTracking $ModuleTracking): static
+    {
+        if ($this->modules->removeElement($ModuleTracking)) {
+            // set the owning side to null (unless already changed)
+            if ($ModuleTracking->getOwner() === $this) {
+                $ModuleTracking->setOwner(null);
+            }
+        }
+
         return $this;
     }
 } 
