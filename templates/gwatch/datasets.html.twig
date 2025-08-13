@@ -25,8 +25,34 @@
                         </div>
                     </div>
                     <div class="sub-modules" id="sub-modules-{{ module.id }}" style="display: none;">
-                        <div class="sub-module-box">
+                        <div class="sub-module-box" data-module-id="{{ module.id }}" data-action="highway-browser">
                             <span class="sub-module-text">Highway Browser</span>
+                            
+                            <!-- Chromosome data container positioned directly underneath -->
+                            <div class="chromosome-data" id="chromosome-data-{{ module.id }}" style="display: none;">
+                                <div class="chromosome-header">
+                                    <h6>Chromosome Data</h6>
+                                    <div class="loading-indicator" style="display: none;">
+                                        <span>Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="chromosome-content">
+                                    <div class="chromosome-table-container">
+                                        <table class="chromosome-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Chromosome</th>
+                                                    <th>Name</th>
+                                                    <th>Length</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="chromosome-tbody-{{ module.id }}">
+                                                <!-- Chromosome data will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="sub-module-box">
                             <span class="sub-module-text">List of Tests and Manhattan Plots</span>
@@ -57,8 +83,34 @@
                         </div>
                     </div>
                     <div class="sub-modules" id="sub-modules-{{ module.id }}" style="display: none;">
-                        <div class="sub-module-box">
+                        <div class="sub-module-box" data-module-id="{{ module.id }}" data-action="highway-browser">
                             <span class="sub-module-text">Highway Browser</span>
+                            
+                            <!-- Chromosome data container positioned directly underneath -->
+                            <div class="chromosome-data" id="chromosome-data-{{ module.id }}" style="display: none;">
+                                <div class="chromosome-header">
+                                    <h6>Chromosome Data</h6>
+                                    <div class="loading-indicator" style="display: none;">
+                                        <span>Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="chromosome-content">
+                                    <div class="chromosome-table-container">
+                                        <table class="chromosome-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Chromosome</th>
+                                                    <th>Name</th>
+                                                    <th>Length</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="chromosome-tbody-{{ module.id }}">
+                                                <!-- Chromosome data will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="sub-module-box">
                             <span class="sub-module-text">List of Tests and Manhattan Plots</span>
@@ -98,6 +150,81 @@ document.addEventListener('DOMContentLoaded', function() {
                 subModules.style.display = 'block';
             } else {
                 subModules.style.display = 'none';
+            }
+        });
+    });
+    
+    // Add click event listeners to Highway Browser sub-module boxes
+    const highwayBrowserBoxes = document.querySelectorAll('.sub-module-box[data-action="highway-browser"]');
+    
+    highwayBrowserBoxes.forEach(function(box) {
+        box.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent triggering the parent module box click
+            
+            const moduleId = this.getAttribute('data-module-id');
+            const chromosomeData = document.getElementById('chromosome-data-' + moduleId);
+            const loadingIndicator = chromosomeData.querySelector('.loading-indicator');
+            const tbody = document.getElementById('chromosome-tbody-' + moduleId);
+            
+            // Toggle chromosome data visibility
+            if (chromosomeData.style.display === 'none') {
+                // Show chromosome data and fetch data
+                chromosomeData.style.display = 'block';
+                loadingIndicator.style.display = 'block';
+                
+                // Fetch chromosome data from the API
+                console.log('Fetching chromosome data for module:', moduleId);
+                console.log('API URL:', `/api/module/${moduleId}/chromosomes`);
+                
+                fetch(`/api/module/${moduleId}/chromosomes`)
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        loadingIndicator.style.display = 'none';
+                        
+                        if (data.success && data.data && data.data.length > 0) {
+                            // Clear existing data
+                            tbody.innerHTML = '';
+                            
+                            // Populate table with chromosome data
+                            data.data.forEach(function(chromosome) {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${chromosome.chr}</td>
+                                    <td>${chromosome.chrname}</td>
+                                    <td>${chromosome.len.toLocaleString()}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                            
+                            // Log debug info if available
+                            if (data.debug) {
+                                console.log('Chromosome data loaded successfully:', data.debug);
+                            }
+                        } else {
+                            let errorMessage = 'No chromosome data available';
+                            if (data.error) {
+                                errorMessage = data.error;
+                                if (data.debug) {
+                                    console.log('Debug info:', data.debug);
+                                }
+                            }
+                            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">${errorMessage}</td></tr>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        loadingIndicator.style.display = 'none';
+                        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading chromosome data</td></tr>';
+                        console.error('Error fetching chromosome data:', error);
+                    });
+            } else {
+                // Hide chromosome data
+                chromosomeData.style.display = 'none';
             }
         });
     });

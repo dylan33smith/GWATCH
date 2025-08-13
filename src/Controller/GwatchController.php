@@ -12,15 +12,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
-#[Route('/')]
 class GwatchController extends AbstractController
 {
     private $databaseManager;
+    private $params;
+    private $entityManager;
 
-    public function __construct(DatabaseManager $databaseManager)
+    public function __construct(DatabaseManager $databaseManager, ParameterBagInterface $params, EntityManagerInterface $entityManager)
     {
         $this->databaseManager = $databaseManager;
+        $this->params = $params;
+        $this->entityManager = $entityManager;
     }
 
     #[Route('/', name: 'gwatch_home')]
@@ -89,6 +95,205 @@ class GwatchController extends AbstractController
     }
 
     /**
+     * Fetch chromosome data for a specific module
+     * 
+     * @param int $moduleId The module ID to fetch chromosome data for
+     * @return JsonResponse JSON response containing chromosome data
+     */
+    #[Route('/api/module/{moduleId}/chromosomes', name: 'gwatch_module_chromosomes', methods: ['GET'])]
+    public function getModuleChromosomes(int $moduleId): JsonResponse
+    {
+        try {
+            // Create connection to the module database
+            $dbName = "Module_{$moduleId}";
+            $connection = $this->databaseManager->createModuleConnection($dbName);
+            
+            if (!$connection) {
+                return new JsonResponse([
+                    'error' => 'Module database not found',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'connectionFailed' => true
+                    ]
+                ], 404);
+            }
+            
+            // First check if the chr table exists and has data
+            $checkTableSql = "SHOW TABLES LIKE 'chr'";
+            $checkStmt = $connection->prepare($checkTableSql);
+            $checkStmt->executeQuery();
+            $tableExists = $checkStmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            if (empty($tableExists)) {
+                $connection->close();
+                return new JsonResponse([
+                    'error' => 'Chr table not found in module database',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'tableExists' => false,
+                        'availableTables' => $this->getAvailableTables($connection)
+                    ]
+                ], 404);
+            }
+            
+            // Check if table has data
+            $countSql = "SELECT COUNT(*) as count FROM chr";
+            $countStmt = $connection->prepare($countSql);
+            $countStmt->executeQuery();
+            $countResult = $countStmt->fetch(\PDO::FETCH_ASSOC);
+            $rowCount = $countResult['count'] ?? 0;
+            
+            if ($rowCount == 0) {
+                $connection->close();
+                return new JsonResponse([
+                    'error' => 'Chr table is empty',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'tableExists' => true,
+                        'rowCount' => $rowCount
+                    ]
+                ], 404);
+            }
+            
+            // Query chromosome data from the chr table
+            $sql = "SELECT chr, chrname, len FROM chr ORDER BY chr ASC";
+            $stmt = $connection->prepare($sql);
+            $stmt->executeQuery();
+            $chromosomes = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            $connection->close();
+            
+            return new JsonResponse([
+                'success' => true,
+                'data' => $chromosomes,
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'database' => $dbName,
+                    'tableExists' => !empty($tableExists),
+                    'rowCount' => $rowCount,
+                    'fetchedRows' => count($chromosomes)
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'Failed to fetch chromosome data',
+                'message' => $e->getMessage(),
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'exception' => get_class($e),
+                    'trace' => $e->getTraceAsString()
+                ]
+            ], 500);
+        }
+    }
+    
+    /**
+     * Get available tables in the module database for debugging
+     */
+    private function getAvailableTables($connection): array
+    {
+        try {
+            $sql = "SHOW TABLES";
+            $stmt = $connection->prepare($sql);
+            $stmt->executeQuery();
+            $tables = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            $tableNames = [];
+            foreach ($tables as $table) {
+                $tableNames[] = $table['Tables_in_' . strtolower($connection->getDatabase())] ?? $table[0] ?? '';
+            }
+            
+            return $tableNames;
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Test endpoint to check available modules and their databases
+     */
+    #[Route('/api/debug/modules', name: 'gwatch_debug_modules', methods: ['GET'])]
+    public function debugModules(): JsonResponse
+    {
+        try {
+            // Get all modules from the tracking table
+            $connection = $this->entityManager->getConnection();
+            $sql = "SELECT id, name, public FROM module_tracking ORDER BY id ASC";
+            $stmt = $connection->prepare($sql);
+            $stmt->executeQuery();
+            $modules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            $moduleInfo = [];
+            foreach ($modules as $module) {
+                $moduleId = $module['id'];
+                $dbName = "Module_{$moduleId}";
+                
+                // Try to connect to the module database
+                $moduleConnection = $this->databaseManager->createModuleConnection($dbName);
+                $hasDatabase = $moduleConnection !== null;
+                
+                if ($hasDatabase) {
+                    $tables = $this->getAvailableTables($moduleConnection);
+                    $moduleConnection->close();
+                } else {
+                    $tables = [];
+                }
+                
+                $moduleInfo[] = [
+                    'id' => $moduleId,
+                    'name' => $module['name'],
+                    'public' => (bool)$module['public'],
+                    'chrData' => $this->getChrDataSample($dbName),
+                    'database' => $dbName,
+                    'hasDatabase' => $hasDatabase,
+                    'tables' => $tables
+                ];
+            }
+            
+            return new JsonResponse([
+                'success' => true,
+                'modules' => $moduleInfo,
+                'totalModules' => count($modules),
+                'databaseUrl' => $this->params->get('app.database_url')
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'Failed to debug modules',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Get a sample of chromosome data from a module database
+     */
+    private function getChrDataSample(string $dbName): array
+    {
+        try {
+            $connection = $this->databaseManager->createModuleConnection($dbName);
+            if (!$connection) {
+                return ['error' => 'Cannot connect to database'];
+            }
+            
+            $sql = "SELECT chr, chrname, len FROM chr LIMIT 3";
+            $stmt = $connection->prepare($sql);
+            $stmt->executeQuery();
+            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            
+            $connection->close();
+            return $data;
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    /**
      * Fetch modules owned by the current user
      */
     private function fetchUserModules(ModuleTrackingRepository $moduleTrackingRepository, User $currentUser): array
@@ -119,5 +324,18 @@ class GwatchController extends AbstractController
             ->orderBy('m.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+    
+    /**
+     * Simple test endpoint to check if the API is working
+     */
+    #[Route('/api/test', name: 'gwatch_test', methods: ['GET'])]
+    public function test(): JsonResponse
+    {
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'API is working',
+            'timestamp' => date('Y-m-d H:i:s')
+        ]);
     }
 } 

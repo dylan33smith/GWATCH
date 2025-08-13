@@ -236,3 +236,83 @@ fieldset legend { width: 100%; cursor:pointer }
     font-weight: 500;
     display: block;
 }
+
+/* Chromosome Data Styles */
+.chromosome-data {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.chromosome-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.chromosome-header h6 {
+    margin: 0;
+    color: #495057;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.loading-indicator {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.chromosome-content {
+    overflow-x: auto;
+}
+
+.chromosome-table-container {
+    min-width: 100%;
+}
+
+.chromosome-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.chromosome-table th,
+.chromosome-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.chromosome-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.chromosome-table td {
+    color: #6c757d;
+}
+
+.chromosome-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+.text-danger {
+    color: #dc3545;
+}

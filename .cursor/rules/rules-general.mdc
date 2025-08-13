@@ -11,6 +11,9 @@ General:
 - Migrations: migrations/* — the only way schema changes land.
 - Templates: templates/* — extend templates/gwatch/base.html.twig; avoid inline styles; put CSS in public/css/.
 
+- All code should be implemented to conform with DBAL 3+ rather than DBAL 2/PDO
+
+
 Database Related:
 - mysql username is gwatch_user and password is 123457. Don't make changes to the database schema, only use this to check structure and verify things. 
 - database structure and file upload mapping is stored in Znotes/databaseStructure.txt. Everything should conform to that. Ask permission if something in there doesn't fit with what changes need to be made.

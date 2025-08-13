@@ -89,10 +89,10 @@ class DatabaseManager
     /**
      * Create connection to module database
      */
-    private function createModuleConnection(string $dbName): ?Connection
+    public function createModuleConnection(string $dbName): ?Connection
     {
         try {
-            $baseUrl = $this->params->get('database_url');
+            $baseUrl = $this->params->get('app.database_url');
             
             // Parse base URL and replace database name
             $urlParts = parse_url($baseUrl);
