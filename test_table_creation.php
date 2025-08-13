@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 // Mock for testing
 class MockParameterBag implements ParameterBagInterface
 {
-    public function get(string $name): UnitEnum|array|string|int|float|bool|null
+    public function get(string $name): \UnitEnum|array|string|int|float|bool|null
     {
         if ($name === 'app.database_url') {
             return 'mysql://gwatch_user:123457@127.0.0.1:3306/gwatch_db?serverVersion=8.0.42&charset=utf8mb4';

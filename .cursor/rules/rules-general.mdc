@@ -10,8 +10,8 @@ General:
 - Security: src/Security/* — voters, authenticators; use Symfony Security (not manual sessions).
 - Migrations: migrations/* — the only way schema changes land.
 - Templates: templates/* — extend templates/gwatch/base.html.twig; avoid inline styles; put CSS in public/css/.
+- read composer.json and ensure that all code conforms to the correct version
 
-- All code should be implemented to conform with DBAL 3+ rather than DBAL 2/PDO
 
 
 Database Related:

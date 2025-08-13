@@ -221,8 +221,8 @@ class DatabaseManager
             
             // Try to query a simple table to verify the database exists and is accessible
             $stmt = $connection->prepare("SHOW TABLES");
-            $stmt->executeQuery();
-            $tables = $stmt->fetchAllAssociative();
+            $result = $stmt->executeQuery();
+            $tables = $result->fetchAllAssociative();
             
             // Check if the database has the expected GWAS tables
             $expectedTables = ['ind', 'pos', 'chr', 'pval', 'ratio'];
@@ -240,8 +240,8 @@ class DatabaseManager
                 try {
                     // Check if there's data in the 'ind' table (core SNP table)
                     $dataStmt = $connection->prepare("SELECT COUNT(*) FROM ind LIMIT 1");
-                    $dataStmt->executeQuery();
-                    $count = $dataStmt->fetchOne();
+                    $result = $dataStmt->executeQuery();
+                    $count = $result->fetchOne();
                     $hasData = $count > 0;
                 } catch (\Exception $e) {
                     $hasData = false;

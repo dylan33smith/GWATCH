@@ -122,8 +122,8 @@ class GwatchController extends AbstractController
             // First check if the chr table exists and has data
             $checkTableSql = "SHOW TABLES LIKE 'chr'";
             $checkStmt = $connection->prepare($checkTableSql);
-            $checkStmt->executeQuery();
-            $tableExists = $checkStmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $checkStmt->executeQuery();
+            $tableExists = $result->fetchAllAssociative();
             
             if (empty($tableExists)) {
                 $connection->close();
@@ -141,8 +141,8 @@ class GwatchController extends AbstractController
             // Check if table has data
             $countSql = "SELECT COUNT(*) as count FROM chr";
             $countStmt = $connection->prepare($countSql);
-            $countStmt->executeQuery();
-            $countResult = $countStmt->fetch(\PDO::FETCH_ASSOC);
+            $result = $countStmt->executeQuery();
+            $countResult = $result->fetchAssociative();
             $rowCount = $countResult['count'] ?? 0;
             
             if ($rowCount == 0) {
@@ -161,8 +161,8 @@ class GwatchController extends AbstractController
             // Query chromosome data from the chr table
             $sql = "SELECT chr, chrname, len FROM chr ORDER BY chr ASC";
             $stmt = $connection->prepare($sql);
-            $stmt->executeQuery();
-            $chromosomes = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $stmt->executeQuery();
+            $chromosomes = $result->fetchAllAssociative();
             
             $connection->close();
             
@@ -199,8 +199,8 @@ class GwatchController extends AbstractController
         try {
             $sql = "SHOW TABLES";
             $stmt = $connection->prepare($sql);
-            $stmt->executeQuery();
-            $tables = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $stmt->executeQuery();
+            $tables = $result->fetchAllAssociative();
             
             $tableNames = [];
             foreach ($tables as $table) {
@@ -224,8 +224,8 @@ class GwatchController extends AbstractController
             $connection = $this->entityManager->getConnection();
             $sql = "SELECT id, name, public FROM module_tracking ORDER BY id ASC";
             $stmt = $connection->prepare($sql);
-            $stmt->executeQuery();
-            $modules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $stmt->executeQuery();
+            $modules = $result->fetchAllAssociative();
             
             $moduleInfo = [];
             foreach ($modules as $module) {
@@ -283,8 +283,8 @@ class GwatchController extends AbstractController
             
             $sql = "SELECT chr, chrname, len FROM chr LIMIT 3";
             $stmt = $connection->prepare($sql);
-            $stmt->executeQuery();
-            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $stmt->executeQuery();
+            $data = $result->fetchAllAssociative();
             
             $connection->close();
             return $data;

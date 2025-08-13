@@ -50,8 +50,8 @@ class TestDatabaseConnectionCommand extends Command
                 
                 // Try to query tables
                 $stmt = $connection->prepare("SHOW TABLES");
-                $stmt->executeQuery();
-                $tables = $stmt->fetchAllAssociative();
+                $result = $stmt->executeQuery();
+                $tables = $result->fetchAllAssociative();
                 
                 $io->text("✓ $dbName exists with " . count($tables) . " tables");
                 
@@ -68,8 +68,8 @@ class TestDatabaseConnectionCommand extends Command
                     
                     // Check for data
                     $dataStmt = $connection->prepare("SELECT COUNT(*) FROM ind LIMIT 1");
-                    $dataStmt->executeQuery();
-                    $count = $dataStmt->fetchOne();
+                    $result = $dataStmt->executeQuery();
+                    $count = $result->fetchOne();
                     $io->text("✓ $dbName has $count records in ind table");
                 } else {
                     $io->text("✗ $dbName missing required GWAS tables");
