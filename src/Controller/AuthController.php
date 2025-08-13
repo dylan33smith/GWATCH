@@ -33,6 +33,11 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('gwatch_home');
         }
 
+        // Clear any existing flash messages to prevent old messages from showing
+        // This ensures only current user's messages are displayed and prevents
+        // messages from previous user sessions from appearing
+        $session->getFlashBag()->clear();
+
         $form = $this->createForm(LoginType::class);
         $form->handleRequest($request);
 
@@ -75,8 +80,14 @@ class AuthController extends AbstractController
     public function register(
         Request $request, 
         EntityManagerInterface $entityManager,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        SessionInterface $session
     ): Response {
+        // Clear any existing flash messages to prevent old messages from showing
+        // This ensures only current user's messages are displayed and prevents
+        // messages from previous user sessions from appearing
+        $session->getFlashBag()->clear();
+        
         $user = new User();
         $form = $this->createForm(UserRegistrationType::class, $user);
         $form->handleRequest($request);
@@ -121,10 +132,12 @@ class AuthController extends AbstractController
     #[Route('/logout', name: 'app_logout')]
     public function logout(SessionInterface $session): Response
     {
+        // Add logout message before clearing session
+        $this->addFlash('success', 'You have been logged out.');
+        
         // Clear session data
         $session->clear();
         
-        $this->addFlash('success', 'You have been logged out.');
         return $this->redirectToRoute('gwatch_home');
     }
 

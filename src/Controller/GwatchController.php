@@ -24,8 +24,14 @@ class GwatchController extends AbstractController
     }
 
     #[Route('/', name: 'gwatch_home')]
-    public function home(): Response
+    public function home(SessionInterface $session): Response
     {
+        // Clear any old flash messages when accessing home page
+        // This prevents messages from previous user sessions from appearing
+        if (!$session->has('user_id')) {
+            $session->getFlashBag()->clear();
+        }
+        
         return $this->render('gwatch/home.html.twig');
     }
 

@@ -71,6 +71,7 @@ fieldset legend { width: 100%; cursor:pointer }
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .module-box:hover {
@@ -204,4 +205,34 @@ fieldset legend { width: 100%; cursor:pointer }
     .status-text {
         font-size: 0.8rem;
     }
+}
+
+/* Sub-module Styles */
+.sub-modules {
+    margin-left: 30px;
+    margin-bottom: 20px;
+}
+
+.sub-module-box {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #fdcb6e;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sub-module-box:hover {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    transform: translateX(5px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    border-color: #f39c12;
+}
+
+.sub-module-text {
+    color: #495057;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: block;
 }

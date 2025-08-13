@@ -14,7 +14,7 @@
         <div class="modules-list">
             {% for module in userModules %}
                 <div class="module-item">
-                    <div class="module-box">
+                    <div class="module-box" data-module-id="{{ module.id }}">
                         <div class="module-content">
                             <h5 class="module-title">{{ module.name }}</h5>
                             <div class="module-status">
@@ -22,6 +22,17 @@
                                     {{ module.public ? 'Public' : 'Private' }}
                                 </span>
                             </div>
+                        </div>
+                    </div>
+                    <div class="sub-modules" id="sub-modules-{{ module.id }}" style="display: none;">
+                        <div class="sub-module-box">
+                            <span class="sub-module-text">Highway Browser</span>
+                        </div>
+                        <div class="sub-module-box">
+                            <span class="sub-module-text">List of Tests and Manhattan Plots</span>
+                        </div>
+                        <div class="sub-module-box">
+                            <span class="sub-module-text">Top Hits</span>
                         </div>
                     </div>
                 </div>
@@ -40,9 +51,20 @@
         <div class="modules-list">
             {% for module in publicModules %}
                 <div class="module-item">
-                    <div class="module-box">
+                    <div class="module-box" data-module-id="{{ module.id }}">
                         <div class="module-content">
                             <h5 class="module-title">{{ module.name }}</h5>
+                        </div>
+                    </div>
+                    <div class="sub-modules" id="sub-modules-{{ module.id }}" style="display: none;">
+                        <div class="sub-module-box">
+                            <span class="sub-module-text">Highway Browser</span>
+                        </div>
+                        <div class="sub-module-box">
+                            <span class="sub-module-text">List of Tests and Manhattan Plots</span>
+                        </div>
+                        <div class="sub-module-box">
+                            <span class="sub-module-text">Top Hits</span>
                         </div>
                     </div>
                 </div>
@@ -50,4 +72,35 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event listeners to all module boxes
+    const moduleBoxes = document.querySelectorAll('.module-box');
+    
+    moduleBoxes.forEach(function(box) {
+        box.addEventListener('click', function() {
+            const moduleId = this.getAttribute('data-module-id');
+            const subModules = document.getElementById('sub-modules-' + moduleId);
+            
+            // Hide all other sub-modules first
+            const allSubModules = document.querySelectorAll('.sub-modules');
+            allSubModules.forEach(function(subModule) {
+                if (subModule.id !== 'sub-modules-' + moduleId) {
+                    subModule.style.display = 'none';
+                }
+            });
+            
+            // Toggle visibility of current sub-modules
+            if (subModules.style.display === 'none') {
+                subModules.style.display = 'block';
+            } else {
+                subModules.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
