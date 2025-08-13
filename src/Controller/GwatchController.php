@@ -327,6 +327,103 @@ class GwatchController extends AbstractController
     }
     
     /**
+     * Fetch column data for a specific module
+     * 
+     * @param int $moduleId The module ID to fetch column data for
+     * @return JsonResponse JSON response containing column data
+     */
+    #[Route('/api/module/{moduleId}/columns', name: 'gwatch_module_columns', methods: ['GET'])]
+    public function getModuleColumns(int $moduleId): JsonResponse
+    {
+        try {
+            // Create connection to the module database
+            $dbName = "Module_{$moduleId}";
+            $connection = $this->databaseManager->createModuleConnection($dbName);
+            
+            if (!$connection) {
+                return new JsonResponse([
+                    'error' => 'Module database not found',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'connectionFailed' => true
+                    ]
+                ], 404);
+            }
+            
+            // First check if the col table exists and has data
+            $checkTableSql = "SHOW TABLES LIKE 'col'";
+            $checkStmt = $connection->prepare($checkTableSql);
+            $result = $checkStmt->executeQuery();
+            $tableExists = $result->fetchAllAssociative();
+            
+            if (empty($tableExists)) {
+                $connection->close();
+                return new JsonResponse([
+                    'error' => 'Col table not found in module database',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'tableExists' => false,
+                        'availableTables' => $this->getAvailableTables($connection)
+                    ]
+                ], 404);
+            }
+            
+            // Check if table has data
+            $countSql = "SELECT COUNT(*) as count FROM col";
+            $countStmt = $connection->prepare($countSql);
+            $result = $countStmt->executeQuery();
+            $countResult = $result->fetchAssociative();
+            $rowCount = $countResult['count'] ?? 0;
+            
+            if ($rowCount == 0) {
+                $connection->close();
+                return new JsonResponse([
+                    'error' => 'Col table is empty',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'tableExists' => true,
+                        'rowCount' => $rowCount
+                    ]
+                ], 404);
+            }
+            
+            // Query column data from the col table
+            $sql = "SELECT col, test FROM col ORDER BY col ASC";
+            $stmt = $connection->prepare($sql);
+            $result = $stmt->executeQuery();
+            $columns = $result->fetchAllAssociative();
+            
+            $connection->close();
+            
+            return new JsonResponse([
+                'success' => true,
+                'data' => $columns,
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'database' => $dbName,
+                    'tableExists' => !empty($tableExists),
+                    'rowCount' => $rowCount,
+                    'fetchedRows' => count($columns)
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'Failed to fetch column data',
+                'message' => $e->getMessage(),
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'exception' => get_class($e),
+                    'trace' => $e->getTraceAsString()
+                ]
+            ], 500);
+        }
+    }
+
+    /**
      * Simple test endpoint to check if the API is working
      */
     #[Route('/api/test', name: 'gwatch_test', methods: ['GET'])]

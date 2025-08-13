@@ -316,3 +316,65 @@ fieldset legend { width: 100%; cursor:pointer }
 .text-danger {
     color: #dc3545;
 }
+
+/* Tests Data Styles */
+.tests-data {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.tests-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.tests-header h6 {
+    margin: 0;
+    color: #495057;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.tests-content {
+    overflow-x: auto;
+}
+
+.tests-table-container {
+    min-width: 100%;
+}
+
+.tests-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.tests-table th,
+.tests-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.tests-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.tests-table td {
+    color: #6c757d;
+}
+
+.tests-table tbody tr:hover {
+    background-color: #f8f9fa;
+}

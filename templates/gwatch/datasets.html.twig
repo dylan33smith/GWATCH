@@ -54,8 +54,33 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="sub-module-box">
+                        <div class="sub-module-box" data-action="list-tests" data-module-id="{{ module.id }}">
                             <span class="sub-module-text">List of Tests and Manhattan Plots</span>
+                            
+                            <!-- Tests data container positioned directly underneath -->
+                            <div class="tests-data" id="tests-data-{{ module.id }}" style="display: none;">
+                                <div class="tests-header">
+                                    <h6>List of Tests</h6>
+                                    <div class="loading-indicator" id="loading-tests-{{ module.id }}" style="display: none;">
+                                        <span>Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="tests-content">
+                                    <div class="tests-table-container">
+                                        <table class="tests-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Test Name</th>
+                                                    <th>Manhattan Plot</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tests-tbody-{{ module.id }}">
+                                                <!-- Tests data will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="sub-module-box">
                             <span class="sub-module-text">Top Hits</span>
@@ -112,8 +137,33 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="sub-module-box">
+                        <div class="sub-module-box" data-action="list-tests" data-module-id="{{ module.id }}">
                             <span class="sub-module-text">List of Tests and Manhattan Plots</span>
+                            
+                            <!-- Tests data container positioned directly underneath -->
+                            <div class="tests-data" id="tests-data-{{ module.id }}" style="display: none;">
+                                <div class="tests-header">
+                                    <h6>List of Tests</h6>
+                                    <div class="loading-indicator" id="loading-tests-{{ module.id }}" style="display: none;">
+                                        <span>Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="tests-content">
+                                    <div class="tests-table-container">
+                                        <table class="tests-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Test Name</th>
+                                                    <th>Manhattan Plot</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tests-tbody-{{ module.id }}">
+                                                <!-- Tests data will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="sub-module-box">
                             <span class="sub-module-text">Top Hits</span>
@@ -225,6 +275,80 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Hide chromosome data
                 chromosomeData.style.display = 'none';
+            }
+        });
+    });
+    
+    // Add click event listeners to List of Tests sub-module boxes
+    const listTestsBoxes = document.querySelectorAll('.sub-module-box[data-action="list-tests"]');
+    
+    listTestsBoxes.forEach(function(box) {
+        box.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent triggering the parent module box click
+            
+            const moduleId = this.getAttribute('data-module-id');
+            const testsData = document.getElementById('tests-data-' + moduleId);
+            const loadingIndicator = testsData.querySelector('.loading-indicator');
+            const tbody = document.getElementById('tests-tbody-' + moduleId);
+            
+            // Toggle tests data visibility
+            if (testsData.style.display === 'none') {
+                // Show tests data and fetch data
+                testsData.style.display = 'block';
+                loadingIndicator.style.display = 'block';
+                
+                // Fetch column data from the API
+                console.log('Fetching column data for module:', moduleId);
+                console.log('API URL:', `/api/module/${moduleId}/columns`);
+                
+                fetch(`/api/module/${moduleId}/columns`)
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        loadingIndicator.style.display = 'none';
+                        
+                        if (data.success && data.data && data.data.length > 0) {
+                            // Clear existing data
+                            tbody.innerHTML = '';
+                            
+                            // Populate table with column data
+                            data.data.forEach(function(column) {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${column.test || 'Test ' + column.col}</td>
+                                    <td class="text-center text-muted">-</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                            
+                            // Log debug info if available
+                            if (data.debug) {
+                                console.log('Column data loaded successfully:', data.debug);
+                            }
+                        } else {
+                            let errorMessage = 'No column data available';
+                            if (data.error) {
+                                errorMessage = data.error;
+                                if (data.debug) {
+                                    console.log('Debug info:', data.debug);
+                                }
+                            }
+                            tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">${errorMessage}</td></tr>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        loadingIndicator.style.display = 'none';
+                        tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Error loading column data</td></tr>';
+                        console.error('Error fetching column data:', error);
+                    });
+            } else {
+                // Hide tests data
+                testsData.style.display = 'none';
             }
         });
     });
