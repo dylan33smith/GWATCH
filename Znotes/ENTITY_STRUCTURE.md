@@ -4,14 +4,14 @@
 
 The entity structure has been reorganized to reflect the multi-database architecture:
 
-- **GWATCH Database**: Contains user management, project tracking, and module metadata
+- **SONGBIRD Database**: Contains user management, project tracking, and module metadata
 - **Module Databases**: Contain actual GWAS data for each module
 
 ## Entity Organization
 
-### `src/Entity/Gwatch/` - GWATCH Database Entities
+### `src/Entity/Gwatch/` - SONGBIRD Database Entities
 
-Entities that belong to the main GWATCH database (`gwatch_db`):
+Entities that belong to the main SONGBIRD database (`gwatch_db` - database name unchanged):
 
 - **ModuleTracking.php** - Tracks available module databases
   - `id` - Primary key
@@ -37,7 +37,7 @@ Entities that belong to the main GWATCH database (`gwatch_db`):
   - `created_at` - Project creation time
 
 - **Sample.php** - Sample data management
-  - Sample-related data for GWATCH system
+  - Sample-related data for SONGBIRD system
 
 ### `src/Entity/Module/` - Module Database Entities
 
@@ -62,7 +62,7 @@ Entities that belong to individual module databases (`Module_186`, `Module_187`,
 ## Database Architecture
 
 ```
-GWATCH Database (gwatch_db)
+SONGBIRD Database (gwatch_db - database name unchanged)
 ├── module_tracking (tracks available modules)
 ├── users (user accounts)
 ├── project (project management)
@@ -79,7 +79,7 @@ Module Databases (Module_186, Module_187, etc.)
 
 ## Benefits of This Structure
 
-1. **Clear Separation**: GWATCH management vs. GWAS data
+1. **Clear Separation**: SONGBIRD management vs. GWAS data
 2. **Scalability**: Easy to add new modules without code changes
 3. **Maintainability**: Clear organization of entities by database context
 4. **Security**: User management separate from data
@@ -87,7 +87,7 @@ Module Databases (Module_186, Module_187, etc.)
 
 ## Usage
 
-- **GWATCH Entities**: Used for user management, project tracking, and module registration
+- **SONGBIRD Entities**: Used for user management, project tracking, and module registration
 - **Module Entities**: Used when working with specific GWAS data in module databases
 
 The DatabaseManager handles switching between databases based on the module ID from the URL. 

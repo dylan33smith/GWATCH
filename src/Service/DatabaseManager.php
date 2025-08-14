@@ -54,7 +54,7 @@ class DatabaseManager
     }
 
     /**
-     * Switch back to main GWATCH database
+     * Switch back to main SONGBIRD database
      */
     public function switchToMainDatabase(): void
     {

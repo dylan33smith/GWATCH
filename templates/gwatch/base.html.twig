@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}GWATCH - Genome-Wide Association Tracks Chromosome Highway{% endblock %}</title>
+    <title>{% block title %}SONGBIRD - Genome-Wide Association Tracks Chromosome Highway{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>G</text></svg>">
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -446,11 +446,11 @@
     <header class="header">
         <div class="nav-container">
             <a href="{{ path('gwatch_home') }}" class="logo">
-                <span class="g">G</span><span class="w">W</span><span class="a">A</span><span class="t">T</span><span class="c">C</span><span class="h">H</span>
+                <span class="s" style="color: #F29C9C;">S</span><span class="o" style="color: #FCEB9F;">O</span><span class="n" style="color: #D9F2D9;">N</span><span class="g" style="color: #9CD9D9;">G</span><span class="b" style="color: #F29C9C;">B</span><span class="i" style="color: #FCEB9F;">I</span><span class="r" style="color: #D9F2D9;">R</span><span class="d" style="color: #9CD9D9;">D</span>
             </a>
             <nav class="nav-links">
-                <a href="{{ path('gwatch_description') }}">What GWATCH does</a>
-                <a href="{{ path('gwatch_features') }}">Features of GWATCH</a>
+                <a href="{{ path('gwatch_description') }}">What SONGBIRD does</a>
+                <a href="{{ path('gwatch_features') }}">Features of SONGBIRD</a>
                 <a href="{{ path('gwatch_tutorial') }}">Tutorial</a>
                 <a href="{{ path('gwatch_datasets') }}">Active Datasets</a>
                 {% if is_logged_in() %}
@@ -471,7 +471,7 @@
 
     <footer class="footer">
         <div class="copyright">
-            © 2024 GWATCH - Genome-Wide Association Tracks Chromosome Highway
+            © 2024 SONGBIRD - Genome-Wide Association Tracks Chromosome Highway
         </div>
     </footer>
 </body>

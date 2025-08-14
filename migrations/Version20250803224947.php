@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Create module_tracking table for GWATCH database
+ * Create module_tracking table for SONGBIRD database
  */
 final class Version20250803224947 extends AbstractMigration
 {
@@ -19,7 +19,7 @@ final class Version20250803224947 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // Create module_tracking table in GWATCH database
+        // Create module_tracking table in SONGBIRD database
         $this->addSql('CREATE TABLE module_tracking (
             id INT AUTO_INCREMENT NOT NULL,
             module_id VARCHAR(50) NOT NULL,

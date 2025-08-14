@@ -1,4 +1,4 @@
-# GWATCH Database Structure
+# SONGBIRD Database Structure
 
 ## gwatch_db (Main Database)
 
