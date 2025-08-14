@@ -82,8 +82,50 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="sub-module-box">
+                        <div class="sub-module-box" data-action="top-hits" data-module-id="{{ module.id }}">
                             <span class="sub-module-text">Top Hits</span>
+                            
+                            <!-- Top Hits data container positioned directly underneath -->
+                            <div class="top-hits-data" id="top-hits-data-{{ module.id }}" style="display: none;">
+                                <div class="top-hits-header">
+                                    <h6>Top Hits</h6>
+                                </div>
+                                <div class="top-hits-content">
+                                    <!-- P-value section -->
+                                    <div class="top-hits-section">
+                                        <div class="section-label">P-value</div>
+                                        <div class="section-controls">
+                                            <select class="top-hits-dropdown" id="pvalue-dropdown-{{ module.id }}">
+                                                <option value="100">100</option>
+                                                <option value="200">200</option>
+                                                <option value="500">500</option>
+                                                <option value="1000">1000</option>
+                                            </select>
+                                            <div class="button-group">
+                                                <button class="top-hits-btn" type="button">get html page</button>
+                                                <button class="top-hits-btn" type="button">get csv file</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- QAS section -->
+                                    <div class="top-hits-section">
+                                        <div class="section-label">QAS</div>
+                                        <div class="section-controls">
+                                            <select class="top-hits-dropdown" id="qas-dropdown-{{ module.id }}">
+                                                <option value="100">100</option>
+                                                <option value="200">200</option>
+                                                <option value="500">500</option>
+                                                <option value="1000">1000</option>
+                                            </select>
+                                            <div class="button-group">
+                                                <button class="top-hits-btn" type="button">get html page</button>
+                                                <button class="top-hits-btn" type="button">get csv file</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -165,8 +207,50 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="sub-module-box">
+                        <div class="sub-module-box" data-action="top-hits" data-module-id="{{ module.id }}">
                             <span class="sub-module-text">Top Hits</span>
+                            
+                            <!-- Top Hits data container positioned directly underneath -->
+                            <div class="top-hits-data" id="top-hits-data-{{ module.id }}" style="display: none;">
+                                <div class="top-hits-header">
+                                    <h6>Top Hits</h6>
+                                </div>
+                                <div class="top-hits-content">
+                                    <!-- P-value section -->
+                                    <div class="top-hits-section">
+                                        <div class="section-label">P-value</div>
+                                        <div class="section-controls">
+                                            <select class="top-hits-dropdown" id="pvalue-dropdown-{{ module.id }}">
+                                                <option value="100">100</option>
+                                                <option value="200">200</option>
+                                                <option value="500">500</option>
+                                                <option value="1000">1000</option>
+                                            </select>
+                                            <div class="button-group">
+                                                <button class="top-hits-btn" type="button">get html page</button>
+                                                <button class="top-hits-btn" type="button">get csv file</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- QAS section -->
+                                    <div class="top-hits-section">
+                                        <div class="section-label">QAS</div>
+                                        <div class="section-controls">
+                                            <select class="top-hits-dropdown" id="qas-dropdown-{{ module.id }}">
+                                                <option value="100">100</option>
+                                                <option value="200">200</option>
+                                                <option value="500">500</option>
+                                                <option value="1000">1000</option>
+                                            </select>
+                                            <div class="button-group">
+                                                <button class="top-hits-btn" type="button">get html page</button>
+                                                <button class="top-hits-btn" type="button">get csv file</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,6 +263,27 @@
 {% block javascripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Function to close all sub-module data containers for a specific module
+    function closeAllSubModuleData(moduleId) {
+        // Close chromosome data
+        const chromosomeData = document.getElementById('chromosome-data-' + moduleId);
+        if (chromosomeData) {
+            chromosomeData.style.display = 'none';
+        }
+        
+        // Close tests data
+        const testsData = document.getElementById('tests-data-' + moduleId);
+        if (testsData) {
+            testsData.style.display = 'none';
+        }
+        
+        // Close top hits data
+        const topHitsData = document.getElementById('top-hits-data-' + moduleId);
+        if (topHitsData) {
+            topHitsData.style.display = 'none';
+        }
+    }
+    
     // Add click event listeners to all module boxes
     const moduleBoxes = document.querySelectorAll('.module-box');
     
@@ -215,6 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const chromosomeData = document.getElementById('chromosome-data-' + moduleId);
             const loadingIndicator = chromosomeData.querySelector('.loading-indicator');
             const tbody = document.getElementById('chromosome-tbody-' + moduleId);
+            
+            // Close all other sub-module data containers first
+            closeAllSubModuleData(moduleId);
             
             // Toggle chromosome data visibility
             if (chromosomeData.style.display === 'none') {
@@ -291,6 +399,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const loadingIndicator = testsData.querySelector('.loading-indicator');
             const tbody = document.getElementById('tests-tbody-' + moduleId);
             
+            // Close all other sub-module data containers first
+            closeAllSubModuleData(moduleId);
+            
             // Toggle tests data visibility
             if (testsData.style.display === 'none') {
                 // Show tests data and fetch data
@@ -351,6 +462,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 testsData.style.display = 'none';
             }
         });
+    });
+    
+    // Add click event listeners to Top Hits sub-module boxes
+    const topHitsBoxes = document.querySelectorAll('.sub-module-box[data-action="top-hits"]');
+    
+    topHitsBoxes.forEach(function(box) {
+        box.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent triggering the parent module box click
+            
+            const moduleId = this.getAttribute('data-module-id');
+            const topHitsData = document.getElementById('top-hits-data-' + moduleId);
+            
+            // Close all other sub-module data containers first
+            closeAllSubModuleData(moduleId);
+            
+            // Toggle top hits data visibility
+            if (topHitsData.style.display === 'none') {
+                // Show top hits data
+                topHitsData.style.display = 'block';
+                console.log('Showing Top Hits options for module:', moduleId);
+            } else {
+                // Hide top hits data
+                topHitsData.style.display = 'none';
+                console.log('Hiding Top Hits options for module:', moduleId);
+            }
+        });
+    });
+    
+    // Add event listeners for dropdown changes and button clicks (for future functionality)
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('top-hits-dropdown')) {
+            const moduleId = e.target.id.split('-')[2]; // Extract module ID from dropdown ID
+            const value = e.target.value;
+            console.log(`Module ${moduleId} ${e.target.id.split('-')[0]} dropdown changed to:`, value);
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('top-hits-btn')) {
+            const moduleId = e.target.closest('.top-hits-data').id.split('-')[3]; // Extract module ID
+            const buttonText = e.target.textContent;
+            console.log(`Module ${moduleId} button clicked:`, buttonText);
+            // Future functionality can be added here
+        }
     });
 });
 </script>
