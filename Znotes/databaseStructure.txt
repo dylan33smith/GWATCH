@@ -84,10 +84,37 @@ Each module creates its own database with the following tables:
 ├── ind (int, primary key)
 └── maf (float, indexed)
 
+### radius_ind table:
+├── radius_ind (int(2), unsigned, indexed) -- Radius index
+├── radius_type (varchar(31), NOT NULL)        -- Radius type
+└── radius_val (int(4), unsigned, NOT NULL)    -- Radius value
+
+### top_hits table:
+├── bits (int(4), NOT NULL, part of composite primary key) -- Analysis type flags
+├── radius_ind (int(2), unsigned, NOT NULL, part of composite primary key) -- Radius index (1,2,3...)
+├── v_ind (int(8), unsigned, NOT NULL, part of composite primary key) -- Variant index
+├── r_density (int(4), unsigned, NOT NULL)     -- Ranked density
+├── r_naive_p (int(4), unsigned, NOT NULL)    -- Ranked naive p-value
+├── left_ind (int(8), unsigned, NOT NULL)      -- Left genomic boundary
+├── right_ind (int(8), unsigned, NOT NULL)     -- Right genomic boundary
+├── left_cnt (int(4), unsigned, NOT NULL)      -- Left count
+├── right_cnt (int(4), unsigned, NOT NULL)     -- Right count
+├── density (double, nullable)                  -- Density value
+├── naive_p (double, nullable)                  -- Naive p-value
+├── adj_p (double, nullable)                    -- Adjusted p-value
+└── cal_p (double, nullable)                    -- Calibrated p-value
+
 ## Notes:
 - Module databases follow naming convention: Module_{id} where id is the module_tracking.id
 - All tables use appropriate indexes for performance
 - Foreign key relationships exist between gwatch_db and module databases
+- radius_ind table includes indexes on radius_ind and radius_type for query performance
+- top_hits table includes composite primary key on (bits, radius_ind, v_ind) and index on bits for query performance
+- No module_id fields needed as each module has its own database
+- radius_ind and top_hits tables are created and populated directly by ModuleCreationService during module creation
+- All module tables follow the same pattern: create table, parse CSV, insert data
+- density_X.csv files must be named with the radius index (e.g., density_7.csv, density_11.csv) - the number is extracted and used as radius_ind for all rows
+- adj_p and cal_p fields are set to NULL as they are not provided in the CSV data
 
 ----------------------------------------------------------------------------------------------------------------------
 - CSV data is parsed and inserted according to:
@@ -107,4 +134,6 @@ Each module creates its own database with the following tables:
 | maf            | row.csv     | ind, maf                      | 1, 5        | ind→1, maf→5                          |
 | pval           | val.csv     | v_ind, pval                   | 1, 2        | v_ind→1, pval→2                       |
 | ratio          | val.csv     | v_ind, ratio                  | 1, 3        | v_ind→1, pval→2                       |
+| radius_ind     | radius_ind.csv | radius_ind, radius_type, radius_val | 1, 2, 3 | radius_ind→1, radius_type→2, radius_val→3 |
+| top_hits       | density_X.csv | bits, v_ind, r_density, r_naive_p, left_ind, right_ind, left_cnt, right_cnt, density, naive_p | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 | bits→1, v_ind→2, r_density→3, r_naive_p→4, left_ind→5, right_ind→6, left_cnt→7, right_cnt→8, density→9, naive_p→10, radius_ind→extracted from filename (e.g., density_7.csv → 7), adj_p→NULL, cal_p→NULL |
 ----------------------------------------------------------------------------------------------------------------------

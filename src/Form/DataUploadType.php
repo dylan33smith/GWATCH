@@ -161,6 +161,34 @@ class DataUploadType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('densityFile', FileType::class, [
+                'label' => 'Density Data File (CSV)',
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '10M',
+                        'mimeTypes' => [
+                            'text/csv',
+                            'text/plain',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
+                    ]),
+                ],
+            ])
+            ->add('radiusIndFile', FileType::class, [
+                'label' => 'Radius Index File (CSV)',
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '10M',
+                        'mimeTypes' => [
+                            'text/csv',
+                            'text/plain',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
+                    ]),
+                ],
+            ])
             ->add('makePublic', CheckboxType::class, [
                 'label' => 'Make this module public',
                 'required' => false,

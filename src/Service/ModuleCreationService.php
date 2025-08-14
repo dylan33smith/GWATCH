@@ -40,6 +40,8 @@ class ModuleCreationService
      * @param UploadedFile $vIndFile Value index CSV file
      * @param UploadedFile $rowFile Row-based data CSV file
      * @param UploadedFile $valFile Value-based data CSV file
+     * @param UploadedFile|null $densityFile Density CSV file (optional)
+     * @param UploadedFile|null $radiusIndFile Radius index CSV file (optional)
      * @return ModuleTracking The created module tracking entity
      * @throws \Exception If module creation fails
      */
@@ -56,46 +58,45 @@ class ModuleCreationService
         UploadedFile $rRatioFile,
         UploadedFile $vIndFile,
         UploadedFile $rowFile,
-        UploadedFile $valFile
+        UploadedFile $valFile,
+        ?UploadedFile $densityFile = null,
+        ?UploadedFile $radiusIndFile = null
     ): ModuleTracking {
-        // Use database transaction for data integrity
-        $this->entityManager->beginTransaction();
-        
-        try {
-            // Create the module tracking entry first
-            $moduleTracking = new ModuleTracking();
-            $moduleTracking->setName($moduleName);
-            $moduleTracking->setDescription($description);
-            $moduleTracking->setPublic($isPublic);
-            $moduleTracking->setOwner($owner);
+        // Create the module tracking entry first
+        $moduleTracking = new ModuleTracking();
+        $moduleTracking->setName($moduleName);
+        $moduleTracking->setDescription($description);
+        $moduleTracking->setPublic($isPublic);
+        $moduleTracking->setOwner($owner);
 
-            // Persist to get the ID
-            $this->entityManager->persist($moduleTracking);
-            $this->entityManager->flush();
+        // Persist to get the ID
+        $this->entityManager->persist($moduleTracking);
+        $this->entityManager->flush();
 
-            // Now create the module database and table using the ID
-            $moduleId = 'Module_' . $moduleTracking->getId();
-            $this->createModuleDatabase($moduleId);
-            $this->createChrTable($moduleId, $chrFile);
-            $this->createChrSuppTable($moduleId, $chrsuppFile);
-            $this->createColTable($moduleId, $colFile);
-            $this->createIndTable($moduleId, $indFile);
-            $this->createRPvalTable($moduleId, $rPvalFile);
-            $this->createRRatioTable($moduleId, $rRatioFile);
-            $this->createVIndTable($moduleId, $vIndFile);
-            $this->createRowBasedTables($moduleId, $rowFile);
-            $this->createValueBasedTables($moduleId, $valFile);
+        // Now create the module database and table using the ID
+        $moduleId = 'Module_' . $moduleTracking->getId();
+        $this->createModuleDatabase($moduleId);
+        $this->createChrTable($moduleId, $chrFile);
+        $this->createChrSuppTable($moduleId, $chrsuppFile);
+        $this->createColTable($moduleId, $colFile);
+        $this->createIndTable($moduleId, $indFile);
+        $this->createRPvalTable($moduleId, $rPvalFile);
+        $this->createRRatioTable($moduleId, $rRatioFile);
+        $this->createVIndTable($moduleId, $vIndFile);
+        $this->createRowBasedTables($moduleId, $rowFile);
+        $this->createValueBasedTables($moduleId, $valFile);
 
-            // Commit transaction if everything succeeds
-            $this->entityManager->commit();
-            
-            return $moduleTracking;
-            
-        } catch (\Exception $e) {
-            // Rollback transaction on error
-            $this->entityManager->rollback();
-            throw $e;
+        // Create radius_ind table if radius index file is provided
+        if ($radiusIndFile !== null) {
+            $this->createRadiusIndTable($moduleId, $radiusIndFile);
         }
+
+        // Create top_hits table if density file is provided
+        if ($densityFile !== null) {
+            $this->createTopHitsTable($moduleId, $densityFile);
+        }
+        
+        return $moduleTracking;
     }
 
     private function createModuleDatabase(string $moduleId): void
@@ -679,6 +680,215 @@ class ModuleCreationService
         foreach ($data as $row) {
             $pvalStmt->executeStatement([$row['v_ind'], $row['pval']]);
             $ratioStmt->executeStatement([$row['v_ind'], $row['ratio']]);
+        }
+    }
+
+    private function createRadiusIndTable(string $moduleId, UploadedFile $radiusIndFile): void
+    {
+        // First, switch to the module database
+        $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
+
+        // Create the radius_ind table
+        $createTableSql = "CREATE TABLE IF NOT EXISTS `radius_ind` (
+            `radius_ind` int(2) unsigned NOT NULL COMMENT 'Radius index',
+            `radius_type` varchar(31) NOT NULL COMMENT 'Radius type',
+            `radius_val` int(4) unsigned NOT NULL COMMENT 'Radius value',
+            KEY `idx_radius_ind` (`radius_ind`),
+            KEY `idx_radius_type` (`radius_type`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Radius index information'";
+        
+        $this->entityManager->getConnection()->executeStatement($createTableSql);
+
+        // Parse and insert the CSV data
+        $csvData = $this->parseRadiusIndCsvFile($radiusIndFile);
+        if (!empty($csvData)) {
+            $this->insertRadiusIndData($moduleId, $csvData);
+        }
+    }
+
+    private function createTopHitsTable(string $moduleId, UploadedFile $densityFile): void
+    {
+        try {
+            // First, switch to the module database
+            $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
+
+            // Create the top_hits table
+            $createTableSql = "CREATE TABLE IF NOT EXISTS `top_hits` (
+                `bits` int(4) NOT NULL COMMENT 'Analysis type flags',
+                `radius_ind` int(2) unsigned NOT NULL COMMENT 'Radius index (1,2,3...)',
+                `v_ind` int(8) unsigned NOT NULL COMMENT 'Variant index',
+                `r_density` int(4) unsigned NOT NULL COMMENT 'Ranked density',
+                `r_naive_p` int(4) unsigned NOT NULL COMMENT 'Ranked naive p-value',
+                `left_ind` int(8) unsigned NOT NULL COMMENT 'Left genomic boundary',
+                `right_ind` int(8) unsigned NOT NULL COMMENT 'Right genomic boundary',
+                `left_cnt` int(4) unsigned NOT NULL COMMENT 'Left count',
+                `right_cnt` int(4) unsigned NOT NULL COMMENT 'Right count',
+                `density` double NULL COMMENT 'Density value',
+                `naive_p` double NULL COMMENT 'Naive p-value',
+                `adj_p` double NULL COMMENT 'Adjusted p-value',
+                `cal_p` double NULL COMMENT 'Calibrated p-value',
+                PRIMARY KEY (`bits`, `radius_ind`, `v_ind`),
+                KEY `idx_bits` (`bits`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Top hits analysis results'";
+            
+            $this->entityManager->getConnection()->executeStatement($createTableSql);
+
+            // Parse and insert the CSV data
+            $csvData = $this->parseDensityCsvFile($densityFile);
+            if (!empty($csvData)) {
+                $this->insertTopHitsData($moduleId, $csvData);
+            }
+        } catch (\Exception $e) {
+            error_log("Error in createTopHitsTable: " . $e->getMessage() . " for module: " . $moduleId);
+            throw $e;
+        }
+    }
+
+    private function parseDensityCsvFile(UploadedFile $file): array
+    {
+        try {
+            $handle = fopen($file->getPathname(), 'r');
+            if (!$handle) {
+                throw new \Exception('Could not open density CSV file');
+            }
+
+            // Extract radius_ind from filename (e.g., density_7.csv -> 7)
+            $filename = $file->getClientOriginalName();
+            error_log("Parsing density file: " . $filename);
+            
+            if (!preg_match('/density_(\d+)\.csv$/', $filename, $matches)) {
+                throw new \Exception('Density file must be named in format: density_X.csv where X is the radius index');
+            }
+            $radiusInd = (int)$matches[1];
+            error_log("Extracted radius_ind: " . $radiusInd);
+
+            $data = [];
+            $firstRow = true;
+            $rowCount = 0;
+            while (($row = fgetcsv($handle)) !== false) {
+                if ($firstRow) {
+                    $firstRow = false; // Skip header row
+                    error_log("Skipping header row: " . implode(',', $row));
+                    continue;
+                }
+                
+                if (count($row) >= 10) {
+                    $data[] = [
+                        'bits' => (int)$row[0],           // CSV column 1: bits
+                        'v_ind' => (int)$row[1],          // CSV column 2: v_ind
+                        'r_density' => (int)$row[2],      // CSV column 3: r_density
+                        'r_naive_p' => (int)$row[3],      // CSV column 4: r_naive_p
+                        'left_ind' => (int)$row[4],       // CSV column 5: left_ind
+                        'right_ind' => (int)$row[5],      // CSV column 6: right_ind
+                        'left_cnt' => (int)$row[6],       // CSV column 7: left_cnt
+                        'right_cnt' => (int)$row[7],      // CSV column 8: right_cnt
+                        'density' => $row[8] ? (float)$row[8] : null,    // CSV column 9: density
+                        'naive_p' => $row[9] ? (float)$row[9] : null,   // CSV column 10: naive_p
+                        'radius_ind' => $radiusInd,       // From filename (e.g., density_7.csv -> 7)
+                        'adj_p' => null,                  // Not in CSV, set to null
+                        'cal_p' => null                   // Not in CSV, set to null
+                    ];
+                    $rowCount++;
+                } else {
+                    error_log("Skipping row with insufficient columns: " . count($row) . " columns found, need 10");
+                }
+            }
+
+            fclose($handle);
+            error_log("Parsed " . $rowCount . " data rows from density file");
+            return $data;
+        } catch (\Exception $e) {
+            error_log("Error in parseDensityCsvFile: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function insertTopHitsData(string $moduleId, array $data): void
+    {
+        try {
+            if (empty($data)) {
+                error_log("No data to insert for top_hits table in module: " . $moduleId);
+                return;
+            }
+
+            error_log("Inserting " . count($data) . " rows into top_hits table for module: " . $moduleId);
+
+            $sql = "INSERT INTO `top_hits` (`bits`, `radius_ind`, `v_ind`, `r_density`, `r_naive_p`, `left_ind`, `right_ind`, `left_cnt`, `right_cnt`, `density`, `naive_p`, `adj_p`, `cal_p`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->entityManager->getConnection()->prepare($sql);
+            
+            $insertedCount = 0;
+            foreach ($data as $row) {
+                $stmt->executeStatement([
+                    $row['bits'],
+                    $row['radius_ind'],
+                    $row['v_ind'],
+                    $row['r_density'],
+                    $row['r_naive_p'],
+                    $row['left_ind'],
+                    $row['right_ind'],
+                    $row['left_cnt'],
+                    $row['right_cnt'],
+                    $row['density'],
+                    $row['naive_p'],
+                    $row['adj_p'],
+                    $row['cal_p']
+                ]);
+                $insertedCount++;
+            }
+            
+            error_log("Successfully inserted " . $insertedCount . " rows into top_hits table for module: " . $moduleId);
+        } catch (\Exception $e) {
+            error_log("Error in insertTopHitsData: " . $e->getMessage() . " for module: " . $moduleId);
+            throw $e;
+        }
+    }
+
+    private function parseRadiusIndCsvFile(UploadedFile $file): array
+    {
+        $handle = fopen($file->getPathname(), 'r');
+        if (!$handle) {
+            throw new \Exception('Could not open radius index CSV file');
+        }
+
+        $data = [];
+        $firstRow = true;
+        while (($row = fgetcsv($handle)) !== false) {
+            if ($firstRow) {
+                $firstRow = false; // Skip header row
+                continue;
+            }
+            
+            if (count($row) >= 3) {
+                $data[] = [
+                    'radius_ind' => (int)$row[0],     // CSV column 1: radius_ind
+                    'radius_type' => $row[1],         // CSV column 2: radius_type
+                    'radius_val' => (int)$row[2]      // CSV column 3: radius_val
+                ];
+            }
+        }
+
+        fclose($handle);
+        return $data;
+    }
+
+    private function insertRadiusIndData(string $moduleId, array $data): void
+    {
+        if (empty($data)) {
+            return;
+        }
+
+        // Ensure we're using the correct module database
+        $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
+
+        $sql = "INSERT INTO `radius_ind` (`radius_ind`, `radius_type`, `radius_val`) VALUES (?, ?, ?)";
+        $stmt = $this->entityManager->getConnection()->prepare($sql);
+        
+        foreach ($data as $row) {
+            $stmt->executeStatement([
+                $row['radius_ind'],
+                $row['radius_type'],
+                $row['radius_val']
+            ]);
         }
     }
 }

@@ -99,6 +99,20 @@
                             <div class="form-text">Upload a CSV file containing value data (creates pval and ratio tables) (required). Maximum file size: 10MB.</div>
                         </div>
 
+                        <div class="mb-3">
+                            {{ form_label(form.densityFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.densityFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.densityFile) }}
+                            <div class="form-text">Upload a density CSV file (e.g., density_7.csv) to create top_hits table. Maximum file size: 10MB.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.radiusIndFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.radiusIndFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.radiusIndFile) }}
+                            <div class="form-text">Upload a radius index CSV file (e.g., radius_ind.csv) to create radius_ind table. Maximum file size: 10MB.</div>
+                        </div>
+
                         <div class="mb-3 form-check">
                             {{ form_widget(form.makePublic, {'attr': {'class': 'form-check-input'}}) }}
                             {{ form_label(form.makePublic, null, {'label_attr': {'class': 'form-check-label'}}) }}

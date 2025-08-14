@@ -82,6 +82,16 @@ class UploadController extends AbstractController
                 }
                 
                 // Create module using the service
+                $this->addFlash('info', 'Starting module creation...');
+                
+                // Log what files are being processed
+                if ($data['densityFile'] !== null) {
+                    $this->addFlash('info', 'Density file detected: ' . $data['densityFile']->getClientOriginalName() . ' (Size: ' . $data['densityFile']->getSize() . ' bytes)');
+                }
+                if ($data['radiusIndFile'] !== null) {
+                    $this->addFlash('info', 'Radius index file detected: ' . $data['radiusIndFile']->getClientOriginalName() . ' (Size: ' . $data['radiusIndFile']->getSize() . ' bytes)');
+                }
+                
                 $moduleTracking = $moduleCreationService->createModule(
                     $data['moduleName'],
                     $data['description'],
@@ -95,7 +105,9 @@ class UploadController extends AbstractController
                     $data['rRatioFile'],
                     $data['vIndFile'],
                     $data['rowFile'],
-                    $data['valFile']
+                    $data['valFile'],
+                    $data['densityFile'] ?? null,
+                    $data['radiusIndFile'] ?? null
                 );
                 
                 $this->addFlash('upload_success', 'Module "' . $data['moduleName'] . '" created successfully! Module ID: Module_' . $moduleTracking->getId());
@@ -105,7 +117,19 @@ class UploadController extends AbstractController
             } catch (\Exception $e) {
                 // Log technical error for debugging
                 error_log('Module creation error: ' . $e->getMessage());
-                $this->addFlash('error', 'An error occurred while creating the module. Please try again or contact support if the problem persists.');
+                
+                // Show the real error message for debugging
+                $errorMessage = 'Module creation failed: ' . $e->getMessage();
+                
+                // Add file and line information for better debugging
+                if ($e->getFile() && $e->getLine()) {
+                    $errorMessage .= ' (File: ' . basename($e->getFile()) . ':' . $e->getLine() . ')';
+                }
+                
+                // Add stack trace for detailed debugging
+                $errorMessage .= ' Stack trace: ' . $e->getTraceAsString();
+                
+                $this->addFlash('error', $errorMessage);
             }
         }
 
