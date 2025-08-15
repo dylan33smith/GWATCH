@@ -6,7 +6,6 @@ use App\Entity\Gwatch\ModuleTracking;
 use App\Entity\Gwatch\User;
 use App\Repository\ModuleTrackingRepository;
 use App\Repository\UserRepository;
-use App\Service\DatabaseManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,16 +14,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\DriverManager;
 
 class GwatchController extends AbstractController
 {
-    private $databaseManager;
     private $params;
     private $entityManager;
 
-    public function __construct(DatabaseManager $databaseManager, ParameterBagInterface $params, EntityManagerInterface $entityManager)
+    public function __construct(ParameterBagInterface $params, EntityManagerInterface $entityManager)
     {
-        $this->databaseManager = $databaseManager;
         $this->params = $params;
         $this->entityManager = $entityManager;
     }
@@ -106,7 +104,7 @@ class GwatchController extends AbstractController
         try {
             // Create connection to the module database
             $dbName = "Module_{$moduleId}";
-            $connection = $this->databaseManager->createModuleConnection($dbName);
+            $connection = $this->createModuleConnection($dbName);
             
             if (!$connection) {
                 return new JsonResponse([
@@ -192,6 +190,60 @@ class GwatchController extends AbstractController
     }
     
     /**
+     * Create a direct connection to a module database
+     */
+    private function createModuleConnection(string $dbName)
+    {
+        try {
+            $baseUrl = $this->params->get('app.database_url');
+            $urlParts = parse_url($baseUrl);
+            $urlParts['path'] = '/' . $dbName;
+            
+            $moduleUrl = $this->buildUrl($urlParts);
+            return DriverManager::getConnection(['url' => $moduleUrl]);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Build URL from parts
+     */
+    private function buildUrl(array $parts): string
+    {
+        $url = '';
+        
+        if (isset($parts['scheme'])) {
+            $url .= $parts['scheme'] . '://';
+        }
+        
+        if (isset($parts['user'])) {
+            $url .= $parts['user'];
+            if (isset($parts['pass'])) {
+                $url .= ':' . $parts['pass'];
+            }
+            $url .= '@';
+        }
+        
+        if (isset($parts['host'])) {
+            $url .= $parts['host'];
+            if (isset($parts['port'])) {
+                $url .= ':' . $parts['port'];
+            }
+        }
+        
+        if (isset($parts['path'])) {
+            $url .= $parts['path'];
+        }
+        
+        if (isset($parts['query'])) {
+            $url .= '?' . $parts['query'];
+        }
+        
+        return $url;
+    }
+
+    /**
      * Get available tables in the module database for debugging
      */
     private function getAvailableTables($connection): array
@@ -233,7 +285,7 @@ class GwatchController extends AbstractController
                 $dbName = "Module_{$moduleId}";
                 
                 // Try to connect to the module database
-                $moduleConnection = $this->databaseManager->createModuleConnection($dbName);
+                $moduleConnection = $this->createModuleConnection($dbName);
                 $hasDatabase = $moduleConnection !== null;
                 
                 if ($hasDatabase) {
@@ -276,7 +328,7 @@ class GwatchController extends AbstractController
     private function getChrDataSample(string $dbName): array
     {
         try {
-            $connection = $this->databaseManager->createModuleConnection($dbName);
+            $connection = $this->createModuleConnection($dbName);
             if (!$connection) {
                 return ['error' => 'Cannot connect to database'];
             }
@@ -338,7 +390,7 @@ class GwatchController extends AbstractController
         try {
             // Create connection to the module database
             $dbName = "Module_{$moduleId}";
-            $connection = $this->databaseManager->createModuleConnection($dbName);
+            $connection = $this->createModuleConnection($dbName);
             
             if (!$connection) {
                 return new JsonResponse([

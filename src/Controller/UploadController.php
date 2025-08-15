@@ -7,8 +7,6 @@ use App\Entity\Gwatch\User;
 use App\Form\DataUploadType;
 use App\Repository\UserRepository;
 use App\Service\ModuleCreationService;
-use App\Service\CsvValidationService;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UploadController extends AbstractController
 {
-    private CsvValidationService $csvValidationService;
-
-    public function __construct(CsvValidationService $csvValidationService)
-    {
-        $this->csvValidationService = $csvValidationService;
-    }
-
     /**
      * Handle data upload form submission and module creation
      * 
@@ -59,28 +50,6 @@ class UploadController extends AbstractController
             }
             
             try {
-                // Validate CSV files before creating module
-                $validationErrors = $this->csvValidationService->validateAllFiles(
-                    $data['chrFile'],
-                    $data['chrsuppFile'],
-                    $data['colFile'],
-                    $data['indFile'],
-                    $data['rPvalFile'],
-                    $data['rRatioFile'],
-                    $data['vIndFile'],
-                    $data['rowFile'],
-                    $data['valFile']
-                );
-                
-                if (!empty($validationErrors)) {
-                    foreach ($validationErrors as $error) {
-                        $this->addFlash('upload_error', $error);
-                    }
-                    return $this->render('upload/upload.html.twig', [
-                        'form' => $form->createView(),
-                    ]);
-                }
-                
                 // Create module using the service
                 $this->addFlash('info', 'Starting module creation...');
                 

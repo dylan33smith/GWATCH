@@ -26,8 +26,3 @@ services:
     # please note that last definitions always *replace* previous ones
     
     # Make services public for testing
-    App\Service\DatabaseConfigurationService:
-        public: true
-        
-    App\Service\DataUploadService:
-        public: true

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Gwatch\ModuleTracking;
 use App\Entity\Gwatch\User;
+use App\Service\ModuleSchemaService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -11,15 +12,18 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class ModuleCreationService
 {
     private $entityManager;
+    private $schemaService;
     private $slugger;
     private $uploadDir;
 
     public function __construct(
         EntityManagerInterface $entityManager,
+        ModuleSchemaService $schemaService,
         SluggerInterface $slugger,
         string $uploadDir = '%kernel.project_root%/uploads'
     ) {
         $this->entityManager = $entityManager;
+        $this->schemaService = $schemaService;
         $this->slugger = $slugger;
         $this->uploadDir = $uploadDir;
     }
@@ -110,16 +114,8 @@ class ModuleCreationService
         // First, switch to the module database
         $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
 
-        // Create the chr table based on the Chr entity structure
-        $createTableSql = "CREATE TABLE IF NOT EXISTS `chr` (
-            `chr` INT NOT NULL,
-            `chrname` VARCHAR(255) NOT NULL,
-            `len` INT NOT NULL,
-            PRIMARY KEY (`chr`),
-            INDEX `idx_chrname` (`chrname`)
-        )";
-        
-        $this->entityManager->getConnection()->executeStatement($createTableSql);
+        // Create the chr table using schema service
+        $this->schemaService->createTable($this->entityManager->getConnection(), 'chr');
 
         // Parse and insert the CSV data
         $csvData = $this->parseCsvFileWithoutHeaders($chrFile);
@@ -688,16 +684,8 @@ class ModuleCreationService
         // First, switch to the module database
         $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
 
-        // Create the radius_ind table
-        $createTableSql = "CREATE TABLE IF NOT EXISTS `radius_ind` (
-            `radius_ind` int(2) unsigned NOT NULL COMMENT 'Radius index',
-            `radius_type` varchar(31) NOT NULL COMMENT 'Radius type',
-            `radius_val` int(4) unsigned NOT NULL COMMENT 'Radius value',
-            KEY `idx_radius_ind` (`radius_ind`),
-            KEY `idx_radius_type` (`radius_type`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Radius index information'";
-        
-        $this->entityManager->getConnection()->executeStatement($createTableSql);
+        // Create the radius_ind table using schema service
+        $this->schemaService->createTable($this->entityManager->getConnection(), 'radius_ind');
 
         // Parse and insert the CSV data
         $csvData = $this->parseRadiusIndCsvFile($radiusIndFile);
@@ -712,26 +700,8 @@ class ModuleCreationService
             // First, switch to the module database
             $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
 
-            // Create the top_hits table
-            $createTableSql = "CREATE TABLE IF NOT EXISTS `top_hits` (
-                `bits` int(4) NOT NULL COMMENT 'Analysis type flags',
-                `radius_ind` int(2) unsigned NOT NULL COMMENT 'Radius index (1,2,3...)',
-                `v_ind` int(8) unsigned NOT NULL COMMENT 'Variant index',
-                `r_density` int(4) unsigned NOT NULL COMMENT 'Ranked density',
-                `r_naive_p` int(4) unsigned NOT NULL COMMENT 'Ranked naive p-value',
-                `left_ind` int(8) unsigned NOT NULL COMMENT 'Left genomic boundary',
-                `right_ind` int(8) unsigned NOT NULL COMMENT 'Right genomic boundary',
-                `left_cnt` int(4) unsigned NOT NULL COMMENT 'Left count',
-                `right_cnt` int(4) unsigned NOT NULL COMMENT 'Right count',
-                `density` double NULL COMMENT 'Density value',
-                `naive_p` double NULL COMMENT 'Naive p-value',
-                `adj_p` double NULL COMMENT 'Adjusted p-value',
-                `cal_p` double NULL COMMENT 'Calibrated p-value',
-                PRIMARY KEY (`bits`, `radius_ind`, `v_ind`),
-                KEY `idx_bits` (`bits`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Top hits analysis results'";
-            
-            $this->entityManager->getConnection()->executeStatement($createTableSql);
+            // Create the top_hits table using schema service
+            $this->schemaService->createTable($this->entityManager->getConnection(), 'top_hits');
 
             // Parse and insert the CSV data
             $csvData = $this->parseDensityCsvFile($densityFile);

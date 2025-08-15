@@ -1,0 +1,50 @@
+# GWatch Development Makefile
+# General development operations
+
+.PHONY: help clear-cache test-syntax install-deps test-upload dev-server
+
+# Default target
+help:
+	@echo "GWatch Development Commands:"
+	@echo ""
+	@echo "Development Operations:"
+	@echo "  clear-cache       - Clear Symfony cache and logs"
+	@echo "  test-syntax       - Check PHP syntax of all files"
+	@echo "  install-deps      - Install/update Composer dependencies"
+	@echo "  test-upload       - Prepare for testing module uploads"
+	@echo "  dev-server        - Start Symfony development server"
+	@echo ""
+	@echo "Help:"
+	@echo "  help              - Show this help message"
+
+# Development Operations
+clear-cache:
+	@echo "🧹 Clearing Symfony cache and logs..."
+	@php bin/console cache:clear 2>/dev/null || echo "❌ Cache clear failed"
+	@rm -rf var/cache/* var/log/* 2>/dev/null || echo "❌ Manual cache cleanup failed"
+	@echo "✅ Cache and logs cleared"
+
+test-syntax:
+	@echo "🔍 Checking PHP syntax..."
+	@find src -name "*.php" -exec php -l {} \; | grep -v "No syntax errors detected" || echo "✅ All PHP files have valid syntax"
+
+install-deps:
+	@echo "📦 Installing/updating Composer dependencies..."
+	@composer install --no-dev --optimize-autoloader
+	@echo "✅ Dependencies installed"
+
+# Testing
+test-upload:
+	@echo "🧪 Preparing for module upload testing..."
+	@make clear-cache
+	@echo "✅ Ready for testing module uploads"
+	@echo ""
+	@echo "Next steps:"
+	@echo "1. Go to your upload page"
+	@echo "2. Upload a density_X.csv file"
+	@echo "3. Check the results"
+
+# Development Server
+dev-server:
+	@echo "🚀 Starting Symfony development server..."
+	@php -S localhost:8000 -t public/
