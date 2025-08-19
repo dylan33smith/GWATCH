@@ -48,3 +48,5 @@ test-upload:
 dev-server:
 	@echo "🚀 Starting Symfony development server..."
 	@php -S localhost:8000 -t public/
+
+

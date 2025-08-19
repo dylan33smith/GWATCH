@@ -3,6 +3,7 @@
 
 .PHONY: help clean-modules test-upload clear-cache install-deps test-syntax check-db status
 
+
 # Default target
 help:
 	@echo "GWatch Development Commands:"

@@ -252,3 +252,5 @@ class ModuleSchemaService
         return $this->tableSchemas[$tableName]['sql'] ?? null;
     }
 }
+
+
