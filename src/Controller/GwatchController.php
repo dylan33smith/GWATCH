@@ -476,6 +476,82 @@ class GwatchController extends AbstractController
     }
 
     /**
+     * Fetch radius values from the radius_ind table for a specific module
+     * 
+     * @param int $moduleId The module ID to fetch radius values for
+     * @return JsonResponse JSON response containing radius values
+     */
+    #[Route('/api/module/{moduleId}/radius', name: 'gwatch_module_radius', methods: ['GET'])]
+    public function getModuleRadius(int $moduleId): JsonResponse
+    {
+        try {
+            // Create connection to the module database
+            $dbName = "Module_{$moduleId}";
+            $connection = $this->createModuleConnection($dbName);
+            
+            if (!$connection) {
+                return new JsonResponse([
+                    'error' => 'Module database not found',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'connectionFailed' => true
+                    ]
+                ], 404);
+            }
+            
+            // First check if the radius_ind table exists
+            $checkTableSql = "SHOW TABLES LIKE 'radius_ind'";
+            $checkStmt = $connection->prepare($checkTableSql);
+            $result = $checkStmt->executeQuery();
+            $tableExists = $result->fetchAllAssociative();
+            
+            if (empty($tableExists)) {
+                $connection->close();
+                return new JsonResponse([
+                    'error' => 'Radius_ind table not found in module database',
+                    'debug' => [
+                        'moduleId' => $moduleId,
+                        'database' => $dbName,
+                        'tableExists' => false,
+                        'availableTables' => $this->getAvailableTables($connection)
+                    ]
+                ], 404);
+            }
+            
+            // Query radius values from the radius_ind table, ordered by radius_type and radius_val
+            $sql = "SELECT radius_ind as id, radius_type as type, radius_val FROM radius_ind ORDER BY radius_type ASC, radius_val ASC";
+            $stmt = $connection->prepare($sql);
+            $result = $stmt->executeQuery();
+            $radiusValues = $result->fetchAllAssociative();
+            
+            $connection->close();
+            
+            return new JsonResponse([
+                'success' => true,
+                'data' => $radiusValues,
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'database' => $dbName,
+                    'tableExists' => !empty($tableExists),
+                    'fetchedRows' => count($radiusValues)
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error' => 'Failed to fetch radius values',
+                'message' => $e->getMessage(),
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'exception' => get_class($e),
+                    'trace' => $e->getTraceAsString()
+                ]
+            ], 500);
+        }
+    }
+
+    /**
      * Simple test endpoint to check if the API is working
      */
     #[Route('/api/test', name: 'gwatch_test', methods: ['GET'])]

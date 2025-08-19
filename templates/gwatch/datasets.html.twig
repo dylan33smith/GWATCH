@@ -91,37 +91,42 @@
                                     <h6>Top Hits</h6>
                                 </div>
                                 <div class="top-hits-content">
-                                    <!-- P-value section -->
+                                    <!-- Type of Report dropdown -->
                                     <div class="top-hits-section">
-                                        <div class="section-label">P-value</div>
+                                        <div class="section-label"><strong>Type of report:</strong></div>
                                         <div class="section-controls">
-                                            <select class="top-hits-dropdown" id="pvalue-dropdown-{{ module.id }}">
-                                                <option value="100">100</option>
-                                                <option value="200">200</option>
-                                                <option value="500">500</option>
-                                                <option value="1000">1000</option>
+                                            <select class="top-hits-dropdown" id="report-type-dropdown-{{ module.id }}">
+                                                <option value="P-value">P-value</option>
+                                                <option value="QAS">QAS</option>
+                                                <option value="density">density</option>
                                             </select>
-                                            <div class="button-group">
-                                                <button class="top-hits-btn" type="button">get html page</button>
-                                                <button class="top-hits-btn" type="button">get csv file</button>
-                                            </div>
                                         </div>
                                     </div>
                                     
-                                    <!-- QAS section -->
+                                    <!-- Window size dropdown -->
                                     <div class="top-hits-section">
-                                        <div class="section-label">QAS</div>
+                                        <div class="section-label"><strong>Window size:</strong></div>
                                         <div class="section-controls">
-                                            <select class="top-hits-dropdown" id="qas-dropdown-{{ module.id }}">
-                                                <option value="100">100</option>
-                                                <option value="200">200</option>
-                                                <option value="500">500</option>
-                                                <option value="1000">1000</option>
+                                            <select class="top-hits-dropdown" id="window-size-dropdown-{{ module.id }}">
+                                                <option value="">Loading...</option>
                                             </select>
-                                            <div class="button-group">
-                                                <button class="top-hits-btn" type="button">get html page</button>
-                                                <button class="top-hits-btn" type="button">get csv file</button>
-                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- CSV file checkbox -->
+                                    <div class="top-hits-section">
+                                        <div class="section-controls">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="csv-checkbox-{{ module.id }}" class="csv-checkbox">
+                                                <span>Get .csv file</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Get Report button -->
+                                    <div class="top-hits-section">
+                                        <div class="section-controls">
+                                            <button class="top-hits-btn get-report-btn" type="button" id="get-report-btn-{{ module.id }}">Get Report</button>
                                         </div>
                                     </div>
                                 </div>
@@ -216,37 +221,42 @@
                                     <h6>Top Hits</h6>
                                 </div>
                                 <div class="top-hits-content">
-                                    <!-- P-value section -->
+                                    <!-- Type of Report dropdown -->
                                     <div class="top-hits-section">
-                                        <div class="section-label">P-value</div>
+                                        <div class="section-label"><strong>Type of report:</strong></div>
                                         <div class="section-controls">
-                                            <select class="top-hits-dropdown" id="pvalue-dropdown-{{ module.id }}">
-                                                <option value="100">100</option>
-                                                <option value="200">200</option>
-                                                <option value="500">500</option>
-                                                <option value="1000">1000</option>
+                                            <select class="top-hits-dropdown" id="report-type-dropdown-{{ module.id }}">
+                                                <option value="P-value">P-value</option>
+                                                <option value="QAS">QAS</option>
+                                                <option value="density">density</option>
                                             </select>
-                                            <div class="button-group">
-                                                <button class="top-hits-btn" type="button">get html page</button>
-                                                <button class="top-hits-btn" type="button">get csv file</button>
-                                            </div>
                                         </div>
                                     </div>
                                     
-                                    <!-- QAS section -->
+                                    <!-- Window size dropdown -->
                                     <div class="top-hits-section">
-                                        <div class="section-label">QAS</div>
+                                        <div class="section-label"><strong>Window size:</strong></div>
                                         <div class="section-controls">
-                                            <select class="top-hits-dropdown" id="qas-dropdown-{{ module.id }}">
-                                                <option value="100">100</option>
-                                                <option value="200">200</option>
-                                                <option value="500">500</option>
-                                                <option value="1000">1000</option>
+                                            <select class="top-hits-dropdown" id="window-size-dropdown-{{ module.id }}">
+                                                <option value="">Loading...</option>
                                             </select>
-                                            <div class="button-group">
-                                                <button class="top-hits-btn" type="button">get html page</button>
-                                                <button class="top-hits-btn" type="button">get csv file</button>
-                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- CSV file checkbox -->
+                                    <div class="top-hits-section">
+                                        <div class="section-controls">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="csv-checkbox-{{ module.id }}" class="csv-checkbox">
+                                                <span>Get .csv file</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Get Report button -->
+                                    <div class="top-hits-section">
+                                        <div class="section-controls">
+                                            <button class="top-hits-btn get-report-btn" type="button" id="get-report-btn-{{ module.id }}">Get Report</button>
                                         </div>
                                     </div>
                                 </div>
@@ -482,6 +492,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show top hits data
                 topHitsData.style.display = 'block';
                 console.log('Showing Top Hits options for module:', moduleId);
+                console.log('Module ID type:', typeof moduleId, 'Value:', moduleId);
+                
+                // Load radius values automatically when opening Top Hits section
+                loadRadiusValues(moduleId);
             } else {
                 // Hide top hits data
                 topHitsData.style.display = 'none';
@@ -489,6 +503,115 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Function to load radius values from the module's radius_ind table
+    function loadRadiusValues(moduleId) {
+        console.log('loadRadiusValues called with moduleId:', moduleId);
+        
+        const windowSizeDropdown = document.getElementById('window-size-dropdown-' + moduleId);
+        console.log('Found dropdown element:', windowSizeDropdown);
+        
+        if (!windowSizeDropdown) {
+            console.error('Window size dropdown not found for module:', moduleId);
+            return;
+        }
+        
+        // Check if we've already loaded radius values for this module
+        if (windowSizeDropdown.dataset.radiusLoaded === 'true') {
+            console.log('Radius values already loaded for module:', moduleId);
+            return;
+        }
+        
+        // Show loading state
+        console.log('Setting loading state...');
+        windowSizeDropdown.innerHTML = '<option value="">Loading...</option>';
+        
+        // Fetch radius values from the API
+        console.log(`Fetching radius values for module: ${moduleId}`);
+        fetch(`/api/module/${moduleId}/radius`)
+            .then(response => {
+                console.log(`Response status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Radius data loaded for module:', moduleId, data);
+                console.log('Data structure:', JSON.stringify(data, null, 2));
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    console.log('Processing successful data...');
+                    // Clear loading option
+                    windowSizeDropdown.innerHTML = '';
+                    
+                    // Group radius values by type (pos/nrow)
+                    const posValues = [];
+                    const nrowValues = [];
+                    
+                    console.log('Processing radius data:', data.data);
+                    data.data.forEach(function(radius) {
+                        console.log('Processing radius:', radius);
+                        const optionText = `+/- ${radius.radius_val} (${radius.type})`;
+                        const optionValue = `+/- ${radius.radius_val} (${radius.type})`;
+                        
+                        if (radius.type === 'pos') {
+                            posValues.push({ text: optionText, value: optionValue });
+                        } else if (radius.type === 'nrow') {
+                            nrowValues.push({ text: optionText, value: optionValue });
+                        }
+                    });
+                    
+                    // Sort values numerically
+                    posValues.sort((a, b) => parseInt(a.text.match(/\d+/)[0]) - parseInt(b.text.match(/\d+/)[0]));
+                    nrowValues.sort((a, b) => parseInt(a.text.match(/\d+/)[0]) - parseInt(b.text.match(/\d+/)[0]));
+                    
+                    console.log('nrow values:', nrowValues);
+                    console.log('pos values:', posValues);
+                    
+                    // Add nrow options first, then pos options
+                    nrowValues.forEach(function(option) {
+                        console.log('Adding nrow option:', option);
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        windowSizeDropdown.appendChild(optionElement);
+                    });
+                    
+                    posValues.forEach(function(option) {
+                        console.log('Adding pos option:', option);
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        windowSizeDropdown.appendChild(optionElement);
+                    });
+                    
+                    // Set default selection to first pos value if available, otherwise first nrow value
+                    if (posValues.length > 0) {
+                        windowSizeDropdown.value = posValues[0].value;
+                        console.log('Set default to first pos value:', posValues[0].value);
+                    } else if (nrowValues.length > 0) {
+                        windowSizeDropdown.value = nrowValues[0].value;
+                        console.log('Set default to first nrow value:', nrowValues[0].value);
+                    }
+                    
+                    console.log(`Loaded ${nrowValues.length} nrow values and ${posValues.length} pos values for module ${moduleId}`);
+                    console.log('Final dropdown HTML:', windowSizeDropdown.innerHTML);
+                    
+                    // Mark that radius values have been loaded for this module
+                    windowSizeDropdown.dataset.radiusLoaded = 'true';
+                } else {
+                    // No data available
+                    windowSizeDropdown.innerHTML = '<option value="">No radius values available</option>';
+                    console.warn('No radius values found for module:', moduleId);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading radius values for module:', moduleId, error);
+                console.error('Error details:', error.message, error.stack);
+                windowSizeDropdown.innerHTML = '<option value="">Error loading radius values</option>';
+            });
+    }
     
     // Add event listeners for dropdown changes and button clicks (for future functionality)
     document.addEventListener('change', function(e) {
@@ -499,7 +622,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Add click event listener specifically for the window size dropdown
     document.addEventListener('click', function(e) {
+        console.log('Click event detected on:', e.target.tagName, e.target.id, e.target.className);
+        
+        if (e.target.id && e.target.id.includes('window-size-dropdown-') && e.target.tagName === 'SELECT') {
+            const moduleId = e.target.id.split('-')[3]; // Extract module ID from dropdown ID
+            console.log('Window size dropdown clicked for module:', moduleId);
+            
+            // Check if radius values have already been loaded for this module
+            if (e.target.dataset.radiusLoaded === 'true') {
+                console.log('Radius values already loaded for module:', moduleId);
+                return;
+            }
+            
+            // Check if dropdown already has options loaded (not just "Loading..." or "Error loading radius values")
+            if (e.target.options.length <= 1 || 
+                (e.target.options.length === 1 && 
+                 (e.target.options[0].text === 'Loading...' || 
+                  e.target.options[0].text === 'Error loading radius values' ||
+                  e.target.options[0].text === 'No radius values available'))) {
+                
+                console.log('Loading radius values for window size dropdown...');
+                loadRadiusValues(moduleId);
+            } else {
+                console.log('Radius values already loaded, skipping API call');
+            }
+        }
+        
         if (e.target.classList.contains('top-hits-btn')) {
             const moduleId = e.target.closest('.top-hits-data').id.split('-')[3]; // Extract module ID
             const buttonText = e.target.textContent;
@@ -507,6 +657,33 @@ document.addEventListener('DOMContentLoaded', function() {
             // Future functionality can be added here
         }
     });
+    
+    // Add focus event listener for the window size dropdown (more reliable than click for SELECT elements)
+    document.addEventListener('focus', function(e) {
+        if (e.target.id && e.target.id.includes('window-size-dropdown-') && e.target.tagName === 'SELECT') {
+            const moduleId = e.target.id.split('-')[3]; // Extract module ID from dropdown ID
+            console.log('Window size dropdown focused for module:', moduleId);
+            
+            // Check if radius values have already been loaded for this module
+            if (e.target.dataset.radiusLoaded === 'true') {
+                console.log('Radius values already loaded for module:', moduleId);
+                return;
+            }
+            
+            // Check if dropdown already has options loaded (not just "Loading..." or "Error loading radius values")
+            if (e.target.options.length <= 1 || 
+                (e.target.options.length === 1 && 
+                 (e.target.options[0].text === 'Loading...' || 
+                  e.target.options[0].text === 'Error loading radius values' ||
+                  e.target.options[0].text === 'No radius values available'))) {
+                
+                console.log('Loading radius values for window size dropdown (focus event)...');
+                loadRadiusValues(moduleId);
+            } else {
+                console.log('Radius values already loaded, skipping API call');
+            }
+        }
+    }, true);
 });
 </script>
 {% endblock %}
