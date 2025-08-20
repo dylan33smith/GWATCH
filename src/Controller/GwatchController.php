@@ -6,6 +6,7 @@ use App\Entity\Gwatch\ModuleTracking;
 use App\Entity\Gwatch\User;
 use App\Repository\ModuleTrackingRepository;
 use App\Repository\UserRepository;
+use App\Service\TopHitsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,6 +90,53 @@ class GwatchController extends AbstractController
             'currentUser' => $currentUser,
             'userModules' => $userModules,
             'publicModules' => $publicModules,
+        ]);
+    }
+
+    /**
+     * Display top hits report page for a specific module
+     * 
+     * @param int $moduleId The module ID to display report for
+     * @param string $windowSize The window size selected from dropdown (URL encoded)
+     * @param int $topHitsCount The number of top hits to display
+     * @param string $reportType The type of report (P-value, QAS, density)
+     * @param ModuleTrackingRepository $moduleTrackingRepository Repository for module operations
+     * @return Response Rendered top hits report page
+     */
+    #[Route('/top-hits-report/{moduleId}/{windowSize}/{topHitsCount}/{reportType}', name: 'gwatch_top_hits_report', requirements: ['windowSize' => '.+', 'topHitsCount' => '\d+', 'reportType' => '.+'])]
+    public function topHitsReport(int $moduleId, string $windowSize, int $topHitsCount, string $reportType, ModuleTrackingRepository $moduleTrackingRepository): Response
+    {
+        // Fetch module information
+        $module = $moduleTrackingRepository->find($moduleId);
+        
+        if (!$module) {
+            throw $this->createNotFoundException('Module not found');
+        }
+        
+        // Get module name for display
+        $moduleName = $module->getName();
+        
+        // Decode the URL-encoded window size
+        $decodedWindowSize = urldecode($windowSize);
+        $decodedReportType = urldecode($reportType);
+        
+        // Get top hits data using the service
+        $topHitsService = new TopHitsService($this->params);
+        
+        $topHitsData = $topHitsService->generateHybridTopHitsReport(
+            $moduleId, 
+            $decodedReportType, 
+            $topHitsCount, 
+            $decodedWindowSize
+        );
+        
+        return $this->render('gwatch/top_hits_report.html.twig', [
+            'moduleId' => $moduleId,
+            'moduleName' => $moduleName,
+            'windowSize' => $decodedWindowSize,
+            'topHitsCount' => $topHitsCount,
+            'reportType' => $decodedReportType,
+            'topHitsData' => $topHitsData,
         ]);
     }
 

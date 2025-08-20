@@ -113,6 +113,19 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Number of top hits dropdown -->
+                                    <div class="top-hits-section">
+                                        <div class="section-label"><strong>Number of top hits:</strong></div>
+                                        <div class="section-controls">
+                                            <select class="top-hits-dropdown" id="top-hits-count-dropdown-{{ module.id }}">
+                                                <option value="100">100</option>
+                                                <option value="500">500</option>
+                                                <option value="1000" selected>1000</option>
+                                                <option value="5000">5000</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- CSV file checkbox -->
                                     <div class="top-hits-section">
                                         <div class="section-controls">
@@ -243,6 +256,19 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Number of top hits dropdown -->
+                                    <div class="top-hits-section">
+                                        <div class="section-label"><strong>Number of top hits:</strong></div>
+                                        <div class="section-controls">
+                                            <select class="top-hits-dropdown" id="top-hits-count-dropdown-{{ module.id }}">
+                                                <option value="100">100</option>
+                                                <option value="500">500</option>
+                                                <option value="1000" selected>1000</option>
+                                                <option value="5000">5000</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- CSV file checkbox -->
                                     <div class="top-hits-section">
                                         <div class="section-controls">
@@ -273,6 +299,7 @@
 {% block javascripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, setting up event listeners...');
     // Function to close all sub-module data containers for a specific module
     function closeAllSubModuleData(moduleId) {
         // Close chromosome data
@@ -496,6 +523,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Load radius values automatically when opening Top Hits section
                 loadRadiusValues(moduleId);
+                
+                // Add event listener to the Get Report button for this module
+                const getReportBtn = document.getElementById('get-report-btn-' + moduleId);
+                if (getReportBtn) {
+                    console.log('Adding event listener to Get Report button for module:', moduleId);
+                    getReportBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Get Report button clicked for module:', moduleId);
+                        
+                        const windowSizeDropdown = document.getElementById('window-size-dropdown-' + moduleId);
+                        const topHitsCountDropdown = document.getElementById('top-hits-count-dropdown-' + moduleId);
+                        const reportTypeDropdown = document.getElementById('report-type-dropdown-' + moduleId);
+                        
+                        if (!windowSizeDropdown) {
+                            console.error('Window size dropdown not found for module:', moduleId);
+                            return;
+                        }
+                        
+                        if (!topHitsCountDropdown) {
+                            console.error('Top hits count dropdown not found for module:', moduleId);
+                            return;
+                        }
+                        
+                        if (!reportTypeDropdown) {
+                            console.error('Report type dropdown not found for module:', moduleId);
+                            return;
+                        }
+                        
+                        const selectedWindowSize = windowSizeDropdown.value;
+                        const selectedTopHitsCount = topHitsCountDropdown.value;
+                        const selectedReportType = reportTypeDropdown.value;
+                        
+                        console.log('Selected window size:', selectedWindowSize);
+                        console.log('Selected top hits count:', selectedTopHitsCount);
+                        console.log('Selected report type:', selectedReportType);
+                        
+                        if (!selectedWindowSize) {
+                            alert('Please select a window size first.');
+                            return;
+                        }
+                        
+                        // Redirect to the top hits report page
+                        const reportUrl = `/top-hits-report/${moduleId}/${encodeURIComponent(selectedWindowSize)}/${encodeURIComponent(selectedTopHitsCount)}/${encodeURIComponent(selectedReportType)}`;
+                        console.log('Redirecting to:', reportUrl);
+                        window.location.href = reportUrl;
+                    });
+                } else {
+                    console.error('Get Report button not found for module:', moduleId);
+                }
             } else {
                 // Hide top hits data
                 topHitsData.style.display = 'none';
@@ -552,8 +629,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Processing radius data:', data.data);
                     data.data.forEach(function(radius) {
                         console.log('Processing radius:', radius);
-                        const optionText = `+/- ${radius.radius_val} (${radius.type})`;
-                        const optionValue = `+/- ${radius.radius_val} (${radius.type})`;
+                        const optionText = `${radius.radius_val}`;
+                        const optionValue = `${radius.radius_val}`;
                         
                         if (radius.type === 'pos') {
                             posValues.push({ text: optionText, value: optionValue });
@@ -622,6 +699,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Get Report button event listeners are now added when Top Hits section is opened
+    
     // Add click event listener specifically for the window size dropdown
     document.addEventListener('click', function(e) {
         console.log('Click event detected on:', e.target.tagName, e.target.id, e.target.className);
@@ -651,10 +730,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (e.target.classList.contains('top-hits-btn')) {
-            const moduleId = e.target.closest('.top-hits-data').id.split('-')[3]; // Extract module ID
             const buttonText = e.target.textContent;
-            console.log(`Module ${moduleId} button clicked:`, buttonText);
-            // Future functionality can be added here
+            console.log(`Button clicked:`, buttonText);
+            // Get Report button handling is now done in the Top Hits section opening code
         }
     });
     

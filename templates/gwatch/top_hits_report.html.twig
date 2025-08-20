@@ -1,0 +1,206 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Top hits of-log(p){% endblock %}
+
+{% block body %}
+<div class="full-width-container">
+                <div class="top-hits-report-header">
+                <h1 class="page-title">Top hits of-log(p)</h1>
+                <div class="dataset-info">
+                    <p class="dataset-name">Dataset - {{ moduleName }}</p>
+                    <p class="window-info">Window of density - {{ windowSize }}</p>
+                    <p class="top-hits-count-info">Number of top hits - {{ topHitsCount }}</p>
+                    <p class="report-type-info">Report type - {{ reportType }}</p>
+                </div>
+            </div>
+    
+    <div class="top-hits-table-container">
+        <table class="table table-striped table-bordered top-hits-table">
+            <thead class="table-header">
+                <tr>
+                    <th>SNP</th>
+                    <th>Chromosome</th>
+                    <th>position</th>
+                    <th>test name</th>
+                    <th>-log(p)</th>
+                    <th>ranks of -log(p)</th>
+                    <th>QAS</th>
+                    <th>ranks of QAS</th>
+                    <th>rank of density</th>
+                    <th>rank of naive p-value</th>
+                    <th>left_ind</th>
+                    <th>right_ind</th>
+                    <th>number of SNPs</th>
+                    <th>density</th>
+                    <th>-log(naive p-value)</th>
+                </tr>
+            </thead>
+                                <tbody class="table-body">
+                        {% if topHitsData.success and topHitsData.data|length > 0 %}
+                            {% for row in topHitsData.data %}
+                                <tr>
+                                    <td>{{ row.SNP }}</td>
+                                    <td>{{ row.Chromosome }}</td>
+                                    <td>{{ row.position }}</td>
+                                    <td>{{ row.test_name }}</td>
+                                    <td>{{ row['-log(p)'] }}</td>
+                                    <td>{{ row['ranks_of_-log(p)'] }}</td>
+                                    <td>{{ row.QAS }}</td>
+                                    <td>{{ row['ranks_of_QAS'] }}</td>
+                                    <td>{{ row['rank_of_density'] }}</td>
+                                    <td>{{ row['rank_of_naive_p_value'] }}</td>
+                                    <td>{{ row.left_ind }}</td>
+                                    <td>{{ row.right_ind }}</td>
+                                    <td>{{ row['number_of_SNPs'] }}</td>
+                                    <td>{{ row.density }}</td>
+                                    <td>{{ row['-log(naive_p_value)'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="15" class="text-center text-muted">
+                                    {% if topHitsData.error %}
+                                        {{ topHitsData.error }}
+                                        {% if topHitsData.debug %}
+                                            <br><small>Debug: {{ topHitsData.debug|json_encode }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        No data available
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+/* Full width container with visible white space margins */
+.full-width-container {
+    width: calc(100vw - 120px);
+    margin: 0 60px;
+    padding: 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: calc(-50vw + 60px);
+    margin-right: calc(-50vw + 60px);
+}
+
+/* Column-specific widths to fit on screen without scrolling */
+.top-hits-table th:nth-child(1), .top-hits-table td:nth-child(1) { width: 90px; } /* SNP */
+.top-hits-table th:nth-child(2), .top-hits-table td:nth-child(2) { width: 70px; } /* Chromosome */
+.top-hits-table th:nth-child(3), .top-hits-table td:nth-child(3) { width: 80px; } /* position */
+.top-hits-table th:nth-child(4), .top-hits-table td:nth-child(4) { width: 140px; } /* test name */
+.top-hits-table th:nth-child(5), .top-hits-table td:nth-child(5) { width: 60px; }  /* -log(p) */
+.top-hits-table th:nth-child(6), .top-hits-table td:nth-child(6) { width: 80px; } /* ranks of -log(p) */
+.top-hits-table th:nth-child(7), .top-hits-table td:nth-child(7) { width: 60px; }  /* QAS */
+.top-hits-table th:nth-child(8), .top-hits-table td:nth-child(8) { width: 80px; } /* ranks of QAS */
+.top-hits-table th:nth-child(9), .top-hits-table td:nth-child(9) { width: 80px; } /* rank of density */
+.top-hits-table th:nth-child(10), .top-hits-table td:nth-child(10) { width: 90px; } /* rank of naive p-value */
+.top-hits-table th:nth-child(11), .top-hits-table td:nth-child(11) { width: 70px; } /* left_ind */
+.top-hits-table th:nth-child(12), .top-hits-table td:nth-child(12) { width: 70px; } /* right_ind */
+.top-hits-table th:nth-child(13), .top-hits-table td:nth-child(13) { width: 80px; } /* number of SNPs */
+.top-hits-table th:nth-child(14), .top-hits-table td:nth-child(14) { width: 70px; } /* density */
+.top-hits-table th:nth-child(15), .top-hits-table td:nth-child(15) { width: 90px; } /* -log(naive p-value) */
+.top-hits-report-header {
+    margin: 0;
+    padding: 1rem 0 1rem 0;
+    border-bottom: 2px solid #e9ecef;
+    text-align: left;
+}
+
+.page-title {
+    color: #495057;
+    margin: 0 0 1rem 0;
+    padding: 0;
+    font-weight: 600;
+    text-align: left;
+}
+
+.dataset-info {
+    margin: 0 0 1rem 0;
+    padding: 0;
+    text-align: left;
+}
+
+.dataset-name, .window-info, .top-hits-count-info, .report-type-info {
+    margin: 0.5rem 0;
+    padding: 0;
+    font-size: 1.1rem;
+    color: #6c757d;
+    text-align: left;
+}
+
+.top-hits-table-container {
+    background: white;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.top-hits-table {
+    margin: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.table-header th {
+    border: 1px solid #dee2e6;
+    padding: 8px 4px;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 60px;
+}
+
+.table-body tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table-body tr:nth-child(odd) {
+    background-color: white;
+}
+
+.table-body td {
+    border: 1px solid #dee2e6;
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.table-body tr:hover {
+    background-color: #e9ecef !important;
+    transition: background-color 0.2s ease;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+</style>
+{% endblock %}
