@@ -103,15 +103,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Window size dropdown -->
-                                    <div class="top-hits-section">
-                                        <div class="section-label"><strong>Window size:</strong></div>
-                                        <div class="section-controls">
-                                            <select class="top-hits-dropdown" id="window-size-dropdown-{{ module.id }}">
-                                                <option value="">Loading...</option>
-                                            </select>
-                                        </div>
-                                    </div>
                                     
                                     <!-- Number of top hits dropdown -->
                                     <div class="top-hits-section">
@@ -246,15 +237,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Window size dropdown -->
-                                    <div class="top-hits-section">
-                                        <div class="section-label"><strong>Window size:</strong></div>
-                                        <div class="section-controls">
-                                            <select class="top-hits-dropdown" id="window-size-dropdown-{{ module.id }}">
-                                                <option value="">Loading...</option>
-                                            </select>
-                                        </div>
-                                    </div>
                                     
                                     <!-- Number of top hits dropdown -->
                                     <div class="top-hits-section">
@@ -298,470 +280,332 @@
 
 {% block javascripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, setting up event listeners...');
-    // Function to close all sub-module data containers for a specific module
-    function closeAllSubModuleData(moduleId) {
-        // Close chromosome data
-        const chromosomeData = document.getElementById('chromosome-data-' + moduleId);
-        if (chromosomeData) {
-            chromosomeData.style.display = 'none';
-        }
-        
-        // Close tests data
-        const testsData = document.getElementById('tests-data-' + moduleId);
-        if (testsData) {
-            testsData.style.display = 'none';
-        }
-        
-        // Close top hits data
-        const topHitsData = document.getElementById('top-hits-data-' + moduleId);
-        if (topHitsData) {
-            topHitsData.style.display = 'none';
-        }
-    }
+// Simple test to see if JavaScript is working
+console.log("Script is loading...");
+alert("Script is loading!");
+
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM loaded!");
+    alert("DOM loaded successfully!");
     
-    // Add click event listeners to all module boxes
-    const moduleBoxes = document.querySelectorAll('.module-box');
+    // Simple test - just find module boxes and log them
+    const moduleBoxes = document.querySelectorAll(".module-box");
+    console.log("Found module boxes:", moduleBoxes.length);
     
-    moduleBoxes.forEach(function(box) {
-        box.addEventListener('click', function() {
-            const moduleId = this.getAttribute('data-module-id');
-            const subModules = document.getElementById('sub-modules-' + moduleId);
-            
-            // Hide all other sub-modules first
-            const allSubModules = document.querySelectorAll('.sub-modules');
-            allSubModules.forEach(function(subModule) {
-                if (subModule.id !== 'sub-modules-' + moduleId) {
-                    subModule.style.display = 'none';
+    if (moduleBoxes.length > 0) {
+        alert("Found " + moduleBoxes.length + " module boxes!");
+        
+        // Add click handler that toggles sub-modules visibility
+        moduleBoxes.forEach(function(box) {
+            box.addEventListener("click", function() {
+                const moduleId = this.getAttribute("data-module-id");
+                console.log("Module box clicked! ID:", moduleId);
+                
+                // Find the sub-modules container for this module
+                const subModules = document.getElementById("sub-modules-" + moduleId);
+                console.log("Sub modules element:", subModules);
+                
+                if (subModules) {
+                    // Hide all other sub-modules first
+                    const allSubModules = document.querySelectorAll(".sub-modules");
+                    allSubModules.forEach(function(subModule) {
+                        if (subModule.id !== "sub-modules-" + moduleId) {
+                            subModule.style.display = "none";
+                        }
+                    });
+                    
+                    // Toggle visibility of current sub-modules
+                    if (subModules.style.display === "none") {
+                        console.log("Showing sub-modules for module:", moduleId);
+                        subModules.style.display = "block";
+                    } else {
+                        console.log("Hiding sub-modules for module:", moduleId);
+                        subModules.style.display = "none";
+                    }
+                } else {
+                    console.error("Sub modules container not found for module:", moduleId);
                 }
             });
-            
-            // Toggle visibility of current sub-modules
-            if (subModules.style.display === 'none') {
-                subModules.style.display = 'block';
-            } else {
-                subModules.style.display = 'none';
-            }
         });
-    });
-    
-    // Add click event listeners to Highway Browser sub-module boxes
-    const highwayBrowserBoxes = document.querySelectorAll('.sub-module-box[data-action="highway-browser"]');
-    
-    highwayBrowserBoxes.forEach(function(box) {
-        box.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent triggering the parent module box click
+        
+        // Function to close all sub-module data containers for a specific module
+        function closeAllSubModuleData(moduleId) {
+            const chromosomeData = document.getElementById("chromosome-data-" + moduleId);
+            const testsData = document.getElementById("tests-data-" + moduleId);
+            const topHitsData = document.getElementById("top-hits-data-" + moduleId);
             
-            const moduleId = this.getAttribute('data-module-id');
-            const chromosomeData = document.getElementById('chromosome-data-' + moduleId);
-            const loadingIndicator = chromosomeData.querySelector('.loading-indicator');
-            const tbody = document.getElementById('chromosome-tbody-' + moduleId);
-            
-            // Close all other sub-module data containers first
-            closeAllSubModuleData(moduleId);
-            
-            // Toggle chromosome data visibility
-            if (chromosomeData.style.display === 'none') {
-                // Show chromosome data and fetch data
-                chromosomeData.style.display = 'block';
-                loadingIndicator.style.display = 'block';
+            if (chromosomeData) chromosomeData.style.display = "none";
+            if (testsData) testsData.style.display = "none";
+            if (topHitsData) topHitsData.style.display = "none";
+        }
+        
+        // Add click event listeners to Highway Browser sub-module boxes
+        const highwayBrowserBoxes = document.querySelectorAll('.sub-module-box[data-action="highway-browser"]');
+        console.log("Found highway browser boxes:", highwayBrowserBoxes.length);
+        
+        highwayBrowserBoxes.forEach(function(box) {
+            box.addEventListener("click", function(e) {
+                e.stopPropagation(); // Prevent triggering the parent module box click
+                console.log("Highway Browser clicked for module:", this.getAttribute("data-module-id"));
                 
-                // Fetch chromosome data from the API
-                console.log('Fetching chromosome data for module:', moduleId);
-                console.log('API URL:', `/api/module/${moduleId}/chromosomes`);
+                const moduleId = this.getAttribute("data-module-id");
+                const chromosomeData = document.getElementById("chromosome-data-" + moduleId);
                 
-                fetch(`/api/module/${moduleId}/chromosomes`)
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        console.log('Response headers:', response.headers);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Response data:', data);
-                        loadingIndicator.style.display = 'none';
+                if (chromosomeData) {
+                    // Close all other sub-module data first
+                    closeAllSubModuleData(moduleId);
+                    
+                    // Toggle chromosome data visibility
+                    if (chromosomeData.style.display === "none") {
+                        chromosomeData.style.display = "block";
+                        console.log("Showing chromosome data for module:", moduleId);
                         
-                        if (data.success && data.data && data.data.length > 0) {
-                            // Clear existing data
-                            tbody.innerHTML = '';
-                            
-                            // Populate table with chromosome data
-                            data.data.forEach(function(chromosome) {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${chromosome.chr}</td>
-                                    <td>${chromosome.chrname}</td>
-                                    <td>${chromosome.len.toLocaleString()}</td>
-                                `;
-                                tbody.appendChild(row);
-                            });
-                            
-                            // Log debug info if available
-                            if (data.debug) {
-                                console.log('Chromosome data loaded successfully:', data.debug);
-                            }
-                        } else {
-                            let errorMessage = 'No chromosome data available';
-                            if (data.error) {
-                                errorMessage = data.error;
-                                if (data.debug) {
-                                    console.log('Debug info:', data.debug);
-                                }
-                            }
-                            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">${errorMessage}</td></tr>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fetch error:', error);
-                        loadingIndicator.style.display = 'none';
-                        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading chromosome data</td></tr>';
-                        console.error('Error fetching chromosome data:', error);
-                    });
-            } else {
-                // Hide chromosome data
-                chromosomeData.style.display = 'none';
-            }
-        });
-    });
-    
-    // Add click event listeners to List of Tests sub-module boxes
-    const listTestsBoxes = document.querySelectorAll('.sub-module-box[data-action="list-tests"]');
-    
-    listTestsBoxes.forEach(function(box) {
-        box.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent triggering the parent module box click
-            
-            const moduleId = this.getAttribute('data-module-id');
-            const testsData = document.getElementById('tests-data-' + moduleId);
-            const loadingIndicator = testsData.querySelector('.loading-indicator');
-            const tbody = document.getElementById('tests-tbody-' + moduleId);
-            
-            // Close all other sub-module data containers first
-            closeAllSubModuleData(moduleId);
-            
-            // Toggle tests data visibility
-            if (testsData.style.display === 'none') {
-                // Show tests data and fetch data
-                testsData.style.display = 'block';
-                loadingIndicator.style.display = 'block';
-                
-                // Fetch column data from the API
-                console.log('Fetching column data for module:', moduleId);
-                console.log('API URL:', `/api/module/${moduleId}/columns`);
-                
-                fetch(`/api/module/${moduleId}/columns`)
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        console.log('Response headers:', response.headers);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Response data:', data);
-                        loadingIndicator.style.display = 'none';
-                        
-                        if (data.success && data.data && data.data.length > 0) {
-                            // Clear existing data
-                            tbody.innerHTML = '';
-                            
-                            // Populate table with column data
-                            data.data.forEach(function(column) {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${column.test || 'Test ' + column.col}</td>
-                                    <td class="text-center text-muted">-</td>
-                                `;
-                                tbody.appendChild(row);
-                            });
-                            
-                            // Log debug info if available
-                            if (data.debug) {
-                                console.log('Column data loaded successfully:', data.debug);
-                            }
-                        } else {
-                            let errorMessage = 'No column data available';
-                            if (data.error) {
-                                errorMessage = data.error;
-                                if (data.debug) {
-                                    console.log('Debug info:', data.debug);
-                                }
-                            }
-                            tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">${errorMessage}</td></tr>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fetch error:', error);
-                        loadingIndicator.style.display = 'none';
-                        tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Error loading column data</td></tr>';
-                        console.error('Error fetching column data:', error);
-                    });
-            } else {
-                // Hide tests data
-                testsData.style.display = 'none';
-            }
-        });
-    });
-    
-    // Add click event listeners to Top Hits sub-module boxes
-    const topHitsBoxes = document.querySelectorAll('.sub-module-box[data-action="top-hits"]');
-    
-    topHitsBoxes.forEach(function(box) {
-        box.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent triggering the parent module box click
-            
-            const moduleId = this.getAttribute('data-module-id');
-            const topHitsData = document.getElementById('top-hits-data-' + moduleId);
-            
-            // Close all other sub-module data containers first
-            closeAllSubModuleData(moduleId);
-            
-            // Toggle top hits data visibility
-            if (topHitsData.style.display === 'none') {
-                // Show top hits data
-                topHitsData.style.display = 'block';
-                console.log('Showing Top Hits options for module:', moduleId);
-                console.log('Module ID type:', typeof moduleId, 'Value:', moduleId);
-                
-                // Load radius values automatically when opening Top Hits section
-                loadRadiusValues(moduleId);
-                
-                // Add event listener to the Get Report button for this module
-                const getReportBtn = document.getElementById('get-report-btn-' + moduleId);
-                if (getReportBtn) {
-                    console.log('Adding event listener to Get Report button for module:', moduleId);
-                    getReportBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Get Report button clicked for module:', moduleId);
-                        
-                        const windowSizeDropdown = document.getElementById('window-size-dropdown-' + moduleId);
-                        const topHitsCountDropdown = document.getElementById('top-hits-count-dropdown-' + moduleId);
-                        const reportTypeDropdown = document.getElementById('report-type-dropdown-' + moduleId);
-                        
-                        if (!windowSizeDropdown) {
-                            console.error('Window size dropdown not found for module:', moduleId);
-                            return;
-                        }
-                        
-                        if (!topHitsCountDropdown) {
-                            console.error('Top hits count dropdown not found for module:', moduleId);
-                            return;
-                        }
-                        
-                        if (!reportTypeDropdown) {
-                            console.error('Report type dropdown not found for module:', moduleId);
-                            return;
-                        }
-                        
-                        const selectedWindowSize = windowSizeDropdown.value;
-                        const selectedTopHitsCount = topHitsCountDropdown.value;
-                        const selectedReportType = reportTypeDropdown.value;
-                        
-                        console.log('Selected window size:', selectedWindowSize);
-                        console.log('Selected top hits count:', selectedTopHitsCount);
-                        console.log('Selected report type:', selectedReportType);
-                        
-                        if (!selectedWindowSize) {
-                            alert('Please select a window size first.');
-                            return;
-                        }
-                        
-                        // Redirect to the top hits report page
-                        const reportUrl = `/top-hits-report/${moduleId}/${encodeURIComponent(selectedWindowSize)}/${encodeURIComponent(selectedTopHitsCount)}/${encodeURIComponent(selectedReportType)}`;
-                        console.log('Redirecting to:', reportUrl);
-                        window.location.href = reportUrl;
-                    });
-                } else {
-                    console.error('Get Report button not found for module:', moduleId);
+                        // Load chromosome data from API
+                        loadChromosomeData(moduleId);
+                    } else {
+                        chromosomeData.style.display = "none";
+                        console.log("Hiding chromosome data for module:", moduleId);
+                    }
                 }
-            } else {
-                // Hide top hits data
-                topHitsData.style.display = 'none';
-                console.log('Hiding Top Hits options for module:', moduleId);
-            }
+            });
         });
-    });
+        
+        // Add click event listeners to List of Tests sub-module boxes
+        const listTestsBoxes = document.querySelectorAll('.sub-module-box[data-action="list-tests"]');
+        console.log("Found list tests boxes:", listTestsBoxes.length);
+        
+        listTestsBoxes.forEach(function(box) {
+            box.addEventListener("click", function(e) {
+                e.stopPropagation(); // Prevent triggering the parent module box click
+                console.log("List of Tests clicked for module:", this.getAttribute("data-module-id"));
+                
+                const moduleId = this.getAttribute("data-module-id");
+                const testsData = document.getElementById("tests-data-" + moduleId);
+                
+                if (testsData) {
+                    // Close all other sub-module data first
+                    closeAllSubModuleData(moduleId);
+                    
+                    // Toggle tests data visibility
+                    if (testsData.style.display === "none") {
+                        testsData.style.display = "block";
+                        console.log("Showing tests data for module:", moduleId);
+                        
+                        // Load tests data from API
+                        loadTestsData(moduleId);
+                    } else {
+                        testsData.style.display = "none";
+                        console.log("Hiding tests data for module:", moduleId);
+                    }
+                }
+            });
+        });
+        
+        // Add click event listeners to Top Hits sub-module boxes
+        const topHitsBoxes = document.querySelectorAll('.sub-module-box[data-action="top-hits"]');
+        console.log("Found top hits boxes:", topHitsBoxes.length);
+        
+        topHitsBoxes.forEach(function(box) {
+            box.addEventListener("click", function(e) {
+                e.stopPropagation(); // Prevent triggering the parent module box click
+                console.log("Top Hits clicked for module:", this.getAttribute("data-module-id"));
+                
+                const moduleId = this.getAttribute("data-module-id");
+                const topHitsData = document.getElementById("top-hits-data-" + moduleId);
+                
+                if (topHitsData) {
+                    // Close all other sub-module data first
+                    closeAllSubModuleData(moduleId);
+                    
+                    // Toggle top hits data visibility
+                    if (topHitsData.style.display === "none") {
+                        topHitsData.style.display = "block";
+                        console.log("Showing top hits data for module:", moduleId);
+                        
+                        // Add event listener to the Get Report button for this module
+                        const getReportBtn = document.getElementById("get-report-btn-" + moduleId);
+                        if (getReportBtn) {
+                            console.log("Adding event listener to Get Report button for module:", moduleId);
+                            getReportBtn.addEventListener("click", function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log("Get Report button clicked for module:", moduleId);
+                                
+                                const topHitsCountDropdown = document.getElementById("top-hits-count-dropdown-" + moduleId);
+                                const reportTypeDropdown = document.getElementById("report-type-dropdown-" + moduleId);
+                                
+                                if (!topHitsCountDropdown) {
+                                    console.error("Top hits count dropdown not found for module:", moduleId);
+                                    return;
+                                }
+                                
+                                if (!reportTypeDropdown) {
+                                    console.error("Report type dropdown not found for module:", moduleId);
+                                    return;
+                                }
+                                
+                                const selectedTopHitsCount = topHitsCountDropdown.value;
+                                const selectedReportType = reportTypeDropdown.value;
+                                const csvCheckbox = document.getElementById("csv-checkbox-" + moduleId);
+                                const downloadCsv = csvCheckbox ? csvCheckbox.checked : false;
+                                
+                                console.log("Selected top hits count:", selectedTopHitsCount);
+                                console.log("Selected report type:", selectedReportType);
+                                console.log("Download CSV:", downloadCsv);
+                                
+                                if (downloadCsv) {
+                                    // Download CSV first, then redirect
+                                    downloadTopHitsCsv(moduleId, selectedTopHitsCount, selectedReportType);
+                                }
+                                
+                                // Redirect to the top hits report page (without window size)
+                                const reportUrl = `/top-hits-report/${moduleId}/${encodeURIComponent(selectedTopHitsCount)}/${encodeURIComponent(selectedReportType)}`;
+                                console.log("Redirecting to:", reportUrl);
+                                window.location.href = reportUrl;
+                            });
+                        } else {
+                            console.error("Get Report button not found for module:", moduleId);
+                        }
+                    } else {
+                        topHitsData.style.display = "none";
+                        console.log("Hiding top hits data for module:", moduleId);
+                    }
+                }
+            });
+        });
+    } else {
+        alert("No module boxes found!");
+    }
     
-    // Function to load radius values from the module's radius_ind table
-    function loadRadiusValues(moduleId) {
-        console.log('loadRadiusValues called with moduleId:', moduleId);
+    // Function to load chromosome data from API
+    function loadChromosomeData(moduleId) {
+        console.log("Loading chromosome data for module:", moduleId);
         
-        const windowSizeDropdown = document.getElementById('window-size-dropdown-' + moduleId);
-        console.log('Found dropdown element:', windowSizeDropdown);
+        const tbody = document.getElementById("chromosome-tbody-" + moduleId);
+        const loadingIndicator = document.querySelector("#chromosome-data-" + moduleId + " .loading-indicator");
         
-        if (!windowSizeDropdown) {
-            console.error('Window size dropdown not found for module:', moduleId);
-            return;
-        }
+        if (loadingIndicator) loadingIndicator.style.display = "block";
         
-        // Check if we've already loaded radius values for this module
-        if (windowSizeDropdown.dataset.radiusLoaded === 'true') {
-            console.log('Radius values already loaded for module:', moduleId);
-            return;
-        }
-        
-        // Show loading state
-        console.log('Setting loading state...');
-        windowSizeDropdown.innerHTML = '<option value="">Loading...</option>';
-        
-        // Fetch radius values from the API
-        console.log(`Fetching radius values for module: ${moduleId}`);
-        fetch(`/api/module/${moduleId}/radius`)
+        // Fetch chromosome data from the API
+        fetch(`/api/module/${moduleId}/chromosomes`)
             .then(response => {
-                console.log(`Response status: ${response.status}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                console.log("Chromosome API response status:", response.status);
                 return response.json();
             })
             .then(data => {
-                console.log('Radius data loaded for module:', moduleId, data);
-                console.log('Data structure:', JSON.stringify(data, null, 2));
+                console.log("Chromosome API response data:", data);
+                if (loadingIndicator) loadingIndicator.style.display = "none";
                 
                 if (data.success && data.data && data.data.length > 0) {
-                    console.log('Processing successful data...');
-                    // Clear loading option
-                    windowSizeDropdown.innerHTML = '';
+                    // Clear existing data
+                    tbody.innerHTML = "";
                     
-                    // Group radius values by type (pos/nrow)
-                    const posValues = [];
-                    const nrowValues = [];
-                    
-                    console.log('Processing radius data:', data.data);
-                    data.data.forEach(function(radius) {
-                        console.log('Processing radius:', radius);
-                        const optionText = `${radius.radius_val}`;
-                        const optionValue = `${radius.radius_val}`;
-                        
-                        if (radius.type === 'pos') {
-                            posValues.push({ text: optionText, value: optionValue });
-                        } else if (radius.type === 'nrow') {
-                            nrowValues.push({ text: optionText, value: optionValue });
-                        }
+                    // Populate table with chromosome data
+                    data.data.forEach(function(chromosome) {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${chromosome.chr}</td>
+                            <td>${chromosome.chrname || "N/A"}</td>
+                            <td>${chromosome.len ? chromosome.len.toLocaleString() : "N/A"}</td>
+                        `;
+                        tbody.appendChild(row);
                     });
                     
-                    // Sort values numerically
-                    posValues.sort((a, b) => parseInt(a.text.match(/\d+/)[0]) - parseInt(b.text.match(/\d+/)[0]));
-                    nrowValues.sort((a, b) => parseInt(a.text.match(/\d+/)[0]) - parseInt(b.text.match(/\d+/)[0]));
-                    
-                    console.log('nrow values:', nrowValues);
-                    console.log('pos values:', posValues);
-                    
-                    // Add nrow options first, then pos options
-                    nrowValues.forEach(function(option) {
-                        console.log('Adding nrow option:', option);
-                        const optionElement = document.createElement('option');
-                        optionElement.value = option.value;
-                        optionElement.textContent = option.text;
-                        windowSizeDropdown.appendChild(optionElement);
-                    });
-                    
-                    posValues.forEach(function(option) {
-                        console.log('Adding pos option:', option);
-                        const optionElement = document.createElement('option');
-                        optionElement.value = option.value;
-                        optionElement.textContent = option.text;
-                        windowSizeDropdown.appendChild(optionElement);
-                    });
-                    
-                    // Set default selection to first pos value if available, otherwise first nrow value
-                    if (posValues.length > 0) {
-                        windowSizeDropdown.value = posValues[0].value;
-                        console.log('Set default to first pos value:', posValues[0].value);
-                    } else if (nrowValues.length > 0) {
-                        windowSizeDropdown.value = nrowValues[0].value;
-                        console.log('Set default to first nrow value:', nrowValues[0].value);
-                    }
-                    
-                    console.log(`Loaded ${nrowValues.length} nrow values and ${posValues.length} pos values for module ${moduleId}`);
-                    console.log('Final dropdown HTML:', windowSizeDropdown.innerHTML);
-                    
-                    // Mark that radius values have been loaded for this module
-                    windowSizeDropdown.dataset.radiusLoaded = 'true';
+                    console.log("Chromosome data loaded successfully for module:", moduleId);
                 } else {
-                    // No data available
-                    windowSizeDropdown.innerHTML = '<option value="">No radius values available</option>';
-                    console.warn('No radius values found for module:', moduleId);
+                    let errorMessage = "No chromosome data available";
+                    if (data.error) {
+                        errorMessage = data.error;
+                    }
+                    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">${errorMessage}</td></tr>`;
                 }
             })
             .catch(error => {
-                console.error('Error loading radius values for module:', moduleId, error);
-                console.error('Error details:', error.message, error.stack);
-                windowSizeDropdown.innerHTML = '<option value="">Error loading radius values</option>';
+                console.error("Error fetching chromosome data:", error);
+                if (loadingIndicator) loadingIndicator.style.display = "none";
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading chromosome data</td></tr>';
             });
     }
     
-    // Add event listeners for dropdown changes and button clicks (for future functionality)
-    document.addEventListener('change', function(e) {
-        if (e.target.classList.contains('top-hits-dropdown')) {
-            const moduleId = e.target.id.split('-')[2]; // Extract module ID from dropdown ID
-            const value = e.target.value;
-            console.log(`Module ${moduleId} ${e.target.id.split('-')[0]} dropdown changed to:`, value);
-        }
-    });
-    
-    // Get Report button event listeners are now added when Top Hits section is opened
-    
-    // Add click event listener specifically for the window size dropdown
-    document.addEventListener('click', function(e) {
-        console.log('Click event detected on:', e.target.tagName, e.target.id, e.target.className);
+    // Function to load tests data from API
+    function loadTestsData(moduleId) {
+        console.log("Loading tests data for module:", moduleId);
         
-        if (e.target.id && e.target.id.includes('window-size-dropdown-') && e.target.tagName === 'SELECT') {
-            const moduleId = e.target.id.split('-')[3]; // Extract module ID from dropdown ID
-            console.log('Window size dropdown clicked for module:', moduleId);
-            
-            // Check if radius values have already been loaded for this module
-            if (e.target.dataset.radiusLoaded === 'true') {
-                console.log('Radius values already loaded for module:', moduleId);
-                return;
-            }
-            
-            // Check if dropdown already has options loaded (not just "Loading..." or "Error loading radius values")
-            if (e.target.options.length <= 1 || 
-                (e.target.options.length === 1 && 
-                 (e.target.options[0].text === 'Loading...' || 
-                  e.target.options[0].text === 'Error loading radius values' ||
-                  e.target.options[0].text === 'No radius values available'))) {
-                
-                console.log('Loading radius values for window size dropdown...');
-                loadRadiusValues(moduleId);
-            } else {
-                console.log('Radius values already loaded, skipping API call');
-            }
-        }
+        const tbody = document.getElementById("tests-tbody-" + moduleId);
+        const loadingIndicator = document.getElementById("loading-tests-" + moduleId);
         
-        if (e.target.classList.contains('top-hits-btn')) {
-            const buttonText = e.target.textContent;
-            console.log(`Button clicked:`, buttonText);
-            // Get Report button handling is now done in the Top Hits section opening code
-        }
-    });
-    
-    // Add focus event listener for the window size dropdown (more reliable than click for SELECT elements)
-    document.addEventListener('focus', function(e) {
-        if (e.target.id && e.target.id.includes('window-size-dropdown-') && e.target.tagName === 'SELECT') {
-            const moduleId = e.target.id.split('-')[3]; // Extract module ID from dropdown ID
-            console.log('Window size dropdown focused for module:', moduleId);
-            
-            // Check if radius values have already been loaded for this module
-            if (e.target.dataset.radiusLoaded === 'true') {
-                console.log('Radius values already loaded for module:', moduleId);
-                return;
-            }
-            
-            // Check if dropdown already has options loaded (not just "Loading..." or "Error loading radius values")
-            if (e.target.options.length <= 1 || 
-                (e.target.options.length === 1 && 
-                 (e.target.options[0].text === 'Loading...' || 
-                  e.target.options[0].text === 'Error loading radius values' ||
-                  e.target.options[0].text === 'No radius values available'))) {
+        if (loadingIndicator) loadingIndicator.style.display = "block";
+        
+        // Fetch column data from the API
+        fetch(`/api/module/${moduleId}/columns`)
+            .then(response => {
+                console.log("Tests API response status:", response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Tests API response data:", data);
+                if (loadingIndicator) loadingIndicator.style.display = "none";
                 
-                console.log('Loading radius values for window size dropdown (focus event)...');
-                loadRadiusValues(moduleId);
-            } else {
-                console.log('Radius values already loaded, skipping API call');
-            }
-        }
-    }, true);
+                if (data.success && data.data && data.data.length > 0) {
+                    // Clear existing data
+                    tbody.innerHTML = "";
+                    
+                    // Populate table with column data
+                    data.data.forEach(function(column) {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${column.test || "Test " + column.col}</td>
+                            <td class="text-center text-muted">-</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    
+                    console.log("Tests data loaded successfully for module:", moduleId);
+                } else {
+                    let errorMessage = "No test data available";
+                    if (data.error) {
+                        errorMessage = data.error;
+                    }
+                    tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">${errorMessage}</td></tr>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching tests data:", error);
+                if (loadingIndicator) loadingIndicator.style.display = "none";
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Error loading test data</td></tr>';
+            });
+    }
+    
+    // Function to download top hits data as CSV
+    function downloadTopHitsCsv(moduleId, topHitsCount, reportType) {
+        console.log("Downloading CSV for module:", moduleId, "count:", topHitsCount, "type:", reportType);
+        
+        // Fetch CSV data from the API
+        fetch(`/api/module/${moduleId}/top-hits-csv?count=${topHitsCount}&type=${encodeURIComponent(reportType)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `top-hits-${reportType}-${moduleId}-${topHitsCount}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                console.log("CSV download completed");
+            })
+            .catch(error => {
+                console.error("Error downloading CSV:", error);
+                alert("Error downloading CSV file. Please try again.");
+            });
+    }
 });
 </script>
 {% endblock %}

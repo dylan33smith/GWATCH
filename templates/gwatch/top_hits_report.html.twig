@@ -1,16 +1,14 @@
 {% extends 'gwatch/base.html.twig' %}
 
-{% block title %}Top hits of-log(p){% endblock %}
+{% block title %}Top hits - {{ reportType }}{% endblock %}
 
 {% block body %}
 <div class="full-width-container">
                 <div class="top-hits-report-header">
-                <h1 class="page-title">Top hits of-log(p)</h1>
+                <h1 class="page-title">Top hits - {{ reportType }}</h1>
                 <div class="dataset-info">
                     <p class="dataset-name">Dataset - {{ moduleName }}</p>
-                    <p class="window-info">Window of density - {{ windowSize }}</p>
                     <p class="top-hits-count-info">Number of top hits - {{ topHitsCount }}</p>
-                    <p class="report-type-info">Report type - {{ reportType }}</p>
                 </div>
             </div>
     
@@ -23,10 +21,10 @@
                     <th>position</th>
                     <th>test name</th>
                     <th>-log(p)</th>
-                    <th>ranks of -log(p)</th>
+                    <th>ranks_of_-log(p)</th>
                     <th>QAS</th>
-                    <th>ranks of QAS</th>
-                    <th>rank of density</th>
+                    <th>ranks_of_QAS</th>
+                    <th>rank_of_density</th>
                     <th>rank of naive p-value</th>
                     <th>left_ind</th>
                     <th>right_ind</th>
@@ -59,14 +57,7 @@
                         {% else %}
                             <tr>
                                 <td colspan="15" class="text-center text-muted">
-                                    {% if topHitsData.error %}
-                                        {{ topHitsData.error }}
-                                        {% if topHitsData.debug %}
-                                            <br><small>Debug: {{ topHitsData.debug|json_encode }}</small>
-                                        {% endif %}
-                                    {% else %}
-                                        No data available
-                                    {% endif %}
+                                    No data available
                                 </td>
                             </tr>
                         {% endif %}
@@ -97,10 +88,10 @@
 .top-hits-table th:nth-child(3), .top-hits-table td:nth-child(3) { width: 80px; } /* position */
 .top-hits-table th:nth-child(4), .top-hits-table td:nth-child(4) { width: 140px; } /* test name */
 .top-hits-table th:nth-child(5), .top-hits-table td:nth-child(5) { width: 60px; }  /* -log(p) */
-.top-hits-table th:nth-child(6), .top-hits-table td:nth-child(6) { width: 80px; } /* ranks of -log(p) */
+.top-hits-table th:nth-child(6), .top-hits-table td:nth-child(6) { width: 80px; } /* ranks_of_-log(p) */
 .top-hits-table th:nth-child(7), .top-hits-table td:nth-child(7) { width: 60px; }  /* QAS */
-.top-hits-table th:nth-child(8), .top-hits-table td:nth-child(8) { width: 80px; } /* ranks of QAS */
-.top-hits-table th:nth-child(9), .top-hits-table td:nth-child(9) { width: 80px; } /* rank of density */
+.top-hits-table th:nth-child(8), .top-hits-table td:nth-child(8) { width: 80px; } /* ranks_of_QAS */
+.top-hits-table th:nth-child(9), .top-hits-table td:nth-child(9) { width: 80px; } /* rank_of_density */
 .top-hits-table th:nth-child(10), .top-hits-table td:nth-child(10) { width: 90px; } /* rank of naive p-value */
 .top-hits-table th:nth-child(11), .top-hits-table td:nth-child(11) { width: 70px; } /* left_ind */
 .top-hits-table th:nth-child(12), .top-hits-table td:nth-child(12) { width: 70px; } /* right_ind */

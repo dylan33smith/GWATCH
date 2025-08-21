@@ -97,14 +97,13 @@ class GwatchController extends AbstractController
      * Display top hits report page for a specific module
      * 
      * @param int $moduleId The module ID to display report for
-     * @param string $windowSize The window size selected from dropdown (URL encoded)
      * @param int $topHitsCount The number of top hits to display
      * @param string $reportType The type of report (P-value, QAS, density)
      * @param ModuleTrackingRepository $moduleTrackingRepository Repository for module operations
      * @return Response Rendered top hits report page
      */
-    #[Route('/top-hits-report/{moduleId}/{windowSize}/{topHitsCount}/{reportType}', name: 'gwatch_top_hits_report', requirements: ['windowSize' => '.+', 'topHitsCount' => '\d+', 'reportType' => '.+'])]
-    public function topHitsReport(int $moduleId, string $windowSize, int $topHitsCount, string $reportType, ModuleTrackingRepository $moduleTrackingRepository): Response
+    #[Route('/top-hits-report/{moduleId}/{topHitsCount}/{reportType}', name: 'gwatch_top_hits_report', requirements: ['topHitsCount' => '\d+', 'reportType' => '.+'])]
+    public function topHitsReport(int $moduleId, int $topHitsCount, string $reportType, ModuleTrackingRepository $moduleTrackingRepository): Response
     {
         // Fetch module information
         $module = $moduleTrackingRepository->find($moduleId);
@@ -116,24 +115,21 @@ class GwatchController extends AbstractController
         // Get module name for display
         $moduleName = $module->getName();
         
-        // Decode the URL-encoded window size
-        $decodedWindowSize = urldecode($windowSize);
+        // Decode the URL-encoded report type
         $decodedReportType = urldecode($reportType);
         
-        // Get top hits data using the service
+        // Get top hits data using the service (without window size)
         $topHitsService = new TopHitsService($this->params);
         
         $topHitsData = $topHitsService->generateHybridTopHitsReport(
             $moduleId, 
             $decodedReportType, 
-            $topHitsCount, 
-            $decodedWindowSize
+            $topHitsCount
         );
         
         return $this->render('gwatch/top_hits_report.html.twig', [
             'moduleId' => $moduleId,
             'moduleName' => $moduleName,
-            'windowSize' => $decodedWindowSize,
             'topHitsCount' => $topHitsCount,
             'reportType' => $decodedReportType,
             'topHitsData' => $topHitsData,
@@ -523,80 +519,120 @@ class GwatchController extends AbstractController
         }
     }
 
+
+
     /**
-     * Fetch radius values from the radius_ind table for a specific module
-     * 
-     * @param int $moduleId The module ID to fetch radius values for
-     * @return JsonResponse JSON response containing radius values
+     * Generate and download top hits data as CSV
      */
-    #[Route('/api/module/{moduleId}/radius', name: 'gwatch_module_radius', methods: ['GET'])]
-    public function getModuleRadius(int $moduleId): JsonResponse
+    #[Route('/api/module/{moduleId}/top-hits-csv', name: 'gwatch_top_hits_csv', methods: ['GET'])]
+    public function getTopHitsCsv(int $moduleId, Request $request): Response
     {
         try {
-            // Create connection to the module database
-            $dbName = "Module_{$moduleId}";
-            $connection = $this->createModuleConnection($dbName);
+            $count = $request->query->get('count', 1000);
+            $type = $request->query->get('type', 'P-value');
             
-            if (!$connection) {
-                return new JsonResponse([
-                    'error' => 'Module database not found',
-                    'debug' => [
-                        'moduleId' => $moduleId,
-                        'database' => $dbName,
-                        'connectionFailed' => true
-                    ]
-                ], 404);
+            // Use the TopHitsService to get the data
+            $topHitsService = new TopHitsService($this->params);
+            $result = $topHitsService->generateHybridTopHitsReport($moduleId, $type, $count);
+            
+            if (!$result['success']) {
+                return new Response('Error: ' . ($result['error'] ?? 'Unknown error'), 500);
             }
             
-            // First check if the radius_ind table exists
-            $checkTableSql = "SHOW TABLES LIKE 'radius_ind'";
-            $checkStmt = $connection->prepare($checkTableSql);
-            $result = $checkStmt->executeQuery();
-            $tableExists = $result->fetchAllAssociative();
-            
-            if (empty($tableExists)) {
-                $connection->close();
-                return new JsonResponse([
-                    'error' => 'Radius_ind table not found in module database',
-                    'debug' => [
-                        'moduleId' => $moduleId,
-                        'database' => $dbName,
-                        'tableExists' => false,
-                        'availableTables' => $this->getAvailableTables($connection)
-                    ]
-                ], 404);
+            $data = $result['data'];
+            if (empty($data)) {
+                return new Response('No data available', 404);
             }
             
-            // Query radius values from the radius_ind table, ordered by radius_type and radius_val
-            $sql = "SELECT radius_ind as id, radius_type as type, radius_val FROM radius_ind ORDER BY radius_type ASC, radius_val ASC";
-            $stmt = $connection->prepare($sql);
-            $result = $stmt->executeQuery();
-            $radiusValues = $result->fetchAllAssociative();
+            // Generate CSV content
+            $csvContent = $this->generateCsvContent($data);
             
-            $connection->close();
+            // Create response with CSV headers
+            $response = new Response($csvContent);
+            $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+            $response->headers->set('Content-Disposition', 'attachment; filename="top-hits-' . $type . '-' . $moduleId . '-' . $count . '.csv"');
             
-            return new JsonResponse([
-                'success' => true,
-                'data' => $radiusValues,
-                'debug' => [
-                    'moduleId' => $moduleId,
-                    'database' => $dbName,
-                    'tableExists' => !empty($tableExists),
-                    'fetchedRows' => count($radiusValues)
-                ]
-            ]);
+            return $response;
             
         } catch (\Exception $e) {
-            return new JsonResponse([
-                'error' => 'Failed to fetch radius values',
-                'message' => $e->getMessage(),
-                'debug' => [
-                    'moduleId' => $moduleId,
-                    'exception' => get_class($e),
-                    'trace' => $e->getTraceAsString()
-                ]
-            ], 500);
+            return new Response('Error generating CSV: ' . $e->getMessage(), 500);
         }
+    }
+    
+    /**
+     * Generate CSV content from top hits data
+     */
+    private function generateCsvContent(array $data): string
+    {
+        if (empty($data)) {
+            return '';
+        }
+        
+        // CSV headers (matching the table columns exactly)
+        $headers = [
+            'SNP',
+            'Chromosome', 
+            'position',
+            'test_name',
+            '-log(p)',
+            'ranks_of_-log(p)',
+            'QAS',
+            'ranks_of_QAS',
+            'rank_of_density',
+            'rank of naive p-value',
+            'left_ind',
+            'right_ind',
+            'number of SNPs',
+            'density',
+            '-log(naive p-value)'
+        ];
+        
+        // Start with headers
+        $csv = implode(',', array_map('self::escapeCsvField', $headers)) . "\n";
+        
+        // Add data rows
+        foreach ($data as $row) {
+            $csvRow = [
+                $row['SNP'] ?? '',
+                $row['Chromosome'] ?? '',
+                $row['position'] ?? '',
+                $row['test_name'] ?? '',
+                $row['-log(p)'] ?? '',
+                $row['ranks_of_-log(p)'] ?? '',
+                $row['QAS'] ?? '',
+                $row['ranks_of_QAS'] ?? '',
+                $row['rank_of_density'] ?? '',
+                $row['rank_of_naive_p_value'] ?? '',
+                $row['left_ind'] ?? '',
+                $row['right_ind'] ?? '',
+                $row['number_of_SNPs'] ?? '',
+                $row['density'] ?? '',
+                $row['-log(naive_p_value)'] ?? ''
+            ];
+            
+            $csv .= implode(',', array_map('self::escapeCsvField', $csvRow)) . "\n";
+        }
+        
+        return $csv;
+    }
+    
+    /**
+     * Escape CSV field value
+     */
+    private static function escapeCsvField($value): string
+    {
+        if (is_null($value)) {
+            return '';
+        }
+        
+        $value = (string)$value;
+        
+        // If field contains comma, quote, or newline, wrap in quotes and escape internal quotes
+        if (strpos($value, ',') !== false || strpos($value, '"') !== false || strpos($value, "\n") !== false) {
+            $value = '"' . str_replace('"', '""', $value) . '"';
+        }
+        
+        return $value;
     }
 
     /**

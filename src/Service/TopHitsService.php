@@ -22,9 +22,8 @@ class TopHitsService
         try {
             // Extract radius index from window size and get the corresponding radius_ind
             $radiusInd = null;
-            if ($windowSize && preg_match('/(\d+)/', $windowSize, $matches)) {
-                $radiusVal = (int)$matches[1];
-                $radiusInd = $this->getRadiusIndFromValue($moduleId, $radiusVal);
+            if ($windowSize) {
+                $radiusInd = $this->getRadiusIndFromValue($moduleId, $windowSize);
             }
             
             // Step 1: Get top v_inds based on ranking method
@@ -53,7 +52,7 @@ class TopHitsService
                     'moduleId' => $moduleId,
                     'reportType' => $reportType,
                     'topHitsCount' => $topHitsCount,
-                    'windowSize' => $windowSize,
+                    'windowSize' => $windowSize ?? 'not provided',
                     'radiusInd' => $radiusInd ?? 'not found',
                     'exception' => get_class($e),
                     'trace' => $e->getTraceAsString()
@@ -83,10 +82,9 @@ class TopHitsService
                     break;
                     
                 case 'density':
-                    if (!$radiusInd) {
-                        throw new \Exception('Radius index is required for density ranking');
-                    }
-                    $sql = "SELECT v_ind FROM top_hits WHERE radius_ind = {$radiusInd} ORDER BY r_density DESC LIMIT {$limit}";
+                    // For density ranking, we can use the r_density column directly from top_hits
+                    // without requiring a specific window size, similar to how r_pval and r_ratio work
+                    $sql = "SELECT v_ind FROM top_hits WHERE r_density IS NOT NULL ORDER BY r_density DESC LIMIT {$limit}";
                     break;
                     
                 default:
@@ -145,7 +143,7 @@ class TopHitsService
                     JOIN ratio q ON v.v_ind = q.v_ind
                     JOIN r_ratio qr ON v.v_ind = qr.v_ind
                     JOIN chr chr ON i.chr = chr.chr
-                    LEFT JOIN top_hits h ON h.v_ind = v.v_ind AND h.radius_ind = {$radiusInd}
+                    LEFT JOIN top_hits h ON h.v_ind = v.v_ind" . ($radiusInd ? " AND h.radius_ind = {$radiusInd}" : "") . "
                     WHERE v.v_ind IN ({$vIndList})
                     ORDER BY " . $this->getOrderByClause($reportType);
 
@@ -169,7 +167,7 @@ class TopHitsService
             case 'QAS':
                 return 'qr.r_ratio ASC';
             case 'density':
-                return 'h.r_density DESC';
+                return 'COALESCE(h.r_density, 0) DESC';
             default:
                 return 'rpv.r_pval DESC';
         }
@@ -206,9 +204,9 @@ class TopHitsService
     }
 
     /**
-     * Get radius_ind from radius_val
+     * Get radius_ind from window size string (e.g., "pos_7" or "nrow_11")
      */
-    private function getRadiusIndFromValue(int $moduleId, int $radiusVal): ?int
+    private function getRadiusIndFromValue(int $moduleId, string $windowSize): ?int
     {
         $connection = $this->createModuleConnection($moduleId);
         if (!$connection) {
@@ -216,12 +214,29 @@ class TopHitsService
         }
 
         try {
-            $sql = "SELECT radius_ind FROM radius_ind WHERE radius_val = {$radiusVal} LIMIT 1";
-            $result = $connection->executeQuery($sql);
-            $row = $result->fetchAssociative();
-            
-            return $row ? (int)$row['radius_ind'] : null;
+            // Parse window size string (e.g., "pos_7" -> type="pos", val=7)
+            if (preg_match('/^(\w+)_(\d+)$/', $windowSize, $matches)) {
+                $radiusType = $matches[1];
+                $radiusVal = (int)$matches[2];
+                
+                $sql = "SELECT radius_ind FROM radius_ind WHERE radius_type = ? AND radius_val = ? LIMIT 1";
+                $result = $connection->executeQuery($sql, [$radiusType, $radiusVal]);
+                $row = $result->fetchAssociative();
+                
+                if ($row) {
+                    return (int)$row['radius_ind'];
+                } else {
+                    // Log the query that didn't return results for debugging
+                    error_log("No radius_ind found for module {$moduleId}, type: {$radiusType}, val: {$radiusVal}");
+                    return null;
+                }
+            } else {
+                // Log the window size format that didn't match the expected pattern
+                error_log("Window size '{$windowSize}' doesn't match expected format 'type_value' for module {$moduleId}");
+                return null;
+            }
         } catch (\Exception $e) {
+            error_log("Error in getRadiusIndFromValue for module {$moduleId}, windowSize: {$windowSize}: " . $e->getMessage());
             return null;
         } finally {
             $connection->close();
