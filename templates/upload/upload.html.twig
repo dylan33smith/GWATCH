@@ -100,10 +100,30 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(form.densityFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.densityFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.densityFile) }}
-                            <div class="form-text">Upload a density CSV file (e.g., density_7.csv) to create top_hits table. Maximum file size: 10MB.</div>
+                            {{ form_label(form.densityFiles, null, {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="density-files-container" data-prototype="{{ form_widget(form.densityFiles.vars.prototype)|e('html_attr') }}">
+                                {% if form.densityFiles|length > 0 %}
+                                    {% for densityFile in form.densityFiles %}
+                                        <div class="density-file-entry mb-2 d-flex align-items-center">
+                                            {{ form_widget(densityFile, {'attr': {'class': 'form-control me-2'}}) }}
+                                            {% if loop.index > 1 %}
+                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeDensityFile(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="density-file-entry mb-2 d-flex align-items-center">
+                                        <input type="file" name="form[densityFiles][0]" class="form-control me-2" accept=".csv,.txt" />
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addDensityFile()">
+                                <i class="fas fa-plus"></i> Add Another Density File
+                            </button>
+                            {{ form_errors(form.densityFiles) }}
+                            <div class="form-text">Upload density CSV files (e.g., density_1.csv, density_3.csv). Maximum file size: 10MB each.</div>
                         </div>
 
                         <div class="mb-3">
@@ -144,4 +164,61 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+let densityFileIndex = 1;
+
+function addDensityFile() {
+    const container = document.querySelector('.density-files-container');
+    const prototype = container.dataset.prototype;
+    const newEntry = prototype.replace(/__name__/g, densityFileIndex);
+    
+    const newDiv = document.createElement('div');
+    newDiv.className = 'density-file-entry mb-2 d-flex align-items-center';
+    newDiv.innerHTML = newEntry;
+    
+    // Add remove button
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'btn btn-outline-danger btn-sm';
+    removeButton.onclick = function() { removeDensityFile(this); };
+    removeButton.innerHTML = '<i class="fas fa-trash"></i>';
+    
+    newDiv.appendChild(removeButton);
+    container.appendChild(newDiv);
+    
+    // Add remove button to first entry if it doesn't have one
+    const firstEntry = container.querySelector('.density-file-entry:first-child');
+    if (firstEntry && !firstEntry.querySelector('.btn-outline-danger')) {
+        const firstRemoveButton = document.createElement('button');
+        firstRemoveButton.type = 'button';
+        firstRemoveButton.className = 'btn btn-outline-danger btn-sm';
+        firstRemoveButton.onclick = function() { removeDensityFile(this); };
+        firstRemoveButton.innerHTML = '<i class="fas fa-trash"></i>';
+        firstEntry.appendChild(firstRemoveButton);
+    }
+    
+    densityFileIndex++;
+}
+
+function removeDensityFile(button) {
+    const container = document.querySelector('.density-files-container');
+    const entries = container.querySelectorAll('.density-file-entry');
+    
+    if (entries.length > 1) {
+        button.parentElement.remove();
+        
+        // If we removed the first entry and there's only one left, remove the remove button from the remaining entry
+        if (entries.length === 2) {
+            const remainingEntry = container.querySelector('.density-file-entry');
+            const removeButton = remainingEntry.querySelector('.btn-outline-danger');
+            if (removeButton) {
+                removeButton.remove();
+            }
+        }
+    }
+}
+</script>
 {% endblock %}

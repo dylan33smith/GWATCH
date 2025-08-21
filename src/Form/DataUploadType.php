@@ -4,6 +4,7 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -149,7 +150,7 @@ class DataUploadType extends AbstractType
             ])
             ->add('valFile', FileType::class, [
                 'label' => 'Value Data File (CSV)',
-                'required' => true,
+                'required' => false,
                 'constraints' => [
                     new File([
                         'maxSize' => '10M',
@@ -161,18 +162,29 @@ class DataUploadType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('densityFile', FileType::class, [
-                'label' => 'Density Data File (CSV)',
+            ->add('densityFiles', CollectionType::class, [
+                'label' => 'Density Data Files (CSV)',
                 'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
+                'entry_type' => FileType::class,
+                'entry_options' => [
+                    'label' => false,
+                    'constraints' => [
+                        new File([
+                            'maxSize' => '10M',
+                            'mimeTypes' => [
+                                'text/csv',
+                                'text/plain',
+                            ],
+                            'mimeTypesMessage' => 'Please upload a valid CSV file.',
+                        ]),
+                    ],
+                ],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype' => true,
+                'prototype_name' => '__name__',
+                'attr' => [
+                    'class' => 'density-files-collection',
                 ],
             ])
             ->add('radiusIndFile', FileType::class, [

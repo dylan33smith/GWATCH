@@ -29,23 +29,23 @@ class ModuleCreationService
     }
 
     /**
-     * Create a new module with all associated tables and data
+     * Create a new module with all associated data
      * 
      * @param string $moduleName Name of the module
-     * @param string $description Module description
-     * @param bool $isPublic Whether the module is public
+     * @param string $description Description of the module
+     * @param bool $isPublic Whether the module should be public
      * @param User $owner User who owns the module
-     * @param UploadedFile $chrFile Chromosome CSV file
-     * @param UploadedFile $chrsuppFile Chromosome supplement CSV file
-     * @param UploadedFile $colFile Column reference CSV file
-     * @param UploadedFile $indFile Index CSV file
-     * @param UploadedFile $rPvalFile R p-value CSV file
-     * @param UploadedFile $rRatioFile R ratio CSV file
-     * @param UploadedFile $vIndFile Value index CSV file
-     * @param UploadedFile $rowFile Row-based data CSV file
-     * @param UploadedFile $valFile Value-based data CSV file
-     * @param UploadedFile|null $densityFile Density CSV file (optional)
-     * @param UploadedFile|null $radiusIndFile Radius index CSV file (optional)
+     * @param UploadedFile $chrFile Chromosome file
+     * @param UploadedFile $chrsuppFile Chromosome supplement file
+     * @param UploadedFile $colFile Column file
+     * @param UploadedFile $indFile Index file
+     * @param UploadedFile $rPvalFile R p-value file
+     * @param UploadedFile $rRatioFile R ratio file
+     * @param UploadedFile $vIndFile Variant index file
+     * @param UploadedFile $rowFile Row data file
+     * @param UploadedFile $valFile Value data file
+     * @param array $densityFiles Array of density files (e.g., [density_1.csv, density_3.csv])
+     * @param UploadedFile|null $radiusIndFile Radius index file (optional)
      * @return ModuleTracking The created module tracking entity
      * @throws \Exception If module creation fails
      */
@@ -63,7 +63,7 @@ class ModuleCreationService
         UploadedFile $vIndFile,
         UploadedFile $rowFile,
         UploadedFile $valFile,
-        ?UploadedFile $densityFile = null,
+        array $densityFiles = [],
         ?UploadedFile $radiusIndFile = null
     ): ModuleTracking {
         // Create the module tracking entry first
@@ -95,9 +95,9 @@ class ModuleCreationService
             $this->createRadiusIndTable($moduleId, $radiusIndFile);
         }
 
-        // Create top_hits table if density file is provided
-        if ($densityFile !== null) {
-            $this->createTopHitsTable($moduleId, $densityFile);
+        // Create top_hits table if density files are provided
+        if (!empty($densityFiles)) {
+            $this->createTopHitsTable($moduleId, $densityFiles);
         }
         
         return $moduleTracking;
@@ -694,7 +694,7 @@ class ModuleCreationService
         }
     }
 
-    private function createTopHitsTable(string $moduleId, UploadedFile $densityFile): void
+    private function createTopHitsTable(string $moduleId, array $densityFiles): void
     {
         try {
             // First, switch to the module database
@@ -703,10 +703,14 @@ class ModuleCreationService
             // Create the top_hits table using schema service
             $this->schemaService->createTable($this->entityManager->getConnection(), 'top_hits');
 
-            // Parse and insert the CSV data
-            $csvData = $this->parseDensityCsvFile($densityFile);
-            if (!empty($csvData)) {
-                $this->insertTopHitsData($moduleId, $csvData);
+            // Process each density file
+            foreach ($densityFiles as $densityFile) {
+                if ($densityFile !== null) {
+                    $csvData = $this->parseDensityCsvFile($densityFile);
+                    if (!empty($csvData)) {
+                        $this->insertTopHitsData($moduleId, $csvData);
+                    }
+                }
             }
         } catch (\Exception $e) {
             error_log("Error in createTopHitsTable: " . $e->getMessage() . " for module: " . $moduleId);

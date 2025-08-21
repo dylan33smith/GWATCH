@@ -282,18 +282,15 @@
 <script>
 // Simple test to see if JavaScript is working
 console.log("Script is loading...");
-alert("Script is loading!");
 
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM loaded!");
-    alert("DOM loaded successfully!");
     
     // Simple test - just find module boxes and log them
     const moduleBoxes = document.querySelectorAll(".module-box");
     console.log("Found module boxes:", moduleBoxes.length);
     
     if (moduleBoxes.length > 0) {
-        alert("Found " + moduleBoxes.length + " module boxes!");
         
         // Add click handler that toggles sub-modules visibility
         moduleBoxes.forEach(function(box) {
@@ -328,6 +325,13 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
         
+        // Function to check if an element is currently visible
+        function isElementVisible(element) {
+            if (!element) return false;
+            const style = window.getComputedStyle(element);
+            return style.display !== "none" && style.visibility !== "hidden";
+        }
+        
         // Function to close all sub-module data containers for a specific module
         function closeAllSubModuleData(moduleId) {
             const chromosomeData = document.getElementById("chromosome-data-" + moduleId);
@@ -352,19 +356,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 const chromosomeData = document.getElementById("chromosome-data-" + moduleId);
                 
                 if (chromosomeData) {
-                    // Close all other sub-module data first
-                    closeAllSubModuleData(moduleId);
-                    
-                    // Toggle chromosome data visibility
-                    if (chromosomeData.style.display === "none") {
+                    // Check if this submodule is already open
+                    if (isElementVisible(chromosomeData)) {
+                        // If it's open, just close it
+                        chromosomeData.style.display = "none";
+                        console.log("Hiding chromosome data for module:", moduleId);
+                    } else {
+                        // If it's closed, close all other sub-modules first, then open this one
+                        closeAllSubModuleData(moduleId);
                         chromosomeData.style.display = "block";
                         console.log("Showing chromosome data for module:", moduleId);
                         
                         // Load chromosome data from API
                         loadChromosomeData(moduleId);
-                    } else {
-                        chromosomeData.style.display = "none";
-                        console.log("Hiding chromosome data for module:", moduleId);
                     }
                 }
             });
@@ -383,19 +387,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 const testsData = document.getElementById("tests-data-" + moduleId);
                 
                 if (testsData) {
-                    // Close all other sub-module data first
-                    closeAllSubModuleData(moduleId);
-                    
-                    // Toggle tests data visibility
-                    if (testsData.style.display === "none") {
+                    // Check if this submodule is already open
+                    if (isElementVisible(testsData)) {
+                        // If it's open, just close it
+                        testsData.style.display = "none";
+                        console.log("Hiding tests data for module:", moduleId);
+                    } else {
+                        // If it's closed, close all other sub-modules first, then open this one
+                        closeAllSubModuleData(moduleId);
                         testsData.style.display = "block";
                         console.log("Showing tests data for module:", moduleId);
                         
                         // Load tests data from API
                         loadTestsData(moduleId);
-                    } else {
-                        testsData.style.display = "none";
-                        console.log("Hiding tests data for module:", moduleId);
                     }
                 }
             });
@@ -414,11 +418,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 const topHitsData = document.getElementById("top-hits-data-" + moduleId);
                 
                 if (topHitsData) {
-                    // Close all other sub-module data first
-                    closeAllSubModuleData(moduleId);
-                    
-                    // Toggle top hits data visibility
-                    if (topHitsData.style.display === "none") {
+                    // Check if this submodule is already open
+                    if (isElementVisible(topHitsData)) {
+                        // If it's open, just close it
+                        topHitsData.style.display = "none";
+                        console.log("Hiding top hits data for module:", moduleId);
+                    } else {
+                        // If it's closed, close all other sub-modules first, then open this one
+                        closeAllSubModuleData(moduleId);
                         topHitsData.style.display = "block";
                         console.log("Showing top hits data for module:", moduleId);
                         
@@ -466,9 +473,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         } else {
                             console.error("Get Report button not found for module:", moduleId);
                         }
-                    } else {
-                        topHitsData.style.display = "none";
-                        console.log("Hiding top hits data for module:", moduleId);
                     }
                 }
             });

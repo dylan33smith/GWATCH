@@ -54,8 +54,18 @@ class UploadController extends AbstractController
                 $this->addFlash('info', 'Starting module creation...');
                 
                 // Log what files are being processed
-                if ($data['densityFile'] !== null) {
-                    $this->addFlash('info', 'Density file detected: ' . $data['densityFile']->getClientOriginalName() . ' (Size: ' . $data['densityFile']->getSize() . ' bytes)');
+                $densityFiles = [];
+                if ($data['densityFiles'] !== null && !empty($data['densityFiles'])) {
+                    $densityFileNames = [];
+                    foreach ($data['densityFiles'] as $densityFile) {
+                        if ($densityFile !== null) {
+                            $densityFiles[] = $densityFile;
+                            $densityFileNames[] = $densityFile->getClientOriginalName() . ' (Size: ' . $densityFile->getSize() . ' bytes)';
+                        }
+                    }
+                    if (!empty($densityFileNames)) {
+                        $this->addFlash('info', 'Density files detected: ' . implode(', ', $densityFileNames));
+                    }
                 }
                 if ($data['radiusIndFile'] !== null) {
                     $this->addFlash('info', 'Radius index file detected: ' . $data['radiusIndFile']->getClientOriginalName() . ' (Size: ' . $data['radiusIndFile']->getSize() . ' bytes)');
@@ -75,7 +85,7 @@ class UploadController extends AbstractController
                     $data['vIndFile'],
                     $data['rowFile'],
                     $data['valFile'],
-                    $data['densityFile'] ?? null,
+                    $densityFiles,
                     $data['radiusIndFile'] ?? null
                 );
                 
