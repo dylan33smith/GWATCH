@@ -4,7 +4,6 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -36,170 +35,21 @@ class DataUploadType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('chrFile', FileType::class, [
-                'label' => 'Chromosome File (CSV)',
+            ->add('csvZipFile', FileType::class, [
+                'label' => 'CSV Files ZIP Archive',
                 'required' => true,
                 'constraints' => [
                     new File([
-                        'maxSize' => '10M',
+                        'maxSize' => '100M',
                         'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
+                            'application/zip',
+                            'application/x-zip-compressed',
+                            'application/octet-stream',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
+                        'mimeTypesMessage' => 'Please upload a valid ZIP file containing your CSV files.',
                     ]),
                 ],
-            ])
-            ->add('chrsuppFile', FileType::class, [
-                'label' => 'Chromosome Supplement File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('colFile', FileType::class, [
-                'label' => 'Column File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('indFile', FileType::class, [
-                'label' => 'Index File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('rPvalFile', FileType::class, [
-                'label' => 'R P-value File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('rRatioFile', FileType::class, [
-                'label' => 'R Ratio File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('vIndFile', FileType::class, [
-                'label' => 'Variant Index File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('rowFile', FileType::class, [
-                'label' => 'Row Data File (CSV)',
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('valFile', FileType::class, [
-                'label' => 'Value Data File (CSV)',
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
-            ])
-            ->add('densityFiles', CollectionType::class, [
-                'label' => 'Density Data Files (CSV)',
-                'required' => false,
-                'entry_type' => FileType::class,
-                'entry_options' => [
-                    'label' => false,
-                    'constraints' => [
-                        new File([
-                            'maxSize' => '10M',
-                            'mimeTypes' => [
-                                'text/csv',
-                                'text/plain',
-                            ],
-                            'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                        ]),
-                    ],
-                ],
-                'allow_add' => true,
-                'allow_delete' => true,
-                'prototype' => true,
-                'prototype_name' => '__name__',
-                'attr' => [
-                    'class' => 'density-files-collection',
-                ],
-            ])
-            ->add('radiusIndFile', FileType::class, [
-                'label' => 'Radius Index File (CSV)',
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '10M',
-                        'mimeTypes' => [
-                            'text/csv',
-                            'text/plain',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid CSV file.',
-                    ]),
-                ],
+                'help' => 'Upload a ZIP file containing all required CSV files. The ZIP should contain files like chr.csv, chrsupp.csv, col.csv, ind.csv, r_pval.csv, r_ratio.csv, row.csv, v_ind.csv, val.csv, and at least one density_#.csv file.',
             ])
             ->add('makePublic', CheckboxType::class, [
                 'label' => 'Make this module public',

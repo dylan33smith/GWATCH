@@ -31,6 +31,12 @@
                     <h3 class="mb-0">Create New Module</h3>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <h5><i class="fas fa-info-circle"></i> Upload Instructions</h5>
+                        <p class="mb-2">Please create a ZIP file containing all your CSV files and upload it here. This is the only way to upload module data.</p>
+                        <p class="mb-0"><strong>Required files in ZIP:</strong> chr.csv, chrsupp.csv, col.csv, ind.csv, r_pval.csv, r_ratio.csv, v_ind.csv, row.csv, val.csv, and at least one density_#.csv file.</p>
+                    </div>
+
                     {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
                         <div class="mb-3">
                             {{ form_label(form.moduleName, null, {'label_attr': {'class': 'form-label'}}) }}
@@ -45,92 +51,10 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(form.chrFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.chrFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.chrFile) }}
-                            <div class="form-text">Upload a CSV file containing chromosome data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.chrsuppFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.chrsuppFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.chrsuppFile) }}
-                            <div class="form-text">Upload a CSV file containing chromosome supplement data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.colFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.colFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.colFile) }}
-                            <div class="form-text">Upload a CSV file containing column data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.indFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.indFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.indFile) }}
-                            <div class="form-text">Upload a CSV file containing index data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.rPvalFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.rPvalFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.rPvalFile) }}
-                            <div class="form-text">Upload a CSV file containing R p-value data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.rRatioFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.rRatioFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.rRatioFile) }}
-                            <div class="form-text">Upload a CSV file containing R ratio data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.vIndFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.vIndFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.vIndFile) }}
-                            <div class="form-text">Upload a CSV file containing variant index data (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.rowFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.rowFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.rowFile) }}
-                            <div class="form-text">Upload a CSV file containing row data (creates pos, alias, allele, and maf tables) (required). Maximum file size: 10MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.valFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.valFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.valFile) }}
-                            <div class="form-text">Upload a CSV file containing value data (creates pval and ratio tables) (required). Maximum file size: 10MB.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.densityFiles, null, {'label_attr': {'class': 'form-label'}}) }}
-                            <div class="density-files-container" data-prototype="{{ form_widget(form.densityFiles.vars.prototype)|e('html_attr') }}">
-                                {% if form.densityFiles|length > 0 %}
-                                    {% for densityFile in form.densityFiles %}
-                                        <div class="density-file-entry mb-2 d-flex align-items-center">
-                                            {{ form_widget(densityFile, {'attr': {'class': 'form-control me-2'}}) }}
-                                            {% if loop.index > 1 %}
-                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeDensityFile(this)">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="density-file-entry mb-2 d-flex align-items-center">
-                                        <input type="file" name="form[densityFiles][0]" class="form-control me-2" accept=".csv,.txt" />
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addDensityFile()">
-                                <i class="fas fa-plus"></i> Add Another Density File
-                            </button>
-                            {{ form_errors(form.densityFiles) }}
-                            <div class="form-text">Upload density CSV files (e.g., density_1.csv, density_3.csv). Maximum file size: 10MB each.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.radiusIndFile, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.radiusIndFile, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.radiusIndFile) }}
-                            <div class="form-text">Upload a radius index CSV file (e.g., radius_ind.csv) to create radius_ind table. Maximum file size: 10MB.</div>
+                            {{ form_label(form.csvZipFile, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.csvZipFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.csvZipFile) }}
+                            <div class="form-text">{{ form_help(form.csvZipFile) }}</div>
                         </div>
 
                         <div class="mb-3 form-check">
@@ -145,13 +69,52 @@
                     {{ form_end(form) }}
 
                     <div class="mt-4">
-                        <h5>Guidelines:</h5>
+                        <h5>Required Files in ZIP:</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-success">Required Files:</h6>
+                                <ul class="list-unstyled">
+                                    <li>✓ <strong>chr.csv</strong> - Chromosome data</li>
+                                    <li>✓ <strong>chrsupp.csv</strong> - Chromosome supplement data</li>
+                                    <li>✓ <strong>col.csv</strong> - Column data</li>
+                                    <li>✓ <strong>ind.csv</strong> - Index data</li>
+                                    <li>✓ <strong>r_pval.csv</strong> - R p-value data</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-success">Required Files (cont.):</h6>
+                                <ul class="list-unstyled">
+                                    <li>✓ <strong>r_ratio.csv</strong> - R ratio data</li>
+                                    <li>✓ <strong>row.csv</strong> - Row data (creates pos, alias, allele, and maf tables)</li>
+                                    <li>✓ <strong>v_ind.csv</strong> - Variant index data</li>
+                                    <li>✓ <strong>val.csv</strong> - Value data (creates pval and ratio tables)</li>
+                                    <li>✓ <strong>At least 1 density_#.csv</strong> - Density data files</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <h6 class="text-info mt-3">Optional Files:</h6>
+                        <ul class="list-unstyled">
+                            <li>○ <strong>radius_ind.csv</strong> - Radius index data</li>
+                        </ul>
+                        
+                        <h5 class="mt-3">Guidelines:</h5>
                         <ul class="list-unstyled">
                             <li>✓ Module name and description are required</li>
-                            <li>✓ CHR file (CSV format) is required</li>
-                            <li>✓ File size limit: 10MB</li>
+                            <li>✓ ZIP file must contain all required CSV files</li>
+                            <li>✓ File size limit: 100MB</li>
                             <li>✓ Choose whether to make the module public or private</li>
                         </ul>
+                        
+                        <div class="alert alert-warning mt-3">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Important Notes:</h6>
+                            <ul class="mb-0">
+                                <li>All CSV files must be in the root of the ZIP (not in subfolders)</li>
+                                <li>File names must match exactly (case-sensitive)</li>
+                                <li>At least one density_#.csv file is required</li>
+                                <li>The system will automatically extract and process all files</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="mt-3">
@@ -166,59 +129,3 @@
 </div>
 {% endblock %}
 
-{% block javascripts %}
-<script>
-let densityFileIndex = 1;
-
-function addDensityFile() {
-    const container = document.querySelector('.density-files-container');
-    const prototype = container.dataset.prototype;
-    const newEntry = prototype.replace(/__name__/g, densityFileIndex);
-    
-    const newDiv = document.createElement('div');
-    newDiv.className = 'density-file-entry mb-2 d-flex align-items-center';
-    newDiv.innerHTML = newEntry;
-    
-    // Add remove button
-    const removeButton = document.createElement('button');
-    removeButton.type = 'button';
-    removeButton.className = 'btn btn-outline-danger btn-sm';
-    removeButton.onclick = function() { removeDensityFile(this); };
-    removeButton.innerHTML = '<i class="fas fa-trash"></i>';
-    
-    newDiv.appendChild(removeButton);
-    container.appendChild(newDiv);
-    
-    // Add remove button to first entry if it doesn't have one
-    const firstEntry = container.querySelector('.density-file-entry:first-child');
-    if (firstEntry && !firstEntry.querySelector('.btn-outline-danger')) {
-        const firstRemoveButton = document.createElement('button');
-        firstRemoveButton.type = 'button';
-        firstRemoveButton.className = 'btn btn-outline-danger btn-sm';
-        firstRemoveButton.onclick = function() { removeDensityFile(this); };
-        firstRemoveButton.innerHTML = '<i class="fas fa-trash"></i>';
-        firstEntry.appendChild(firstRemoveButton);
-    }
-    
-    densityFileIndex++;
-}
-
-function removeDensityFile(button) {
-    const container = document.querySelector('.density-files-container');
-    const entries = container.querySelectorAll('.density-file-entry');
-    
-    if (entries.length > 1) {
-        button.parentElement.remove();
-        
-        // If we removed the first entry and there's only one left, remove the remove button from the remaining entry
-        if (entries.length === 2) {
-            const remainingEntry = container.querySelector('.density-file-entry');
-            const removeButton = remainingEntry.querySelector('.btn-outline-danger');
-            if (removeButton) {
-                removeButton.remove();
-            }
-        }
-    }
-}
-</script>
-{% endblock %}
