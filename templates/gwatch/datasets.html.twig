@@ -557,9 +557,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Populate table with column data
                     data.data.forEach(function(column) {
                         const row = document.createElement("tr");
+                        row.setAttribute("data-test", column.col);
+                        
+                        // Check if manhattan plot exists for this test
+                        const manhattanCell = checkManhattanPlotExists(moduleId, column.col);
+                        
                         row.innerHTML = `
                             <td>${column.test || "Test " + column.col}</td>
-                            <td class="text-center text-muted">-</td>
+                            <td class="text-center">${manhattanCell}</td>
                         `;
                         tbody.appendChild(row);
                     });
@@ -578,6 +583,39 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (loadingIndicator) loadingIndicator.style.display = "none";
                 tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Error loading test data</td></tr>';
             });
+    }
+    
+    // Function to check if a manhattan plot exists for a test
+    function checkManhattanPlotExists(moduleId, testNumber) {
+        // Make API call to check if manhattan plot exists
+        fetch(`/api/module/${moduleId}/manhattan-plot-exists/${testNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.exists) {
+                    // Plot exists - create a link
+                    const link = document.createElement('a');
+                    link.href = `/manhattan-plot/${moduleId}/${testNumber}`;
+                    link.className = 'btn btn-sm btn-primary';
+                    link.innerHTML = '<i class="fas fa-chart-line"></i> View Plot';
+                    link.title = 'Click to view Manhattan plot';
+                    
+                    // Find the cell and update it
+                    const row = document.querySelector(`#tests-tbody-${moduleId} tr[data-test="${testNumber}"]`);
+                    if (row) {
+                        const cell = row.querySelector('td:last-child');
+                        if (cell) {
+                            cell.innerHTML = '';
+                            cell.appendChild(link);
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error checking manhattan plot existence:', error);
+            });
+        
+        // Return initial placeholder
+        return '<span class="text-muted">-</span>';
     }
     
     // Function to download top hits data as CSV

@@ -200,6 +200,29 @@ class ModuleSchemaService
                 KEY `idx_bits` (`bits`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Top hits analysis results'",
             'description' => 'Top hits table with analysis results and genomic boundaries'
+        ],
+        
+        'mplot_png' => [
+            'sql' => "CREATE TABLE IF NOT EXISTS `mplot_png` (
+                `test_number` INT NOT NULL PRIMARY KEY,
+                `png` MEDIUMBLOB NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='PNG images for manhattan plots'",
+            'description' => 'PNG storage table for manhattan plot images'
+        ],
+        
+        'mplot' => [
+            'sql' => "CREATE TABLE IF NOT EXISTS `mplot` (
+                `ind` INT NOT NULL,
+                `test_number` INT NOT NULL,
+                `chr` INT NOT NULL,
+                `nrow` INT NOT NULL,
+                `coordX` FLOAT NOT NULL,
+                `coordY` FLOAT NOT NULL,
+                PRIMARY KEY (`ind`, `test_number`),
+                INDEX `idx_test_number` (`test_number`),
+                INDEX `idx_chr` (`chr`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Manhattan plot metadata for significant SNPs'",
+            'description' => 'Metadata table for manhattan plot coordinates and SNP information'
         ]
     ];
 

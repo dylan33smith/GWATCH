@@ -99,6 +99,9 @@ class ModuleCreationService
         if (!empty($densityFiles)) {
             $this->createTopHitsTable($moduleId, $densityFiles);
         }
+
+        // Create mplot tables for manhattan plots
+        $this->createMplotTables($moduleId);
         
         return $moduleTracking;
     }
@@ -863,6 +866,60 @@ class ModuleCreationService
                 $row['radius_type'],
                 $row['radius_val']
             ]);
+        }
+    }
+
+    private function createMplotTables(string $moduleId): void
+    {
+        // First, switch to the module database
+        $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
+
+        // Create the mplot_png table using schema service
+        $this->schemaService->createTable($this->entityManager->getConnection(), 'mplot_png');
+
+        // Create the mplot table using schema service
+        $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
+        $this->schemaService->createTable($this->entityManager->getConnection(), 'mplot');
+        
+        // Generate manhattan plots using Python script
+        $this->generateManhattanPlots($moduleId);
+    }
+    
+    private function generateManhattanPlots(string $moduleId): void
+    {
+        try {
+            // Extract module ID number from the database name
+            $moduleIdNumber = str_replace('Module_', '', $moduleId);
+            
+            // Get database connection parameters from environment
+            $dbHost = $_ENV['DATABASE_HOST'] ?? '127.0.0.1';
+            $dbUser = $_ENV['DATABASE_USER'] ?? 'gwatch_user';
+            $dbPassword = $_ENV['DATABASE_PASSWORD'] ?? '123457';
+            
+            // Build command to run Python script
+            $scriptPath = __DIR__ . '/../../scripts/generate_manhattan_plots.py';
+            $command = sprintf(
+                'python3 %s %s %s %s %s 2>&1',
+                escapeshellarg($scriptPath),
+                escapeshellarg($dbHost),
+                escapeshellarg($dbUser),
+                escapeshellarg($dbPassword),
+                escapeshellarg($moduleIdNumber)
+            );
+            
+            // Execute the Python script
+            exec($command, $output, $returnCode);
+            
+            if ($returnCode !== 0) {
+                error_log("Failed to generate manhattan plots for {$moduleId}: " . implode("\n", $output));
+                // Don't throw exception - plot generation failure shouldn't prevent module creation
+            } else {
+                error_log("Successfully generated manhattan plots for {$moduleId}");
+            }
+            
+        } catch (\Exception $e) {
+            error_log("Error generating manhattan plots for {$moduleId}: " . $e->getMessage());
+            // Don't throw exception - plot generation failure shouldn't prevent module creation
         }
     }
 }

@@ -1,0 +1,73 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Manhattan Plot - Module {{ moduleId }} Test {{ testNumber }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-0">
+    <!-- Simple header -->
+    <div class="bg-light border-bottom py-2">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Manhattan Plot - Module {{ moduleId }} Test {{ testNumber }}</h4>
+                <a href="{{ path('gwatch_datasets') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i> Back to Modules
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manhattan Plot Display - Full width, no extra content -->
+    <div class="manhattan-plot-container">
+        <!-- Base PNG Image with Image Map -->
+        <img src="data:image/png;base64,{{ pngBase64 }}" 
+             alt="Manhattan Plot for Test {{ testNumber }}" 
+             class="img-fluid"
+             id="manhattan-plot-image"
+             usemap="#manhattan-map">
+        
+        <!-- Image Map for Clickable SNPs -->
+        {% if metadata is not empty %}
+            <map name="manhattan-map">
+                {% for snp in metadata %}
+                    <area shape="circle" 
+                          coords="{{ snp.coordX }},{{ snp.coordY }},5" 
+                          href="#" 
+                          data-snp="{{ snp.ind }}"
+                          data-chr="{{ snp.chr }}"
+                          data-nrow="{{ snp.nrow }}"
+                          title="SNP {{ snp.ind }} (Chr{{ snp.chr }}:{{ snp.nrow }})"
+                          onclick="showSnpDetails({{ snp.ind }}, {{ snp.chr }}, {{ snp.nrow }}, {{ snp.coordX }}, {{ snp.coordY }}); return false;">
+                {% endfor %}
+            </map>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.manhattan-plot-container {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+}
+
+.manhattan-plot-container img {
+    max-width: 100%;
+    height: auto;
+    border: none;
+}
+
+/* Make the image map areas more visible on hover */
+img[usemap] {
+    cursor: crosshair;
+}
+</style>
+
+<script>
+// Function to show SNP details in modal (called from image map onclick)
+function showSnpDetails(snpId, chr, nrow, coordX, coordY) {
+    // For now, just show an alert with basic info
+    alert(`SNP ${snpId}\nChromosome: ${chr}\nPosition: ${nrow}\nCoordinates: (${coordX}, ${coordY})`);
+}
+</script>
+{% endblock %}
