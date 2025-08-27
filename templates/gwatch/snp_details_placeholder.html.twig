@@ -1,0 +1,159 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}SNP Details - Module {{ moduleId }} - SONGBIRD{% endblock %}
+
+{% block body %}
+<div class="snp-details-container">
+    <div class="placeholder-content">
+        <div class="placeholder-icon">
+            <i class="fas fa-tools"></i>
+        </div>
+        
+        <h2>SNP Details Page</h2>
+        <p class="placeholder-message">{{ message }}</p>
+        
+        <div class="snp-info">
+            <p><strong>Module ID:</strong> {{ moduleId }}</p>
+            <p><strong>SNP Index:</strong> {{ snpInd }}</p>
+        </div>
+        
+        <div class="placeholder-actions">
+            <a href="{{ path('gwatch_datasets') }}" class="btn btn-primary">← Back to Datasets</a>
+            <button onclick="window.history.back()" class="btn btn-secondary">← Go Back</button>
+        </div>
+        
+        <div class="development-note">
+            <h4>🚧 Under Development</h4>
+            <p>This page will eventually show:</p>
+            <ul>
+                <li>Detailed SNP information</li>
+                <li>Genomic coordinates</li>
+                <li>Association statistics</li>
+                <li>Related genes and pathways</li>
+                <li>Visualization options</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+.snp-details-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 20px;
+}
+
+.placeholder-content {
+    text-align: center;
+    max-width: 600px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
+}
+
+.placeholder-icon {
+    font-size: 4em;
+    color: #ffc107;
+    margin-bottom: 20px;
+}
+
+.placeholder-icon i {
+    font-size: 1em;
+}
+
+.placeholder-content h2 {
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.placeholder-message {
+    color: #6c757d;
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.snp-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.snp-info p {
+    margin: 5px 0;
+    color: #495057;
+}
+
+.placeholder-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.btn {
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: 1px solid #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+    border-color: #545b62;
+}
+
+.development-note {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: left;
+}
+
+.development-note h4 {
+    color: #856404;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.development-note p {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.development-note ul {
+    color: #856404;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.development-note li {
+    margin: 5px 0;
+}
+</style>
+{% endblock %}

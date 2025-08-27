@@ -310,6 +310,55 @@ class GwatchController extends AbstractController
     }
     
     /**
+     * Check if a manhattan plot exists for a specific test
+     */
+    #[Route('/api/module/{moduleId}/manhattan-plot-exists/{testNumber}', name: 'gwatch_manhattan_plot_exists', methods: ['GET'])]
+    public function checkManhattanPlotExists(int $moduleId, int $testNumber): JsonResponse
+    {
+        try {
+            $dbName = "Module_{$moduleId}";
+            $connection = $this->createModuleConnection($dbName);
+            
+            if (!$connection) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Could not connect to module database',
+                    'debug' => ['moduleId' => $moduleId, 'database' => $dbName]
+                ], 404);
+            }
+            
+            // Check if mplot_png table exists and has data for this test
+            $sql = "SELECT COUNT(*) as count FROM mplot_png WHERE test_number = ?";
+            $stmt = $connection->prepare($sql);
+            $result = $stmt->executeQuery([$testNumber]);
+            $row = $result->fetchAssociative();
+            
+            $connection->close();
+            
+            $exists = $row && $row['count'] > 0;
+            
+            return new JsonResponse([
+                'success' => true,
+                'exists' => $exists,
+                'testNumber' => $testNumber,
+                'moduleId' => $moduleId
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Failed to check manhattan plot existence',
+                'message' => $e->getMessage(),
+                'debug' => [
+                    'moduleId' => $moduleId,
+                    'testNumber' => $testNumber,
+                    'exception' => get_class($e)
+                ]
+            ], 500);
+        }
+    }
+
+    /**
      * Test endpoint to check available modules and their databases
      */
     #[Route('/api/debug/modules', name: 'gwatch_debug_modules', methods: ['GET'])]
