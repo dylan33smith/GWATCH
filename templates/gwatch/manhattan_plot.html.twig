@@ -1,0 +1,157 @@
+{% extends 'gwatch/base.html.twig' %}
+
+{% block title %}Manhattan Plot - {{ testName }} - SONGBIRD{% endblock %}
+
+{% block body %}
+<div class="manhattan-plot-container">
+    <div class="plot-header">
+        <h2>Manhattan Plot: {{ testName }}</h2>
+    </div>
+
+    <div class="plot-content">
+        <div class="plot-image-container">
+            <img src="data:image/png;base64,{{ plotImage }}" 
+                 alt="Manhattan Plot for {{ testName }}" 
+                 width="{{ plotWidth }}" 
+                 height="{{ plotHeight }}"
+                 class="manhattan-plot-image"
+                 id="manhattan-plot"
+                 usemap="#significant-points-map">
+            
+            <!-- Image map for clickable significant points -->
+            <map name="significant-points-map" id="significant-points-map">
+                {% for point in significantPoints %}
+                    <area shape="circle" 
+                          coords="{{ point.x_pixel }},{{ point.y_pixel }},5" 
+                          href="{{ path('app_snp_details', {'moduleId': moduleId, 'snpInd': point.snp_ind}) }}" 
+                          target="_blank"
+                          title="SNP {{ point.snp_ind }}: Chr{{ point.chromosome }}, p-value: {{ point.p_value|number_format(6) }}, -log10(p): {{ point.neg_log_p|number_format(3) }}">
+                {% endfor %}
+            </map>
+        </div>
+
+        <div class="plot-info">
+            <h4>Information</h4>
+            <ul>
+                <li><strong>Test:</strong> {{ testName }}</li>
+                <li><strong>Module:</strong> {{ moduleId }}</li>
+                <li><strong>Significant Points:</strong> {{ significantPoints|length }} SNPs with -log10(p-value) > 6</li>
+            </ul>
+
+            {% if significantPoints|length > 0 %}
+                <h4>Significant Points (Click on plot or see list below)</h4>
+                <div class="significant-points-list">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>SNP Index</th>
+                                <th>Chromosome</th>
+                                <th>P-value</th>
+                                <th>-log10(p)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for point in significantPoints %}
+                                <tr>
+                                    <td>{{ point.snp_ind }}</td>
+                                    <td>{{ point.chromosome }}</td>
+                                    <td>{{ point.p_value|number_format(6) }}</td>
+                                    <td>{{ point.neg_log_p|number_format(3) }}</td>
+                                    <td>
+                                        <a href="{{ path('app_snp_details', {'moduleId': moduleId, 'snpInd': point.snp_ind}) }}" 
+                                           class="btn btn-sm btn-primary" 
+                                           target="_blank">
+                                            View Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No significant points found for this test (all SNPs have -log10(p-value) ≤ 6).
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.manhattan-plot-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.plot-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.plot-header h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.plot-content {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.plot-image-container {
+    flex: 1;
+    text-align: center;
+}
+
+.manhattan-plot-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.plot-info {
+    flex: 0 0 350px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.plot-info h4 {
+    color: #495057;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+.significant-points-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table {
+    font-size: 0.9em;
+}
+
+.btn-secondary {
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .plot-content {
+        flex-direction: column;
+    }
+    
+    .plot-info {
+        flex: none;
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

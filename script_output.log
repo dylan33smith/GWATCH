@@ -1,0 +1,110 @@
+/home/dylan33smith/projects/gwatch/gwatch/scripts/generate_manhattan_plots.py:148: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding.
+  plt.ylim(0, max(y_values) * 1.1)
+Getting tests for module...
+Found 20 tests
+Getting chromosome boundaries...
+Found 20 chromosomes
+Getting SNP positions...
+Found 20 SNP positions
+
+Processing test 1: NPC:N+E+E-/CHN:ALL/CAT/A
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 2: NPC:N+E+E-/CHN:ALL/CAT/CD
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 3: NPC:N+E+E-/CHN:ALL/CAT/D
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 4: NPC:N+E+E-/CHN:ALL/CAT/R
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 5: NPC:N+E+E-/CHN:M/CAT/A
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 6: NPC:N+E+E-/CHN:M/CAT/CD
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 7: NPC:N+E+E-/CHN:M/CAT/D
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 8: NPC:N+E+E-/CHN:M/CAT/R
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 9: NPC:N+E+E-/CHN:F/CAT/A
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 10: NPC:N+E+E-/CHN:F/CAT/CD
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 39: NPC:N+E-/CHN:ALL/CAT/D
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 40: NPC:N+E-/CHN:ALL/CAT/R
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 41: NPC:N+E-/CHN:M/CAT/A
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 42: NPC:N+E-/CHN:M/CAT/CD
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 43: NPC:N+E-/CHN:M/CAT/D
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 44: NPC:N+E-/CHN:M/CAT/R
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 45: NPC:N+E-/CHN:F/CAT/A
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 46: NPC:N+E-/CHN:F/CAT/CD
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 47: NPC:N+E-/CHN:F/CAT/D
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Processing test 48: NPC:N+E-/CHN:F/CAT/R
+  Found 1 SNPs for this test
+  Generated plot with 0 significant points
+  Stored plot and data in database
+
+Manhattan plot generation completed!

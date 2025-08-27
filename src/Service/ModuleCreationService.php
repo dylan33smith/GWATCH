@@ -103,6 +103,12 @@ class ModuleCreationService
         // Create mplot tables for manhattan plots
         $this->createMplotTables($moduleId);
         
+        // Create Manhattan plot tables
+        $this->createManhattanPlotTables($moduleId);
+        
+        // Generate Manhattan plots for all tests in the module
+        $this->generateManhattanPlots($moduleId);
+        
         return $moduleTracking;
     }
 
@@ -869,6 +875,7 @@ class ModuleCreationService
         }
     }
 
+<<<<<<< HEAD
     private function createMplotTables(string $moduleId): void
     {
         // First, switch to the module database
@@ -922,4 +929,110 @@ class ModuleCreationService
             // Don't throw exception - plot generation failure shouldn't prevent module creation
         }
     }
+=======
+    /**
+     * Create Manhattan plot tables in the module database
+     */
+    private function createManhattanPlotTables(string $moduleId): void
+    {
+        try {
+            error_log("Creating Manhattan plot tables for module: " . $moduleId);
+            
+            // Switch to the module database
+            $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
+            
+            // Create mplots table
+            $createMplotsTable = "CREATE TABLE IF NOT EXISTS `mplots` (
+                `test_id` int(11) NOT NULL COMMENT 'Test ID from col table',
+                `test_name` varchar(255) NOT NULL COMMENT 'Test name from col.test',
+                `plot_image` longblob NOT NULL COMMENT 'PNG image data',
+                `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation timestamp',
+                `plot_width` int(11) NOT NULL COMMENT 'Image width in pixels',
+                `plot_height` int(11) NOT NULL COMMENT 'Image height in pixels',
+                PRIMARY KEY (`test_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Manhattan plot images for each test'";
+            
+            $this->entityManager->getConnection()->executeStatement($createMplotsTable);
+            error_log("Created mplots table for module: " . $moduleId);
+            
+            // Create significant_points table
+            $createSignificantPointsTable = "CREATE TABLE IF NOT EXISTS `significant_points` (
+                `test_id` int(11) NOT NULL COMMENT 'Foreign key to mplots.test_id',
+                `snp_ind` int(11) NOT NULL COMMENT 'SNP index from ind.ind',
+                `x_pixel` int(11) NOT NULL COMMENT 'X-coordinate on plot',
+                `y_pixel` int(11) NOT NULL COMMENT 'Y-coordinate on plot',
+                `p_value` double NOT NULL COMMENT 'Original p-value',
+                `neg_log_p` double NOT NULL COMMENT '-log10(p-value)',
+                `chromosome` int(11) NOT NULL COMMENT 'Chromosome number',
+                PRIMARY KEY (`test_id`, `snp_ind`),
+                KEY `idx_chromosome` (`chromosome`),
+                KEY `idx_neg_log_p` (`neg_log_p`),
+                CONSTRAINT `fk_significant_points_test` FOREIGN KEY (`test_id`) REFERENCES `mplots` (`test_id`) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Significant points coordinates for Manhattan plots'";
+            
+            $this->entityManager->getConnection()->executeStatement($createSignificantPointsTable);
+            error_log("Created significant_points table for module: " . $moduleId);
+            
+            error_log("Manhattan plot tables created successfully for module: " . $moduleId);
+            
+        } catch (\Exception $e) {
+            error_log("Error creating Manhattan plot tables for module {$moduleId}: " . $e->getMessage());
+            throw $e; // Re-throw this error as it's critical for module creation
+        }
+    }
+
+    /**
+     * Generate Manhattan plots for all tests in the module
+     */
+    private function generateManhattanPlots(string $moduleId): void
+    {
+        try {
+            error_log("Starting Manhattan plot generation for module: " . $moduleId);
+            
+            // Get the path to the Python script
+            $scriptPath = $this->getProjectRoot() . '/scripts/generate_manhattan_plots.py';
+            
+            if (!file_exists($scriptPath)) {
+                error_log("Manhattan plot script not found at: " . $scriptPath);
+                return;
+            }
+            
+            // Build the command to execute the Python script
+            $command = sprintf(
+                'python3 %s --database %s 2>&1',
+                escapeshellarg($scriptPath),
+                escapeshellarg($moduleId)
+            );
+            
+            error_log("Executing command: " . $command);
+            
+            // Execute the Python script
+            $output = [];
+            $returnCode = 0;
+            exec($command, $output, $returnCode);
+            
+            if ($returnCode !== 0) {
+                error_log("Manhattan plot generation failed with return code: " . $returnCode);
+                error_log("Output: " . implode("\n", $output));
+            } else {
+                error_log("Manhattan plot generation completed successfully for module: " . $moduleId);
+                if (!empty($output)) {
+                    error_log("Output: " . implode("\n", $output));
+                }
+            }
+            
+        } catch (\Exception $e) {
+            error_log("Error generating Manhattan plots for module {$moduleId}: " . $e->getMessage());
+            // Don't throw the exception - Manhattan plot generation failure shouldn't break module creation
+        }
+    }
+
+    /**
+     * Get the project root directory
+     */
+    private function getProjectRoot(): string
+    {
+        return dirname(__DIR__, 2); // Go up two levels from src/Service to project root
+    }
+>>>>>>> 98722db6 (mplots are working. Still need editing for how they look)
 }

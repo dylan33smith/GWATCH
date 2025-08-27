@@ -564,7 +564,16 @@ document.addEventListener("DOMContentLoaded", function() {
                         
                         row.innerHTML = `
                             <td>${column.test || "Test " + column.col}</td>
+<<<<<<< HEAD
                             <td class="text-center">${manhattanCell}</td>
+=======
+                            <td class="text-center">
+                                <a href="/module/${moduleId}/test/${column.col}/manhattan-plot" 
+                                   class="manhattan-plot-link btn btn-sm btn-primary">
+                                    View Manhattan Plot
+                                </a>
+                            </td>
+>>>>>>> 98722db6 (mplots are working. Still need editing for how they look)
                         `;
                         tbody.appendChild(row);
                     });
@@ -649,5 +658,50 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 });
+
+// Add CSS for Manhattan plot links
+const style = document.createElement('style');
+style.textContent = `
+    .manhattan-plot-link {
+        text-decoration: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        transition: background-color 0.2s;
+    }
+    
+    .manhattan-plot-link:hover {
+        background-color: #0056b3 !important;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .manhattan-plot-link:focus {
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+`;
+document.head.appendChild(style);
 </script>
+
+<style>
+.manhattan-plot-link {
+    text-decoration: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.manhattan-plot-link:hover {
+    background-color: #0056b3 !important;
+    color: white;
+    text-decoration: none;
+}
+
+.manhattan-plot-link:focus {
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+</style>
 {% endblock %}

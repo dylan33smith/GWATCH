@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Manhattan Plot Generator for SONGBIRD
 
 This script generates manhattan plots for each test in a module and stores
@@ -373,6 +374,293 @@ def main():
     finally:
         if generator:
             generator.close_connection()
+=======
+Manhattan Plot Generator for GWATCH
+
+This script generates Manhattan plots for each test in a module by:
+1. Querying the database for test data
+2. Processing SNP data and p-values
+3. Generating plots with chromosome boundaries
+4. Storing plots and significant points in the database
+"""
+
+import sys
+import mysql.connector
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Rectangle
+import io
+import base64
+from typing import List, Dict, Tuple, Optional
+import argparse
+
+class ManhattanPlotGenerator:
+    def __init__(self, host: str, user: str, password: str, database: str):
+        """Initialize database connection"""
+        self.connection = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database
+        )
+        self.cursor = self.connection.cursor(dictionary=True)
+        
+    def __del__(self):
+        """Clean up database connection"""
+        if hasattr(self, 'cursor') and self.cursor:
+            self.cursor.close()
+        if hasattr(self, 'connection') and self.connection:
+            self.connection.close()
+    
+    def get_tests_for_module(self) -> List[Dict]:
+        """Get all tests from the col table"""
+        query = "SELECT col, test FROM col ORDER BY col"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def get_chromosome_boundaries(self) -> List[Dict]:
+        """Get chromosome boundaries from chrsupp table"""
+        query = "SELECT chr, chroff, chrlen FROM chrsupp ORDER BY chr"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def get_snp_data_for_test(self, test_id: int) -> List[Dict]:
+        """Get SNP data for a specific test"""
+        query = """
+        SELECT v.ind, v.col, v.v_ind, p.pval 
+        FROM v_ind v 
+        JOIN pval p ON v.v_ind = p.v_ind 
+        WHERE v.col = %s 
+        ORDER BY v.ind
+        """
+        self.cursor.execute(query, (test_id,))
+        return self.cursor.fetchall()
+    
+    def get_snp_positions(self) -> List[Dict]:
+        """Get SNP positions from ind table"""
+        query = "SELECT ind, nrow, chr FROM ind ORDER BY ind"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def calculate_manhattan_positions(self, snp_data: List[Dict], snp_positions: List[Dict], 
+                                    chr_boundaries: List[Dict]) -> Tuple[List[float], List[float], List[int]]:
+        """Calculate Manhattan plot positions for SNPs"""
+        x_positions = []
+        y_values = []
+        chromosomes = []
+        
+        # Create lookup for SNP positions
+        snp_pos_lookup = {pos['ind']: pos for pos in snp_positions}
+        
+        # Create lookup for chromosome boundaries
+        chr_lookup = {bound['chr']: bound for bound in chr_boundaries}
+        
+        for snp in snp_data:
+            snp_ind = snp['ind']
+            if snp_ind not in snp_pos_lookup:
+                continue
+                
+            pos = snp_pos_lookup[snp_ind]
+            chr_num = pos['chr']
+            nrow = pos['nrow']
+            
+            if chr_num not in chr_lookup:
+                continue
+                
+            chr_bound = chr_lookup[chr_num]
+            chr_offset = chr_bound['chroff']
+            
+            # Calculate x position: chromosome offset + SNP position within chromosome
+            x_pos = chr_offset + nrow
+            
+            # Calculate y value: -log10(p-value)
+            pval = float(snp['pval'])
+            if pval > 0:
+                y_val = -np.log10(pval)
+            else:
+                y_val = 0
+            
+            x_positions.append(x_pos)
+            y_values.append(y_val)
+            chromosomes.append(chr_num)
+        
+        return x_positions, y_values, chromosomes
+    
+    def generate_manhattan_plot(self, test_id: int, test_name: str, x_positions: List[float], 
+                               y_values: List[float], chromosomes: List[int], 
+                               chr_boundaries: List[Dict]) -> Tuple[bytes, List[Dict]]:
+        """Generate Manhattan plot and return image bytes and significant points"""
+        
+        # Set up the plot
+        plt.figure(figsize=(12, 8))
+        
+        # Plot all points
+        plt.scatter(x_positions, y_values, alpha=0.6, s=1, c=chromosomes, cmap='tab20')
+        
+        # Add chromosome boundaries
+        for chr_bound in chr_boundaries:
+            chr_num = chr_bound['chr']
+            chr_start = chr_bound['chroff']
+            chr_end = chr_start + chr_bound['chrlen']
+            
+            # Add vertical line for chromosome boundary
+            plt.axvline(x=chr_start, color='black', alpha=0.3, linewidth=0.5)
+            
+            # Add chromosome label
+            plt.text(chr_start + chr_bound['chrlen']/2, plt.ylim()[1] * 0.95, 
+                    str(chr_num), ha='center', va='top', fontsize=8)
+        
+        # Set labels and title
+        plt.xlabel('Genomic Position')
+        plt.ylabel('-log10(p-value)')
+        plt.title(f'Manhattan Plot: {test_name}')
+        
+        # Add significance threshold line at -log10(p) = 6
+        plt.axhline(y=6, color='red', linestyle='--', alpha=0.7, label='Significance threshold (-log10(p) = 6)')
+        plt.legend()
+        
+        # Set y-axis limits
+        plt.ylim(0, max(y_values) * 1.1)
+        
+        # Save plot to bytes
+        img_buffer = io.BytesIO()
+        plt.savefig(img_buffer, format='png', dpi=150, bbox_inches='tight')
+        img_buffer.seek(0)
+        plot_bytes = img_buffer.getvalue()
+        plt.close()
+        
+        # Find significant points (-log10(p) > 6)
+        significant_points = []
+        for i, (x, y, chr_num) in enumerate(zip(x_positions, y_values, chromosomes)):
+            if y > 6:
+                # Convert genomic position to pixel coordinates
+                # This is a simplified conversion - in practice you'd need more sophisticated mapping
+                x_pixel = int((x - min(x_positions)) / (max(x_positions) - min(x_positions)) * 1000)
+                y_pixel = int(y / max(y_values) * 600)
+                
+                significant_points.append({
+                    'test_id': test_id,
+                    'snp_ind': int(x_positions[i]),  # Using position as SNP index for now
+                    'x_pixel': x_pixel,
+                    'y_pixel': y_pixel,
+                    'p_value': float(10**(-y)),
+                    'neg_log_p': y,
+                    'chromosome': chr_num
+                })
+        
+        return plot_bytes, significant_points
+    
+    def store_plot_in_database(self, test_id: int, test_name: str, plot_bytes: bytes, 
+                              significant_points: List[Dict]) -> None:
+        """Store plot and significant points in database"""
+        
+        # Store the plot
+        plot_query = """
+        INSERT INTO mplots (test_id, test_name, plot_image, plot_width, plot_height) 
+        VALUES (%s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE 
+        test_name = VALUES(test_name), 
+        plot_image = VALUES(plot_image), 
+        plot_width = VALUES(plot_width), 
+        plot_height = VALUES(plot_height)
+        """
+        
+        self.cursor.execute(plot_query, (test_id, test_name, plot_bytes, 1000, 600))
+        
+        # Clear existing significant points for this test
+        clear_query = "DELETE FROM significant_points WHERE test_id = %s"
+        self.cursor.execute(clear_query, (test_id,))
+        
+        # Store significant points
+        if significant_points:
+            points_query = """
+            INSERT INTO significant_points 
+            (test_id, snp_ind, x_pixel, y_pixel, p_value, neg_log_p, chromosome) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            
+            for point in significant_points:
+                self.cursor.execute(points_query, (
+                    point['test_id'], point['snp_ind'], point['x_pixel'], 
+                    point['y_pixel'], point['p_value'], point['neg_log_p'], 
+                    point['chromosome']
+                ))
+        
+        self.connection.commit()
+    
+    def generate_plots_for_module(self) -> None:
+        """Generate Manhattan plots for all tests in the module"""
+        
+        print("Getting tests for module...")
+        tests = self.get_tests_for_module()
+        print(f"Found {len(tests)} tests")
+        
+        print("Getting chromosome boundaries...")
+        chr_boundaries = self.get_chromosome_boundaries()
+        print(f"Found {len(chr_boundaries)} chromosomes")
+        
+        print("Getting SNP positions...")
+        snp_positions = self.get_snp_positions()
+        print(f"Found {len(snp_positions)} SNP positions")
+        
+        for test in tests:
+            test_id = test['col']
+            test_name = test['test']
+            
+            print(f"\nProcessing test {test_id}: {test_name}")
+            
+            try:
+                # Get SNP data for this test
+                snp_data = self.get_snp_data_for_test(test_id)
+                print(f"  Found {len(snp_data)} SNPs for this test")
+                
+                if not snp_data:
+                    print(f"  No SNP data found for test {test_id}, skipping...")
+                    continue
+                
+                # Calculate Manhattan plot positions
+                x_positions, y_values, chromosomes = self.calculate_manhattan_positions(
+                    snp_data, snp_positions, chr_boundaries
+                )
+                
+                if not x_positions:
+                    print(f"  No valid positions calculated for test {test_id}, skipping...")
+                    continue
+                
+                # Generate the plot
+                plot_bytes, significant_points = self.generate_manhattan_plot(
+                    test_id, test_name, x_positions, y_values, chromosomes, chr_boundaries
+                )
+                
+                print(f"  Generated plot with {len(significant_points)} significant points")
+                
+                # Store in database
+                self.store_plot_in_database(test_id, test_name, plot_bytes, significant_points)
+                print(f"  Stored plot and data in database")
+                
+            except Exception as e:
+                print(f"  Error processing test {test_id}: {str(e)}")
+                continue
+        
+        print("\nManhattan plot generation completed!")
+
+def main():
+    """Main function to run the Manhattan plot generator"""
+    parser = argparse.ArgumentParser(description='Generate Manhattan plots for GWATCH module')
+    parser.add_argument('--host', default='localhost', help='Database host')
+    parser.add_argument('--user', default='gwatch_user', help='Database user')
+    parser.add_argument('--password', default='123457', help='Database password')
+    parser.add_argument('--database', required=True, help='Module database name (e.g., Module_51)')
+    
+    args = parser.parse_args()
+    
+    try:
+        generator = ManhattanPlotGenerator(args.host, args.user, args.password, args.database)
+        generator.generate_plots_for_module()
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        sys.exit(1)
+>>>>>>> 98722db6 (mplots are working. Still need editing for how they look)
 
 if __name__ == "__main__":
     main()
