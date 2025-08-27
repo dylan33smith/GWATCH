@@ -564,16 +564,12 @@ document.addEventListener("DOMContentLoaded", function() {
                         
                         row.innerHTML = `
                             <td>${column.test || "Test " + column.col}</td>
-<<<<<<< HEAD
-                            <td class="text-center">${manhattanCell}</td>
-=======
                             <td class="text-center">
                                 <a href="/module/${moduleId}/test/${column.col}/manhattan-plot" 
                                    class="manhattan-plot-link btn btn-sm btn-primary">
                                     View Manhattan Plot
                                 </a>
                             </td>
->>>>>>> 98722db6 (mplots are working. Still need editing for how they look)
                         `;
                         tbody.appendChild(row);
                     });
