@@ -5,4 +5,24 @@ hello:
     path:   /hello/{name}
     controller: 'App\Controller\TestController::helloAction'
 
+# Highway Browser Routes
+display:
+    path: /display.php
+    controller: 'App\Controller\DisplayController::indexAction'
+
+getColumns:
+    path: /getColumns.php
+    controller: 'App\Controller\DisplayController::columnsAction'
+
+getData:
+    path: /getData.php
+    controller: 'App\Controller\DisplayController::dataAction'
+
+search:
+    path: /search.php
+    controller: 'App\Controller\DisplayController::searchAction'
+
+report:
+    path: /report.php
+    controller: 'App\Controller\DisplayController::reportAction'
 

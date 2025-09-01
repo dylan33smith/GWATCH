@@ -44,6 +44,7 @@
                                                     <th>Chromosome</th>
                                                     <th>Name</th>
                                                     <th>Length</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="chromosome-tbody-{{ module.id }}">
@@ -178,6 +179,7 @@
                                                     <th>Chromosome</th>
                                                     <th>Name</th>
                                                     <th>Length</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="chromosome-tbody-{{ module.id }}">
@@ -507,11 +509,31 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Populate table with chromosome data
                     data.data.forEach(function(chromosome) {
                         const row = document.createElement("tr");
+                        row.style.cursor = "pointer";
                         row.innerHTML = `
                             <td>${chromosome.chr}</td>
                             <td>${chromosome.chrname || "N/A"}</td>
                             <td>${chromosome.len ? chromosome.len.toLocaleString() : "N/A"}</td>
+                            <td><a href="/display.php?module=${moduleId}&chr=${chromosome.chr}&row=0" target="_blank" class="btn btn-sm btn-primary">Open Highway Browser</a></td>
                         `;
+                        
+                        // Add click handler to the entire row
+                        row.addEventListener('click', function(e) {
+                            // Don't trigger if clicking on the button
+                            if (e.target.tagName !== 'A') {
+                                window.open(`/display.php?module=${moduleId}&chr=${chromosome.chr}&row=0`, '_blank');
+                            }
+                        });
+                        
+                        // Add hover effect
+                        row.addEventListener('mouseenter', function() {
+                            this.style.backgroundColor = '#f8f9fa';
+                        });
+                        
+                        row.addEventListener('mouseleave', function() {
+                            this.style.backgroundColor = '';
+                        });
+                        
                         tbody.appendChild(row);
                     });
                     
@@ -521,13 +543,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (data.error) {
                         errorMessage = data.error;
                     }
-                    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">${errorMessage}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${errorMessage}</td></tr>`;
                 }
             })
             .catch(error => {
                 console.error("Error fetching chromosome data:", error);
                 if (loadingIndicator) loadingIndicator.style.display = "none";
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading chromosome data</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error loading chromosome data</td></tr>';
             });
     }
     
@@ -698,6 +720,45 @@ document.head.appendChild(style);
 
 .manhattan-plot-link:focus {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Highway Browser Action Button Styles */
+.chromosome-table .btn {
+    padding: 4px 8px;
+    font-size: 0.8em;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+}
+
+.chromosome-table .btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+
+.chromosome-table .btn:focus {
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.chromosome-table .btn:active {
+    background-color: #004085;
+    border-color: #004085;
+}
+
+/* Chromosome table row hover effects */
+.chromosome-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.chromosome-table tbody tr:hover {
+    background-color: #f8f9fa !important;
 }
 </style>
 {% endblock %}

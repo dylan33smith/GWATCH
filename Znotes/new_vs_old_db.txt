@@ -1,0 +1,1330 @@
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+OLD VERSION 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+MODULE SCHEMA
+
+mysqldump -u gwatch -pgwatch --no-data --routines --events --triggers Module_186 
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+-- MySQL dump 10.13  Distrib 5.7.41, for Linux (x86_64)
+--
+-- Host: localhost    Database: Module_186
+-- ------------------------------------------------------
+-- Server version       5.7.41
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+mysqldump: Error: 'Access denied; you need (at least one of) the PROCESS privilege(s) for this operation' when trying to dump tablespaces
+
+--
+-- Table structure for table `alias`
+--
+
+DROP TABLE IF EXISTS `alias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `alias` (
+  `ind` int(4) unsigned NOT NULL,
+  `alias` varchar(31) DEFAULT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `alias` (`alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `allele`
+--
+
+DROP TABLE IF EXISTS `allele`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `allele` (
+  `ind` int(4) unsigned NOT NULL,
+  `allele` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `allele` (`allele`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `chr`
+--
+
+DROP TABLE IF EXISTS `chr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chr` (
+  `chr` int(2) unsigned NOT NULL,
+  `chrname` varchar(255) NOT NULL,
+  PRIMARY KEY (`chr`),
+  KEY `chrname` (`chrname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `chrsupp`
+--
+
+DROP TABLE IF EXISTS `chrsupp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chrsupp` (
+  `chr` int(2) unsigned NOT NULL,
+  `chroff` int(4) unsigned NOT NULL,
+  `chrlen` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`chr`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `col`
+--
+
+DROP TABLE IF EXISTS `col`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `col` (
+  `col` int(4) unsigned NOT NULL,
+  `test` varchar(255) NOT NULL,
+  `ref.table` varchar(31) NOT NULL,
+  `ref.col` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`col`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `cov`
+--
+
+DROP TABLE IF EXISTS `cov`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cov` (
+  `cov` int(4) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `src` varchar(255) NOT NULL,
+  PRIMARY KEY (`cov`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gen`
+--
+
+DROP TABLE IF EXISTS `gen`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gen` (
+  `ind` int(8) NOT NULL,
+  `gen` text NOT NULL,
+  PRIMARY KEY (`ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPRESSED;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ind`
+--
+
+DROP TABLE IF EXISTS `ind`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ind` (
+  `chr` int(2) unsigned NOT NULL,
+  `nrow` int(4) unsigned NOT NULL,
+  `ind` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`chr`,`nrow`),
+  KEY `ind` (`ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `maf`
+--
+
+DROP TABLE IF EXISTS `maf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `maf` (
+  `ind` int(4) unsigned NOT NULL,
+  `maf` double DEFAULT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `maf` (`maf`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `phen`
+--
+
+DROP TABLE IF EXISTS `phen`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `phen` (
+  `smp` int(4) NOT NULL,
+  `1` varchar(255) DEFAULT NULL,
+  `2` varchar(255) DEFAULT NULL,
+  `3` varchar(255) DEFAULT NULL,
+  `4` varchar(255) DEFAULT NULL,
+  `5` varchar(255) DEFAULT NULL,
+  `6` varchar(255) DEFAULT NULL,
+  `7` varchar(255) DEFAULT NULL,
+  `8` varchar(255) DEFAULT NULL,
+  `9` varchar(255) DEFAULT NULL,
+  `10` varchar(255) DEFAULT NULL,
+  `11` varchar(255) DEFAULT NULL,
+  `12` varchar(255) DEFAULT NULL,
+  `13` varchar(255) DEFAULT NULL,
+  `14` varchar(255) DEFAULT NULL,
+  `15` varchar(255) DEFAULT NULL,
+  `16` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`smp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pos`
+--
+
+DROP TABLE IF EXISTS `pos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pos` (
+  `ind` int(4) unsigned NOT NULL,
+  `pos` int(4) unsigned DEFAULT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `pos` (`pos`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pval`
+--
+
+DROP TABLE IF EXISTS `pval`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pval` (
+  `v_ind` int(8) unsigned NOT NULL,
+  `pval` double DEFAULT NULL,
+  PRIMARY KEY (`v_ind`),
+  KEY `pval` (`pval`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `r_pval`
+--
+
+DROP TABLE IF EXISTS `r_pval`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `r_pval` (
+  `v_ind` int(8) unsigned NOT NULL,
+  `r_pval` int(8) DEFAULT NULL,
+  PRIMARY KEY (`v_ind`),
+  KEY `r_pval` (`r_pval`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `r_ratio`
+--
+
+DROP TABLE IF EXISTS `r_ratio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `r_ratio` (
+  `v_ind` int(8) unsigned NOT NULL,
+  `r_ratio` int(8) DEFAULT NULL,
+  PRIMARY KEY (`v_ind`),
+  KEY `r_ratio` (`r_ratio`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `radius_ind`
+--
+
+DROP TABLE IF EXISTS `radius_ind`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `radius_ind` (
+  `radius_ind` int(2) unsigned NOT NULL,
+  `radius_type` varchar(31) NOT NULL,
+  `radius_val` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`radius_ind`),
+  KEY `radius_type` (`radius_type`,`radius_val`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ratio`
+--
+
+DROP TABLE IF EXISTS `ratio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ratio` (
+  `v_ind` int(8) unsigned NOT NULL,
+  `ratio` double DEFAULT NULL,
+  PRIMARY KEY (`v_ind`),
+  KEY `ratio` (`ratio`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `report_top_hits`
+--
+
+DROP TABLE IF EXISTS `report_top_hits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `report_top_hits` (
+  `bits` bit(4) NOT NULL,
+  `radius_ind` int(2) unsigned NOT NULL,
+  `v_ind` int(8) unsigned NOT NULL,
+  `r_density` int(4) unsigned NOT NULL,
+  `r_naive_p` int(4) unsigned NOT NULL,
+  `left_ind` int(8) unsigned NOT NULL,
+  `right_ind` int(8) unsigned NOT NULL,
+  `left_cnt` int(4) unsigned NOT NULL,
+  `right_cnt` int(4) unsigned NOT NULL,
+  `density` double DEFAULT NULL,
+  `naive_p` double DEFAULT NULL,
+  `adj_p` double DEFAULT NULL,
+  `cal_p` double DEFAULT NULL,
+  PRIMARY KEY (`radius_ind`,`v_ind`),
+  KEY `bits` (`bits`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `v_ind`
+--
+
+DROP TABLE IF EXISTS `v_ind`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `v_ind` (
+  `ind` int(8) unsigned NOT NULL,
+  `col` int(4) unsigned NOT NULL,
+  `v_ind` int(8) unsigned NOT NULL,
+  PRIMARY KEY (`ind`,`col`),
+  KEY `v_ind` (`v_ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'Module_186'
+--
+
+--
+-- Dumping routines for database 'Module_186'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-09-01 18:47:25
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+GWATCH DB SCHEMA
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+-- MySQL dump 10.13  Distrib 5.7.41, for Linux (x86_64)
+--
+-- Host: localhost    Database: GWATCH
+-- ------------------------------------------------------
+-- Server version       5.7.41
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+mysqldump: Error: 'Access denied; you need (at least one of) the PROCESS privilege(s) for this operation' when trying to dump tablespaces
+
+--
+-- Table structure for table `constructor`
+--
+
+DROP TABLE IF EXISTS `constructor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `constructor` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `options` varchar(255) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `vartype` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  `required` int(11) NOT NULL,
+  `value` varchar(35) NOT NULL,
+  `goto` varchar(255) NOT NULL,
+  PRIMARY KEY (`page`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `effect`
+--
+
+DROP TABLE IF EXISTS `effect`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `effect` (
+  `chr` varchar(2) DEFAULT NULL,
+  `pos` int(9) NOT NULL DEFAULT '0',
+  `alias` varchar(30) DEFAULT NULL,
+  `reported_genes` varchar(369) DEFAULT NULL,
+  `effect` varchar(640) DEFAULT NULL,
+  PRIMARY KEY (`pos`),
+  KEY `snp` (`alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `file`
+--
+
+DROP TABLE IF EXISTS `file`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `file` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner_id` int(11) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `localpath` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_8C9F36107E3C61F9` (`owner_id`),
+  CONSTRAINT `FK_8C9F36107E3C61F9` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `file_project`
+--
+
+DROP TABLE IF EXISTS `file_project`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `file_project` (
+  `file_id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `forms`
+--
+
+DROP TABLE IF EXISTS `forms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `forms` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `title` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `defvalue` varchar(10) NOT NULL,
+  `goto` int(11) NOT NULL,
+  `path` varchar(50) NOT NULL,
+  PRIMARY KEY (`page`,`id`,`path`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `formsold`
+--
+
+DROP TABLE IF EXISTS `formsold`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `formsold` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `title` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `defvalue` varchar(10) NOT NULL,
+  `goto` int(11) NOT NULL,
+  PRIMARY KEY (`page`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `genes`
+--
+
+DROP TABLE IF EXISTS `genes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genes` (
+  `build` int(8) NOT NULL,
+  `chr` int(8) NOT NULL,
+  `posstart` int(11) NOT NULL,
+  `posend` int(11) NOT NULL,
+  `strand` int(11) NOT NULL,
+  `gene` varchar(255) CHARACTER SET latin1 NOT NULL,
+  KEY `chr` (`chr`,`posstart`,`posend`,`build`) USING BTREE
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `medtable`
+--
+
+DROP TABLE IF EXISTS `medtable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `medtable` (
+  `build` varchar(20) NOT NULL,
+  `chr` int(11) NOT NULL,
+  `pos` int(11) NOT NULL,
+  `alias` varchar(35) NOT NULL,
+  `all` varchar(10) NOT NULL,
+  `dbn` varchar(255) NOT NULL,
+  `dsdb` varchar(255) NOT NULL,
+  `dbid` varchar(255) NOT NULL,
+  PRIMARY KEY (`chr`,`pos`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `new_tbl`
+--
+
+DROP TABLE IF EXISTS `new_tbl`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `new_tbl` (
+  `id` varchar(255) NOT NULL,
+  `posstart` int(11) NOT NULL,
+  `posend` int(11) NOT NULL,
+  `strand` int(11) NOT NULL,
+  `gene` varchar(255) NOT NULL,
+  `chr` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `newbquery`
+--
+
+DROP TABLE IF EXISTS `newbquery`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `newbquery` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `des_en` text,
+  `ans_en` text,
+  `des` text,
+  `ans` text,
+  `var` varchar(255) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `page` int(4) DEFAULT NULL,
+  `validator` varchar(255) DEFAULT NULL,
+  `layout` varchar(255) DEFAULT NULL,
+  `cros` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1104 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path`
+--
+
+DROP TABLE IF EXISTS `path`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path` (
+  `page` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `description` text NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `options` varchar(255) NOT NULL,
+  `var` varchar(25) NOT NULL,
+  `vartype` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  `required` int(11) NOT NULL,
+  `value` varchar(35) NOT NULL,
+  `path` varchar(50) NOT NULL,
+  `goto` varchar(255) NOT NULL,
+  PRIMARY KEY (`page`,`id`,`path`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_calccsv`
+--
+
+DROP TABLE IF EXISTS `path_calccsv`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_calccsv` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_calcgds`
+--
+
+DROP TABLE IF EXISTS `path_calcgds`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_calcgds` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_calcplink`
+--
+
+DROP TABLE IF EXISTS `path_calcplink`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_calcplink` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_calcvcf`
+--
+
+DROP TABLE IF EXISTS `path_calcvcf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_calcvcf` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `testnames` text,
+  `filenames` text,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_rawgds`
+--
+
+DROP TABLE IF EXISTS `path_rawgds`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_rawgds` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `projectname` varchar(255) DEFAULT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefile` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariatefile` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_rawplink`
+--
+
+DROP TABLE IF EXISTS `path_rawplink`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_rawplink` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `projectname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_swedish_ci DEFAULT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefile` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariatefile` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `path_rawvcf`
+--
+
+DROP TABLE IF EXISTS `path_rawvcf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `path_rawvcf` (
+  `module` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `projectname` varchar(255) DEFAULT NULL,
+  `prefix` varchar(255) DEFAULT NULL,
+  `typeoftest` varchar(255) DEFAULT NULL,
+  `phenotypename` varchar(255) DEFAULT NULL,
+  `typeofdata` varchar(255) DEFAULT NULL,
+  `phenotypefile` varchar(255) DEFAULT NULL,
+  `phenotypefield` varchar(255) DEFAULT NULL,
+  `population` varchar(255) DEFAULT NULL,
+  `subpopulation` varchar(255) DEFAULT NULL,
+  `covariate` varchar(255) DEFAULT NULL,
+  `iscovdata` varchar(255) DEFAULT NULL,
+  `covariatefile` varchar(255) DEFAULT NULL,
+  `covariatefields` varchar(255) DEFAULT NULL,
+  `formula` varchar(255) DEFAULT NULL,
+  `done` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`col`,`module`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pathnames`
+--
+
+DROP TABLE IF EXISTS `pathnames`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pathnames` (
+  `path` varchar(25) NOT NULL,
+  `pathname` varchar(255) NOT NULL,
+  PRIMARY KEY (`path`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `project`
+--
+
+DROP TABLE IF EXISTS `project`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `project` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner_id` tinyint(1) DEFAULT NULL,
+  `build` varchar(10) NOT NULL,
+  `visible` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `deleted` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=197 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `project-old`
+--
+
+DROP TABLE IF EXISTS `project-old`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `project-old` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner_id` tinyint(1) DEFAULT NULL,
+  `build` varchar(10) NOT NULL,
+  `visible` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `deleted` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=171 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `projectstatus`
+--
+
+DROP TABLE IF EXISTS `projectstatus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `projectstatus` (
+  `id` int(11) NOT NULL,
+  `pid` int(8) DEFAULT NULL,
+  `status` enum('created','running','done','failed') NOT NULL,
+  `progress` int(8) unsigned DEFAULT '0',
+  `total` int(8) unsigned DEFAULT '0',
+  `pid.adjp` int(8) DEFAULT NULL,
+  `status.adjp` enum('created','running','done','failed','skipped') DEFAULT NULL,
+  `progress.adjp` int(8) unsigned DEFAULT '0',
+  `total.adjp` int(8) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tests`
+--
+
+DROP TABLE IF EXISTS `tests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tests` (
+  `project_id` int(11) NOT NULL,
+  `col` int(11) NOT NULL,
+  `test` varchar(255) NOT NULL,
+  `json` text NOT NULL,
+  `file` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`project_id`,`col`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tmpgenes`
+--
+
+DROP TABLE IF EXISTS `tmpgenes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tmpgenes` (
+  `id` varchar(255) NOT NULL,
+  `posstart` int(11) NOT NULL,
+  `posend` int(11) NOT NULL,
+  `strand` int(11) NOT NULL,
+  `gene` varchar(255) NOT NULL,
+  `chr` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'GWATCH'
+--
+
+--
+-- Dumping routines for database 'GWATCH'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-09-01 18:52:57
+
+
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+NEW VERSION 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+MODULE SCHEMA
+
+
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
+--
+-- Host: localhost    Database: Module_54
+-- ------------------------------------------------------
+-- Server version	8.0.43-0ubuntu0.22.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `alias`
+--
+
+DROP TABLE IF EXISTS `alias`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `alias` (
+  `ind` int NOT NULL,
+  `alias` varchar(255) NOT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `idx_alias` (`alias`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `allele`
+--
+
+DROP TABLE IF EXISTS `allele`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `allele` (
+  `ind` int NOT NULL,
+  `allele` varchar(255) NOT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `idx_allele` (`allele`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `chr`
+--
+
+DROP TABLE IF EXISTS `chr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chr` (
+  `chr` int NOT NULL,
+  `chrname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `len` int NOT NULL,
+  PRIMARY KEY (`chr`),
+  KEY `idx_chrname` (`chrname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chromosome information';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `chrsupp`
+--
+
+DROP TABLE IF EXISTS `chrsupp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chrsupp` (
+  `chr` int NOT NULL,
+  `chroff` int NOT NULL,
+  `chrlen` int NOT NULL,
+  PRIMARY KEY (`chr`),
+  KEY `idx_chr` (`chr`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `col`
+--
+
+DROP TABLE IF EXISTS `col`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `col` (
+  `col` int NOT NULL,
+  `test` varchar(255) DEFAULT NULL,
+  `refTable` varchar(255) NOT NULL,
+  `refCol` varchar(255) NOT NULL,
+  PRIMARY KEY (`col`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ind`
+--
+
+DROP TABLE IF EXISTS `ind`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ind` (
+  `chr` int NOT NULL,
+  `nrow` int NOT NULL,
+  `ind` int NOT NULL,
+  PRIMARY KEY (`chr`,`nrow`),
+  KEY `idx_ind` (`ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `maf`
+--
+
+DROP TABLE IF EXISTS `maf`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `maf` (
+  `ind` int NOT NULL,
+  `maf` float NOT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `idx_maf` (`maf`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mplots`
+--
+
+DROP TABLE IF EXISTS `mplots`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mplots` (
+  `test_id` int NOT NULL COMMENT 'Test ID from col table',
+  `test_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Test name from col.test',
+  `plot_image` longblob NOT NULL COMMENT 'PNG image data',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation timestamp',
+  `plot_width` int NOT NULL COMMENT 'Image width in pixels',
+  `plot_height` int NOT NULL COMMENT 'Image height in pixels',
+  PRIMARY KEY (`test_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Manhattan plot images for each test';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pos`
+--
+
+DROP TABLE IF EXISTS `pos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pos` (
+  `ind` int NOT NULL,
+  `pos` int NOT NULL,
+  PRIMARY KEY (`ind`),
+  KEY `idx_pos` (`pos`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pval`
+--
+
+DROP TABLE IF EXISTS `pval`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pval` (
+  `v_ind` int NOT NULL,
+  `pval` float NOT NULL,
+  PRIMARY KEY (`v_ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `r_pval`
+--
+
+DROP TABLE IF EXISTS `r_pval`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `r_pval` (
+  `v_ind` int NOT NULL,
+  `r_pval` int NOT NULL,
+  PRIMARY KEY (`v_ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `r_ratio`
+--
+
+DROP TABLE IF EXISTS `r_ratio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `r_ratio` (
+  `v_ind` int NOT NULL,
+  `r_ratio` int NOT NULL,
+  PRIMARY KEY (`v_ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `radius_ind`
+--
+
+DROP TABLE IF EXISTS `radius_ind`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `radius_ind` (
+  `radius_ind` int unsigned NOT NULL COMMENT 'Radius index',
+  `radius_type` varchar(31) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Radius type',
+  `radius_val` int unsigned NOT NULL COMMENT 'Radius value',
+  KEY `idx_radius_ind` (`radius_ind`),
+  KEY `idx_radius_type` (`radius_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Radius index information';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `ratio`
+--
+
+DROP TABLE IF EXISTS `ratio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ratio` (
+  `v_ind` int NOT NULL,
+  `ratio` float NOT NULL,
+  PRIMARY KEY (`v_ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `significant_points`
+--
+
+DROP TABLE IF EXISTS `significant_points`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `significant_points` (
+  `test_id` int NOT NULL COMMENT 'Foreign key to mplots.test_id',
+  `snp_ind` int NOT NULL COMMENT 'SNP index from ind.ind',
+  `x_pixel` int NOT NULL COMMENT 'X-coordinate on plot',
+  `y_pixel` int NOT NULL COMMENT 'Y-coordinate on plot',
+  `p_value` double NOT NULL COMMENT 'Original p-value',
+  `neg_log_p` double NOT NULL COMMENT '-log10(p-value)',
+  `chromosome` int NOT NULL COMMENT 'Chromosome number',
+  PRIMARY KEY (`test_id`,`snp_ind`),
+  KEY `idx_chromosome` (`chromosome`),
+  KEY `idx_neg_log_p` (`neg_log_p`),
+  CONSTRAINT `fk_significant_points_test` FOREIGN KEY (`test_id`) REFERENCES `mplots` (`test_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Significant points coordinates for Manhattan plots';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `top_hits`
+--
+
+DROP TABLE IF EXISTS `top_hits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `top_hits` (
+  `bits` int NOT NULL COMMENT 'Analysis type flags',
+  `radius_ind` int unsigned NOT NULL COMMENT 'Radius index (1,2,3...)',
+  `v_ind` int unsigned NOT NULL COMMENT 'Variant index',
+  `r_density` int unsigned NOT NULL COMMENT 'Ranked density',
+  `r_naive_p` int unsigned NOT NULL COMMENT 'Ranked naive p-value',
+  `left_ind` int unsigned NOT NULL COMMENT 'Left genomic boundary',
+  `right_ind` int unsigned NOT NULL COMMENT 'Right genomic boundary',
+  `left_cnt` int unsigned NOT NULL COMMENT 'Left count',
+  `right_cnt` int unsigned NOT NULL COMMENT 'Right count',
+  `density` double DEFAULT NULL COMMENT 'Density value',
+  `naive_p` double DEFAULT NULL COMMENT 'Naive p-value',
+  `adj_p` double DEFAULT NULL COMMENT 'Adjusted p-value',
+  `cal_p` double DEFAULT NULL COMMENT 'Calibrated p-value',
+  PRIMARY KEY (`bits`,`radius_ind`,`v_ind`),
+  KEY `idx_bits` (`bits`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Top hits analysis results';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `v_ind`
+--
+
+DROP TABLE IF EXISTS `v_ind`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `v_ind` (
+  `ind` int NOT NULL,
+  `col` int NOT NULL,
+  `v_ind` int NOT NULL,
+  PRIMARY KEY (`ind`,`col`),
+  KEY `idx_v_ind` (`v_ind`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'Module_54'
+--
+
+--
+-- Dumping routines for database 'Module_54'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-09-01 14:45:02
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
+--
+-- Host: localhost    Database: gwatch_db
+-- ------------------------------------------------------
+-- Server version       8.0.43-0ubuntu0.22.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `doctrine_migration_versions`
+--
+
+DROP TABLE IF EXISTS `doctrine_migration_versions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `doctrine_migration_versions` (
+  `version` varchar(191) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `executed_at` datetime DEFAULT NULL,
+  `execution_time` int DEFAULT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `genes`
+--
+
+DROP TABLE IF EXISTS `genes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `build` int NOT NULL,
+  `chr` int NOT NULL,
+  `posstart` int NOT NULL,
+  `posend` int NOT NULL,
+  `strand` int NOT NULL,
+  `gene` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_genes_chr` (`chr`)
+) ENGINE=InnoDB AUTO_INCREMENT=115534 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `module_tracking`
+--
+
+DROP TABLE IF EXISTS `module_tracking`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `module_tracking` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `createdAt` datetime NOT NULL,
+  `public` tinyint(1) NOT NULL,
+  `description` longtext COLLATE utf8mb4_unicode_ci,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_CCBCB1E27E3C61F9` (`owner_id`),
+  CONSTRAINT `FK_CCBCB1E27E3C61F9` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(88) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mail` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` int NOT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `UNIQ_1483A5E9F85E0677` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'gwatch_db'
+--
+
+--
+-- Dumping routines for database 'gwatch_db'
+--
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-09-01 14:54:25
