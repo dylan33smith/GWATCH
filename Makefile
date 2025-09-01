@@ -20,6 +20,8 @@ help:
 	@echo ""
 	@echo "Testing:"
 	@echo "  test-upload       - Prepare for testing module uploads"
+	@echo "  test-memory       - Test memory limits and system capabilities"
+	@echo "  create-module     - Create new module from ZIP file"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  help              - Show this help message"
@@ -83,6 +85,15 @@ test-upload:
 	@echo "1. Go to your upload page"
 	@echo "2. Upload a density_X.csv file"
 	@echo "3. Check the results"
+
+test-memory:
+	@echo "🧠 Testing memory limits and system capabilities..."
+	@php scripts/test_memory_limits.php
+
+# Module Creation
+create-module:
+	@echo "📦 Creating new module from ZIP file..."
+	@php bin/console app:create-module --help
 
 # Advanced Operations
 backup-modules:

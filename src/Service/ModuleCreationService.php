@@ -100,9 +100,6 @@ class ModuleCreationService
             $this->createTopHitsTable($moduleId, $densityFiles);
         }
 
-        // Create mplot tables for manhattan plots
-        $this->createMplotTables($moduleId);
-        
         // Create Manhattan plot tables
         $this->createManhattanPlotTables($moduleId);
         
