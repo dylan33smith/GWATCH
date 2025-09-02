@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Gwatch\ModuleTracking;
-use App\Entity\Gwatch\User;
+use App\Entity\SONGBIRD\ModuleTracking;
+use App\Entity\SONGBIRD\User;
 use App\Repository\ModuleTrackingRepository;
 use App\Repository\UserRepository;
 use App\Service\TopHitsService;
@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\DriverManager;
 
-class GwatchController extends AbstractController
+class SONGBIRDController extends AbstractController
 {
     private $params;
     private $entityManager;
@@ -37,25 +37,25 @@ class GwatchController extends AbstractController
             $session->getFlashBag()->clear();
         }
         
-        return $this->render('gwatch/home.html.twig');
+        return $this->render('songbird/home.html.twig');
     }
 
     #[Route('/description', name: 'gwatch_description')]
     public function description(): Response
     {
-        return $this->render('gwatch/description.html.twig');
+        return $this->render('songbird/description.html.twig');
     }
 
     #[Route('/features', name: 'gwatch_features')]
     public function features(): Response
     {
-        return $this->render('gwatch/features.html.twig');
+        return $this->render('songbird/features.html.twig');
     }
 
     #[Route('/tutorial', name: 'gwatch_tutorial')]
     public function tutorial(): Response
     {
-        return $this->render('gwatch/tutorial.html.twig');
+        return $this->render('songbird/tutorial.html.twig');
     }
 
     /**
@@ -85,7 +85,7 @@ class GwatchController extends AbstractController
         // Fetch all public modules, excluding those owned by the current user
         $publicModules = $this->fetchPublicModules($moduleTrackingRepository, $isLoggedIn, $currentUser);
 
-        return $this->render('gwatch/datasets.html.twig', [
+        return $this->render('songbird/datasets.html.twig', [
             'isLoggedIn' => $isLoggedIn,
             'currentUser' => $currentUser,
             'userModules' => $userModules,
@@ -127,7 +127,7 @@ class GwatchController extends AbstractController
             $topHitsCount
         );
         
-        return $this->render('gwatch/top_hits_report.html.twig', [
+        return $this->render('songbird/top_hits_report.html.twig', [
             'moduleId' => $moduleId,
             'moduleName' => $moduleName,
             'topHitsCount' => $topHitsCount,

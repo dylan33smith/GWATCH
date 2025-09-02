@@ -257,7 +257,7 @@ class DisplayController extends AbstractController
 		$colors = array(imagecolorallocate($im,245,185,15), imagecolorallocate($im,65,107,236), imagecolorallocate($im,48,149,84),imagecolorallocate($im,208,79,53));
 		shuffle($colors);
 
-		$text = 'GWATCH';
+		$text = 'SONGBIRD';
 		$text2 = 'Genome-Wide Association Tracks Chromosome Highway';
 		$arr1 = str_split($text); 
 		$font = "/home/gwatch/htdocs/font/Artifika-Regular.ttf";
@@ -303,7 +303,7 @@ class DisplayController extends AbstractController
 		shuffle($colors);
 
 
-		$text = 'GWATCH';
+		$text = 'SONGBIRD';
 		$arr1 = str_split($text);
 		 
 		
@@ -339,12 +339,12 @@ class DisplayController extends AbstractController
 			if ( $reportType == "array" )
 			{
 			//echo 1;
- 				$svgContent = $DisplayRepository->generateGWASArray($request);
+ 				$svgContent = $DisplayRepository->generateSONGBIRDArray($request);
 				$report = '2D';
 			}
 			else if ( $reportType == "snapshot" )
 			{
-				$svgContent = $DisplayRepository->generateGWASSnapshot( $request, false );
+				$svgContent = $DisplayRepository->generateSONGBIRDSnapshot( $request, false );
 				$report = '3D';
 			}
 			// Removed snapshot-polarized - not needed for new schema

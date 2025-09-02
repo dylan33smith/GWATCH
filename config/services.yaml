@@ -1,11 +1,20 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
+# This file is the entry point to configure your own services and load the default configuration.
+# If you want to remove a service, deprecate it, or change its class, you can apply the changes here.
+#
+# If you are *not* using the default services.yaml file in your package, you *must* pass an
+# empty array to the $configs parameter in your Kernel class's constructor:
+#
+#     public function __construct(array $configs = [])
+#     {
+#         $this->configs = $configs;
+#     }
+#
+# The parameter $configs is the return value of a call to one of the
+# load() methods in your bundle or extension class.
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    app.database_url: '%env(DATABASE_URL)%'
-    app.upload_directory: '%kernel.project_dir%/data/uploads'
 
 services:
     # default configuration for services in *this* file
@@ -24,5 +33,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    
-    # Make services public for testing
+
+    # Explicitly configure the SONGBIRDController as a service
+    App\Controller\SONGBIRDController:
+        arguments:
+            $params: '@parameter_bag'
+            $entityManager: '@doctrine.orm.entity_manager'
+        tags: ['controller.service_arguments']

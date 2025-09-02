@@ -56,7 +56,7 @@ class ManhattanPlotController extends AbstractController
             // Convert plot image to base64 for display
             $plotImageBase64 = base64_encode($plotData['plot_image']);
             
-            return $this->render('gwatch/manhattan_plot.html.twig', [
+            return $this->render('songbird/manhattan_plot.html.twig', [
                 'moduleId' => $moduleId,
                 'testId' => $testId,
                 'testName' => $plotData['test_name'],
@@ -71,7 +71,7 @@ class ManhattanPlotController extends AbstractController
             error_log("Error displaying Manhattan plot for module {$moduleId}, test {$testId}: " . $e->getMessage());
             
             // Return an error response
-            return $this->render('gwatch/manhattan_plot_error.html.twig', [
+            return $this->render('songbird/manhattan_plot_error.html.twig', [
                 'error' => 'Unable to load Manhattan plot. Please try again later.',
                 'moduleId' => $moduleId,
                 'testId' => $testId
@@ -86,7 +86,7 @@ class ManhattanPlotController extends AbstractController
     public function showSnpDetails(int $moduleId, int $snpInd): Response
     {
         // For now, just show a placeholder page
-        return $this->render('gwatch/snp_details_placeholder.html.twig', [
+        return $this->render('songbird/snp_details_placeholder.html.twig', [
             'moduleId' => $moduleId,
             'snpInd' => $snpInd,
             'message' => 'SNP details page is still being built. This will show detailed information about the selected SNP.'

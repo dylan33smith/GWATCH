@@ -2,8 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\Gwatch\User;
-use App\Entity\Gwatch\ModuleTracking;
+use App\Entity\SONGBIRD\User;
+use App\Entity\SONGBIRD\ModuleTracking;
 use App\Repository\UserRepository;
 use App\Service\ModuleCreationService;
 use Doctrine\ORM\EntityManagerInterface;

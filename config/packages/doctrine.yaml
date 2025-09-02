@@ -18,12 +18,12 @@ doctrine:
                 connection: default
                 auto_mapping: true
                 mappings:
-                    App\Gwatch:
+                    App\SONGBIRD:
                         type: attribute
                         is_bundle: false
-                        dir: '%kernel.project_dir%/src/Entity/Gwatch'
-                        prefix: 'App\Entity\Gwatch'
-                        alias: Gwatch
+                        dir: '%kernel.project_dir%/src/Entity/SONGBIRD'
+                        prefix: 'App\Entity\SONGBIRD'
+                        alias: SONGBIRD
 
 
 when@test:

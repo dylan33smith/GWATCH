@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\Gwatch\ModuleTracking;
-use App\Entity\Gwatch\User;
+use App\Entity\SONGBIRD\ModuleTracking;
+use App\Entity\SONGBIRD\User;
 use App\Service\ModuleSchemaService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

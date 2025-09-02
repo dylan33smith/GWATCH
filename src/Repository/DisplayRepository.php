@@ -1153,7 +1153,7 @@ class DisplayRepository
 		return 'g';
 	}
 
-	public function generateGWASArray($request)
+	    public function generateSONGBIRDArray($request)
 	{
 		$reportRow = $request->query->get('row');
 		if (!isset($reportRow))
@@ -2140,7 +2140,7 @@ public function generateLDSnapshot($request)
 
 // 3D snapshot
 
-public function generateGWASSnapshot($request, $polarized)
+public function generateSONGBIRDSnapshot($request, $polarized)
 {
 
 

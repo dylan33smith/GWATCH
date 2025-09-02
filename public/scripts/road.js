@@ -1,4 +1,4 @@
-//This scripts creates road elements on client side of GWATCH HIGHWAY
+//This scripts creates road elements on client side of SONGBIRD HIGHWAY
 function Road() {}
 
 

@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Gwatch\User;
+use App\Entity\SONGBIRD\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

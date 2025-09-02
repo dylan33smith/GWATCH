@@ -1,4 +1,4 @@
-//This scripts creates SNP bars on client side of GWATCH HIGHWAY
+//This scripts creates SNP bars on client side of SONGBIRD HIGHWAY
 
 function log10(arg) {
     return Math.log(arg) / Math.LN10;

@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Gwatch\ModuleTracking;
-use App\Entity\Gwatch\User;
+use App\Entity\SONGBIRD\ModuleTracking;
+use App\Entity\SONGBIRD\User;
 use App\Form\DataUploadType;
 use App\Repository\UserRepository;
 use App\Service\ModuleCreationService;

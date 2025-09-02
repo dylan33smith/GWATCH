@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Gwatch\User;
+use App\Entity\SONGBIRD\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;

@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Gwatch\User;
+use App\Entity\SONGBIRD\User;
 use App\Form\LoginType;
 use App\Form\UserRegistrationType;
 use App\Repository\UserRepository;

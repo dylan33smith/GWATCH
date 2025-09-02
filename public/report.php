@@ -28,7 +28,7 @@ $svgContent = '<?xml version="1.0" encoding="UTF-8"?>
 <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
   <rect width="400" height="300" fill="white" stroke="black" stroke-width="2"/>
   <text x="200" y="150" text-anchor="middle" font-family="Arial" font-size="16">
-    GWATCH Report - Module: ' . htmlspecialchars($module) . ', Chr: ' . htmlspecialchars($chr) . ', Row: ' . htmlspecialchars($row) . '
+    SONGBIRD Report - Module: ' . htmlspecialchars($module) . ', Chr: ' . htmlspecialchars($chr) . ', Row: ' . htmlspecialchars($row) . '
   </text>
   <text x="200" y="180" text-anchor="middle" font-family="Arial" font-size="12">
     Type: ' . htmlspecialchars($reportType) . ', Format: ' . htmlspecialchars($format) . '

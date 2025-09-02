@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Gwatch\Genes;
+use App\Entity\SONGBIRD\Genes;
 use App\Repository\GenesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
