@@ -42,9 +42,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Chromosome</th>
-                                                    <th>Name</th>
-                                                    <th>Length</th>
-                                                    <th>Action</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody id="chromosome-tbody-{{ module.id }}">
@@ -177,9 +175,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Chromosome</th>
-                                                    <th>Name</th>
-                                                    <th>Length</th>
-                                                    <th>Action</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody id="chromosome-tbody-{{ module.id }}">
@@ -351,26 +347,32 @@ document.addEventListener("DOMContentLoaded", function() {
         
         highwayBrowserBoxes.forEach(function(box) {
             box.addEventListener("click", function(e) {
-                e.stopPropagation(); // Prevent triggering the parent module box click
-                console.log("Highway Browser clicked for module:", this.getAttribute("data-module-id"));
-                
-                const moduleId = this.getAttribute("data-module-id");
-                const chromosomeData = document.getElementById("chromosome-data-" + moduleId);
-                
-                if (chromosomeData) {
-                    // Check if this submodule is already open
-                    if (isElementVisible(chromosomeData)) {
-                        // If it's open, just close it
-                        chromosomeData.style.display = "none";
-                        console.log("Hiding chromosome data for module:", moduleId);
-                    } else {
-                        // If it's closed, close all other sub-modules first, then open this one
-                        closeAllSubModuleData(moduleId);
-                        chromosomeData.style.display = "block";
-                        console.log("Showing chromosome data for module:", moduleId);
-                        
-                        // Load chromosome data from API
-                        loadChromosomeData(moduleId);
+                // Only handle clicks on the sub-module box itself, not on its content
+                if (e.target === this || e.target.classList.contains('sub-module-text')) {
+                    e.stopPropagation(); // Prevent triggering the parent module box click
+                    console.log("Highway Browser clicked for module:", this.getAttribute("data-module-id"));
+                    
+                    const moduleId = this.getAttribute("data-module-id");
+                    const chromosomeData = document.getElementById("chromosome-data-" + moduleId);
+                    
+                    if (chromosomeData) {
+                        // Check if this submodule is already open
+                        if (isElementVisible(chromosomeData)) {
+                            // If it's open, just close it
+                            chromosomeData.style.display = "none";
+                            console.log("Hiding chromosome data for module:", moduleId);
+                        } else {
+                            // If it's closed, close all other sub-modules first, then open this one
+                            closeAllSubModuleData(moduleId);
+                            chromosomeData.style.display = "block";
+                            console.log("Showing chromosome data for module:", moduleId);
+                            
+                            // Load chromosome data from API
+                            loadChromosomeData(moduleId);
+                            
+                            // Setup chromosome table interactions
+                            setupChromosomeTableInteractions(moduleId);
+                        }
                     }
                 }
             });
@@ -382,26 +384,32 @@ document.addEventListener("DOMContentLoaded", function() {
         
         listTestsBoxes.forEach(function(box) {
             box.addEventListener("click", function(e) {
-                e.stopPropagation(); // Prevent triggering the parent module box click
-                console.log("List of Tests clicked for module:", this.getAttribute("data-module-id"));
-                
-                const moduleId = this.getAttribute("data-module-id");
-                const testsData = document.getElementById("tests-data-" + moduleId);
-                
-                if (testsData) {
-                    // Check if this submodule is already open
-                    if (isElementVisible(testsData)) {
-                        // If it's open, just close it
-                        testsData.style.display = "none";
-                        console.log("Hiding tests data for module:", moduleId);
-                    } else {
-                        // If it's closed, close all other sub-modules first, then open this one
-                        closeAllSubModuleData(moduleId);
-                        testsData.style.display = "block";
-                        console.log("Showing tests data for module:", moduleId);
-                        
-                        // Load tests data from API
-                        loadTestsData(moduleId);
+                // Only handle clicks on the sub-module box itself, not on its content
+                if (e.target === this || e.target.classList.contains('sub-module-text')) {
+                    e.stopPropagation(); // Prevent triggering the parent module box click
+                    console.log("List of Tests clicked for module:", this.getAttribute("data-module-id"));
+                    
+                    const moduleId = this.getAttribute("data-module-id");
+                    const testsData = document.getElementById("tests-data-" + moduleId);
+                    
+                    if (testsData) {
+                        // Check if this submodule is already open
+                        if (isElementVisible(testsData)) {
+                            // If it's open, just close it
+                            testsData.style.display = "none";
+                            console.log("Hiding tests data for module:", moduleId);
+                        } else {
+                            // If it's closed, close all other sub-modules first, then open this one
+                            closeAllSubModuleData(moduleId);
+                            testsData.style.display = "block";
+                            console.log("Showing tests data for module:", moduleId);
+                            
+                            // Load tests data from API
+                            loadTestsData(moduleId);
+                            
+                            // Setup tests table interactions
+                            setupTestsTableInteractions(moduleId);
+                        }
                     }
                 }
             });
@@ -413,72 +421,159 @@ document.addEventListener("DOMContentLoaded", function() {
         
         topHitsBoxes.forEach(function(box) {
             box.addEventListener("click", function(e) {
-                e.stopPropagation(); // Prevent triggering the parent module box click
-                console.log("Top Hits clicked for module:", this.getAttribute("data-module-id"));
-                
-                const moduleId = this.getAttribute("data-module-id");
-                const topHitsData = document.getElementById("top-hits-data-" + moduleId);
-                
-                if (topHitsData) {
-                    // Check if this submodule is already open
-                    if (isElementVisible(topHitsData)) {
-                        // If it's open, just close it
-                        topHitsData.style.display = "none";
-                        console.log("Hiding top hits data for module:", moduleId);
-                    } else {
-                        // If it's closed, close all other sub-modules first, then open this one
-                        closeAllSubModuleData(moduleId);
-                        topHitsData.style.display = "block";
-                        console.log("Showing top hits data for module:", moduleId);
-                        
-                        // Add event listener to the Get Report button for this module
-                        const getReportBtn = document.getElementById("get-report-btn-" + moduleId);
-                        if (getReportBtn) {
-                            console.log("Adding event listener to Get Report button for module:", moduleId);
-                            getReportBtn.addEventListener("click", function(e) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log("Get Report button clicked for module:", moduleId);
-                                
-                                const topHitsCountDropdown = document.getElementById("top-hits-count-dropdown-" + moduleId);
-                                const reportTypeDropdown = document.getElementById("report-type-dropdown-" + moduleId);
-                                
-                                if (!topHitsCountDropdown) {
-                                    console.error("Top hits count dropdown not found for module:", moduleId);
-                                    return;
-                                }
-                                
-                                if (!reportTypeDropdown) {
-                                    console.error("Report type dropdown not found for module:", moduleId);
-                                    return;
-                                }
-                                
-                                const selectedTopHitsCount = topHitsCountDropdown.value;
-                                const selectedReportType = reportTypeDropdown.value;
-                                const csvCheckbox = document.getElementById("csv-checkbox-" + moduleId);
-                                const downloadCsv = csvCheckbox ? csvCheckbox.checked : false;
-                                
-                                console.log("Selected top hits count:", selectedTopHitsCount);
-                                console.log("Selected report type:", selectedReportType);
-                                console.log("Download CSV:", downloadCsv);
-                                
-                                if (downloadCsv) {
-                                    // Download CSV first, then redirect
-                                    downloadTopHitsCsv(moduleId, selectedTopHitsCount, selectedReportType);
-                                }
-                                
-                                // Redirect to the top hits report page (without window size)
-                                const reportUrl = `/top-hits-report/${moduleId}/${encodeURIComponent(selectedTopHitsCount)}/${encodeURIComponent(selectedReportType)}`;
-                                console.log("Redirecting to:", reportUrl);
-                                window.location.href = reportUrl;
-                            });
+                // Only handle clicks on the sub-module box itself, not on its content
+                if (e.target === this || e.target.classList.contains('sub-module-text')) {
+                    e.stopPropagation(); // Prevent triggering the parent module box click
+                    console.log("Top Hits clicked for module:", this.getAttribute("data-module-id"));
+                    
+                    const moduleId = this.getAttribute("data-module-id");
+                    const topHitsData = document.getElementById("top-hits-data-" + moduleId);
+                    
+                    if (topHitsData) {
+                        // Check if this submodule is already open
+                        if (isElementVisible(topHitsData)) {
+                            // If it's open, just close it
+                            topHitsData.style.display = "none";
+                            console.log("Hiding top hits data for module:", moduleId);
                         } else {
-                            console.error("Get Report button not found for module:", moduleId);
+                            // If it's closed, close all other sub-modules first, then open this one
+                            closeAllSubModuleData(moduleId);
+                            topHitsData.style.display = "block";
+                            console.log("Showing top hits data for module:", moduleId);
+                            
+                            // Add event listeners to interactive elements
+                            setupTopHitsInteractions(moduleId);
                         }
                     }
                 }
             });
         });
+        
+        // Function to setup interactions for top hits elements
+        function setupTopHitsInteractions(moduleId) {
+            // Get Report button
+            const getReportBtn = document.getElementById("get-report-btn-" + moduleId);
+            if (getReportBtn) {
+                // Remove any existing event listeners
+                getReportBtn.replaceWith(getReportBtn.cloneNode(true));
+                const newGetReportBtn = document.getElementById("get-report-btn-" + moduleId);
+                
+                newGetReportBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Get Report button clicked for module:", moduleId);
+                    
+                    const topHitsCountDropdown = document.getElementById("top-hits-count-dropdown-" + moduleId);
+                    const reportTypeDropdown = document.getElementById("report-type-dropdown-" + moduleId);
+                    
+                    if (!topHitsCountDropdown) {
+                        console.error("Top hits count dropdown not found for module:", moduleId);
+                        return;
+                    }
+                    
+                    if (!reportTypeDropdown) {
+                        console.error("Report type dropdown not found for module:", moduleId);
+                        return;
+                    }
+                    
+                    const selectedTopHitsCount = topHitsCountDropdown.value;
+                    const selectedReportType = reportTypeDropdown.value;
+                    const csvCheckbox = document.getElementById("csv-checkbox-" + moduleId);
+                    const downloadCsv = csvCheckbox ? csvCheckbox.checked : false;
+                    
+                    console.log("Selected top hits count:", selectedTopHitsCount);
+                    console.log("Selected report type:", selectedReportType);
+                    console.log("Download CSV:", downloadCsv);
+                    
+                    if (downloadCsv) {
+                        // Download CSV first, then redirect
+                        downloadTopHitsCsv(moduleId, selectedTopHitsCount, selectedReportType);
+                    }
+                    
+                    // Redirect to the top hits report page (without window size)
+                    const reportUrl = `/top-hits-report/${moduleId}/${encodeURIComponent(selectedTopHitsCount)}/${encodeURIComponent(selectedReportType)}`;
+                    console.log("Redirecting to:", reportUrl);
+                    window.location.href = reportUrl;
+                });
+            }
+            
+            // Dropdowns
+            const topHitsCountDropdown = document.getElementById("top-hits-count-dropdown-" + moduleId);
+            const reportTypeDropdown = document.getElementById("report-type-dropdown-" + moduleId);
+            
+            if (topHitsCountDropdown) {
+                topHitsCountDropdown.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                });
+                topHitsCountDropdown.addEventListener("change", function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            if (reportTypeDropdown) {
+                reportTypeDropdown.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                });
+                reportTypeDropdown.addEventListener("change", function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            // CSV checkbox
+            const csvCheckbox = document.getElementById("csv-checkbox-" + moduleId);
+            if (csvCheckbox) {
+                csvCheckbox.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                });
+                csvCheckbox.addEventListener("change", function(e) {
+                    e.stopPropagation();
+                });
+            }
+        }
+        
+        // Function to setup interactions for chromosome table elements
+        function setupChromosomeTableInteractions(moduleId) {
+            const chromosomeTable = document.querySelector(`#chromosome-data-${moduleId} .chromosome-table`);
+            if (chromosomeTable) {
+                // Add event listeners to all buttons in the table
+                const buttons = chromosomeTable.querySelectorAll('.btn');
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                });
+                
+                // Add event listeners to all table rows
+                const rows = chromosomeTable.querySelectorAll('tbody tr');
+                rows.forEach(function(row) {
+                    row.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                });
+            }
+        }
+        
+        // Function to setup interactions for tests table elements
+        function setupTestsTableInteractions(moduleId) {
+            const testsTable = document.querySelector(`#tests-data-${moduleId} .tests-table`);
+            if (testsTable) {
+                // Add event listeners to all buttons in the table
+                const buttons = testsTable.querySelectorAll('.btn');
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                });
+                
+                // Add event listeners to all table rows
+                const rows = testsTable.querySelectorAll('tbody tr');
+                rows.forEach(function(row) {
+                    row.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                });
+            }
+        }
     } else {
         alert("No module boxes found!");
     }
@@ -512,8 +607,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         row.style.cursor = "pointer";
                         row.innerHTML = `
                             <td>${chromosome.chr}</td>
-                            <td>${chromosome.chrname || "N/A"}</td>
-                            <td>${chromosome.len ? chromosome.len.toLocaleString() : "N/A"}</td>
                             <td><a href="/display.php?module=${moduleId}&chr=${chromosome.chr}&row=0" target="_blank" class="btn btn-sm btn-primary">Open Highway Browser</a></td>
                         `;
                         
@@ -543,13 +636,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (data.error) {
                         errorMessage = data.error;
                     }
-                    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">${errorMessage}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">${errorMessage}</td></tr>`;
                 }
             })
             .catch(error => {
                 console.error("Error fetching chromosome data:", error);
                 if (loadingIndicator) loadingIndicator.style.display = "none";
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error loading chromosome data</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">Error loading chromosome data</td></tr>';
             });
     }
     

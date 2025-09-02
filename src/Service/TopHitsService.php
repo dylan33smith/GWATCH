@@ -250,7 +250,9 @@ class TopHitsService
     {
         try {
             $dbName = "Module_{$moduleId}";
-            $baseUrl = $this->params->get('app.database_url');
+            
+            // Get the base connection parameters from the environment
+            $baseUrl = $_ENV['DATABASE_URL'] ?? 'mysql://gwatch_user:123457@127.0.0.1:3306/gwatch_db?serverVersion=8.0.42&charset=utf8mb4';
             $urlParts = parse_url($baseUrl);
             $urlParts['path'] = '/' . $dbName;
             
