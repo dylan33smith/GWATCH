@@ -239,12 +239,15 @@ class SONGBIRDController extends AbstractController
     private function createModuleConnection(string $dbName)
     {
         try {
-            $baseUrl = $this->params->get('app.database_url');
-            $urlParts = parse_url($baseUrl);
-            $urlParts['path'] = '/' . $dbName;
+            // Get the base connection from the entity manager
+            $connection = $this->entityManager->getConnection();
+            $params = $connection->getParams();
             
-            $moduleUrl = $this->buildUrl($urlParts);
-            return DriverManager::getConnection(['url' => $moduleUrl]);
+            // Modify the database name
+            $params['dbname'] = $dbName;
+            
+            // Create new connection with modified database name
+            return DriverManager::getConnection($params);
         } catch (\Exception $e) {
             return null;
         }
@@ -403,7 +406,7 @@ class SONGBIRDController extends AbstractController
                 'success' => true,
                 'modules' => $moduleInfo,
                 'totalModules' => count($modules),
-                'databaseUrl' => $this->params->get('app.database_url')
+                'databaseUrl' => $this->entityManager->getConnection()->getParams()['url'] ?? 'N/A'
             ]);
             
         } catch (\Exception $e) {
