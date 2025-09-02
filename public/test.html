@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GWATCH Highway Browser Test</title>
+    <script type="text/javascript" src="js/jquery-1.6.min.js"></script>
+    <script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
+    <script type="text/javascript" src="js/GLU.js"></script>
+    <script type="text/javascript" src="scripts/main.js"></script>
+    <script type="text/javascript" src="scripts/glhelpers.js"></script>
+    <script type="text/javascript" src="scripts/rowCache-g.js"></script>
+    <script type="text/javascript" src="scripts/road-g.js"></script>
+    <script type="text/javascript" src="scripts/font.js"></script>
+</head>
+<body>
+    <h1>GWATCH Highway Browser Test</h1>
+    <canvas id="canvas" width="800" height="600" style="border: 1px solid black;"></canvas>
+    <div id="status"></div>
+    
+    <script>
+        // Test WebGL initialization
+        var canvas = document.getElementById('canvas');
+        var gl = initGL(canvas);
+        
+        if (gl) {
+            document.getElementById('status').innerHTML = 'WebGL initialized successfully!';
+            console.log('WebGL context created');
+        } else {
+            document.getElementById('status').innerHTML = 'WebGL initialization failed!';
+            console.log('WebGL context creation failed');
+        }
+        
+        // Test data loading
+        var request = new XMLHttpRequest();
+        request.open("GET", "getColumns.php?module=54&chr=1");
+        request.onreadystatechange = function () {
+            if (request.readyState == 4) {
+                if (request.status == 200) {
+                    var data = JSON.parse(request.responseText);
+                    console.log('Column data loaded:', data);
+                    document.getElementById('status').innerHTML += '<br/>Column data loaded: ' + data.NumColumns + ' columns, ' + data.NumRows + ' rows';
+                } else {
+                    console.log('Failed to load column data');
+                    document.getElementById('status').innerHTML += '<br/>Failed to load column data';
+                }
+            }
+        }
+        request.send();
+    </script>
+</body>
+</html>

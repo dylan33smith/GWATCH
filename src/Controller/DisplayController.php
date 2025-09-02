@@ -54,7 +54,7 @@ class DisplayController extends AbstractController
  		
  	
     
-		 return $this->render('display_simplified.html.twig', $data);
+		 return $this->render('display.html.twig', $data);
 
 	}
     public function columnsAction( Request $request, EntityManagerInterface $entityManager)
