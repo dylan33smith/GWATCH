@@ -15,6 +15,7 @@ class ModuleCreationService
     private $schemaService;
     private $slugger;
     private $uploadDir;
+    private int $batchSize = 10000;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -123,11 +124,8 @@ class ModuleCreationService
         // Create the chr table using schema service
         $this->schemaService->createTable($this->entityManager->getConnection(), 'chr');
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseCsvFileWithoutHeaders($chrFile);
-        if (!empty($csvData)) {
-            $this->insertChrData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertChrDataStream($chrFile->getPathname());
     }
 
     private function createChrSuppTable(string $moduleId, UploadedFile $chrsuppFile): void
@@ -146,11 +144,8 @@ class ModuleCreationService
         
         $this->entityManager->getConnection()->executeStatement($createTableSql);
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseChrSuppCsvFile($chrsuppFile);
-        if (!empty($csvData)) {
-            $this->insertChrSuppData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertChrSuppDataStream($chrsuppFile->getPathname());
     }
 
     private function createColTable(string $moduleId, UploadedFile $colFile): void
@@ -169,11 +164,8 @@ class ModuleCreationService
         
         $this->entityManager->getConnection()->executeStatement($createTableSql);
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseColCsvFile($colFile);
-        if (!empty($csvData)) {
-            $this->insertColData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertColDataStream($colFile->getPathname());
     }
 
     private function createIndTable(string $moduleId, UploadedFile $indFile): void
@@ -192,11 +184,8 @@ class ModuleCreationService
         
         $this->entityManager->getConnection()->executeStatement($createTableSql);
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseIndCsvFile($indFile);
-        if (!empty($csvData)) {
-            $this->insertIndData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertIndDataStream($indFile->getPathname());
     }
 
     private function createRPvalTable(string $moduleId, UploadedFile $rPvalFile): void
@@ -213,11 +202,8 @@ class ModuleCreationService
         
         $this->entityManager->getConnection()->executeStatement($createTableSql);
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseRPvalCsvFile($rPvalFile);
-        if (!empty($csvData)) {
-            $this->insertRPvalData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertRPvalDataStream($rPvalFile->getPathname());
     }
 
     private function createRRatioTable(string $moduleId, UploadedFile $rRatioFile): void
@@ -234,11 +220,8 @@ class ModuleCreationService
         
         $this->entityManager->getConnection()->executeStatement($createTableSql);
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseRRatioCsvFile($rRatioFile);
-        if (!empty($csvData)) {
-            $this->insertRRatioData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertRRatioDataStream($rRatioFile->getPathname());
     }
 
     private function createVIndTable(string $moduleId, UploadedFile $vIndFile): void
@@ -257,11 +240,8 @@ class ModuleCreationService
         
         $this->entityManager->getConnection()->executeStatement($createTableSql);
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseVIndCsvFile($vIndFile);
-        if (!empty($csvData)) {
-            $this->insertVIndData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data
+        $this->insertVIndDataStream($vIndFile->getPathname());
     }
 
     private function createValueBasedTables(string $moduleId, UploadedFile $valFile): void
@@ -285,11 +265,8 @@ class ModuleCreationService
         )";
         $this->entityManager->getConnection()->executeStatement($createRatioTableSql);
 
-        // Parse and insert the CSV data into both tables
-        $csvData = $this->parseValCsvFile($valFile);
-        if (!empty($csvData)) {
-            $this->insertValData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data into both tables
+        $this->insertValDataStream($valFile->getPathname());
     }
 
     private function createRowBasedTables(string $moduleId, UploadedFile $rowFile): void
@@ -333,356 +310,337 @@ class ModuleCreationService
         )";
         $this->entityManager->getConnection()->executeStatement($createMafTableSql);
 
-        // Parse and insert the CSV data into all tables
-        $csvData = $this->parseRowCsvFile($rowFile);
-        if (!empty($csvData)) {
-            $this->insertRowData($moduleId, $csvData);
-        }
+        // Stream-insert CSV data into all tables
+        $this->insertRowDataStream($rowFile->getPathname());
     }
 
-    private function parseRowCsvFile(UploadedFile $file): array
+    private function insertRowDataStream(string $filePath): void
     {
-        $handle = fopen($file->getPathname(), 'r');
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
         if (!$handle) {
             throw new \Exception('Could not open CSV file');
         }
 
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 5) {
-                $data[] = [
-                    'ind' => (int)$row[0],      // CSV column 1
-                    'alias' => $row[1],          // CSV column 2
-                    'pos' => (int)$row[2],       // CSV column 3
-                    'allele' => $row[3],         // CSV column 4
-                    'maf' => (float)$row[4]      // CSV column 5
-                ];
+        $posStmt = $connection->prepare("INSERT INTO `pos` (`ind`, `pos`) VALUES (?, ?)");
+        $aliasStmt = $connection->prepare("INSERT INTO `alias` (`ind`, `alias`) VALUES (?, ?)");
+        $alleleStmt = $connection->prepare("INSERT INTO `allele` (`ind`, `allele`) VALUES (?, ?)");
+        $mafStmt = $connection->prepare("INSERT INTO `maf` (`ind`, `maf`) VALUES (?, ?)");
+
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 5) {
+                    continue;
+                }
+                $ind = (int)$row[0];
+                $alias = $row[1];
+                $pos = (int)$row[2];
+                $allele = $row[3];
+                $maf = (float)$row[4];
+
+                $posStmt->executeStatement([$ind, $pos]);
+                $aliasStmt->executeStatement([$ind, $alias]);
+                $alleleStmt->executeStatement([$ind, $allele]);
+                $mafStmt->executeStatement([$ind, $maf]);
+
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
 
         fclose($handle);
-        return $data;
     }
 
-    private function insertRowData(string $moduleId, array $data): void
+    private function insertRPvalDataStream(string $filePath): void
     {
-        if (empty($data)) {
-            return;
-        }
-
-        // Insert into pos table
-        $posSql = "INSERT INTO `pos` (`ind`, `pos`) VALUES (?, ?)";
-        $posStmt = $this->entityManager->getConnection()->prepare($posSql);
-
-        // Insert into alias table
-        $aliasSql = "INSERT INTO `alias` (`ind`, `alias`) VALUES (?, ?)";
-        $aliasStmt = $this->entityManager->getConnection()->prepare($aliasSql);
-
-        // Insert into allele table
-        $alleleSql = "INSERT INTO `allele` (`ind`, `allele`) VALUES (?, ?)";
-        $alleleStmt = $this->entityManager->getConnection()->prepare($alleleSql);
-
-        // Insert into maf table
-        $mafSql = "INSERT INTO `maf` (`ind`, `maf`) VALUES (?, ?)";
-        $mafStmt = $this->entityManager->getConnection()->prepare($mafSql);
-        
-        foreach ($data as $row) {
-            $posStmt->executeStatement([$row['ind'], $row['pos']]);
-            $aliasStmt->executeStatement([$row['ind'], $row['alias']]);
-            $alleleStmt->executeStatement([$row['ind'], $row['allele']]);
-            $mafStmt->executeStatement([$row['ind'], $row['maf']]);
-        }
-    }
-
-    private function parseRPvalCsvFile(UploadedFile $file): array
-    {
-        $handle = fopen($file->getPathname(), 'r');
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
         if (!$handle) {
             throw new \Exception('Could not open CSV file');
         }
 
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 2) {
-                $data[] = [
-                    'v_ind' => (int)$row[0],
-                    'r_pval' => (int)$row[1]
-                ];
+        $stmt = $connection->prepare("INSERT INTO `r_pval` (`v_ind`, `r_pval`) VALUES (?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 2) {
+                    continue;
+                }
+                $stmt->executeStatement([(int)$row[0], (int)$row[1]]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
-
         fclose($handle);
-        return $data;
     }
 
-    private function parseRRatioCsvFile(UploadedFile $file): array
+    private function insertRRatioDataStream(string $filePath): void
     {
-        $handle = fopen($file->getPathname(), 'r');
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
         if (!$handle) {
             throw new \Exception('Could not open CSV file');
         }
 
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 2) {
-                $data[] = [
-                    'v_ind' => (int)$row[0],
-                    'r_ratio' => (int)$row[1]
-                ];
+        $stmt = $connection->prepare("INSERT INTO `r_ratio` (`v_ind`, `r_ratio`) VALUES (?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 2) {
+                    continue;
+                }
+                $stmt->executeStatement([(int)$row[0], (int)$row[1]]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
-
         fclose($handle);
-        return $data;
     }
 
-    private function parseVIndCsvFile(UploadedFile $file): array
+    private function insertVIndDataStream(string $filePath): void
     {
-        $handle = fopen($file->getPathname(), 'r');
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
         if (!$handle) {
             throw new \Exception('Could not open CSV file');
         }
 
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 3) {
-                $data[] = [
-                    'ind' => (int)$row[0],
-                    'col' => (int)$row[1],
-                    'v_ind' => (int)$row[2]
-                ];
+        $stmt = $connection->prepare("INSERT INTO `v_ind` (`ind`, `col`, `v_ind`) VALUES (?, ?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 3) {
+                    continue;
+                }
+                $stmt->executeStatement([(int)$row[0], (int)$row[1], (int)$row[2]]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
-
         fclose($handle);
-        return $data;
     }
 
-    private function insertRPvalData(string $moduleId, array $data): void
+    private function insertChrDataStream(string $filePath): void
     {
-        if (empty($data)) {
-            return;
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception('Could not open CSV file');
         }
-
-        $sql = "INSERT INTO `r_pval` (`v_ind`, `r_pval`) VALUES (?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['v_ind'], $row['r_pval']]);
+        $stmt = $connection->prepare("INSERT INTO `chr` (`chr`, `chrname`, `len`) VALUES (?, ?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 3) {
+                    continue;
+                }
+                $chr = (int)$row[0];
+                $chrname = $row[1];
+                $len = (int)$row[2];
+                $stmt->executeStatement([$chr, $chrname, $len]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
+            }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
+        fclose($handle);
     }
 
-    private function insertRRatioData(string $moduleId, array $data): void
+    private function insertChrSuppDataStream(string $filePath): void
     {
-        if (empty($data)) {
-            return;
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception('Could not open CSV file');
         }
-
-        $sql = "INSERT INTO `r_ratio` (`v_ind`, `r_ratio`) VALUES (?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['v_ind'], $row['r_ratio']]);
+        $stmt = $connection->prepare("INSERT INTO `chrsupp` (`chr`, `chroff`, `chrlen`) VALUES (?, ?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 3) {
+                    continue;
+                }
+                $stmt->executeStatement([(int)$row[0], (int)$row[1], (int)$row[2]]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
+            }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
+        fclose($handle);
     }
 
-    private function insertVIndData(string $moduleId, array $data): void
+    private function insertColDataStream(string $filePath): void
     {
-        if (empty($data)) {
-            return;
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception('Could not open CSV file');
         }
-
-        $sql = "INSERT INTO `v_ind` (`ind`, `col`, `v_ind`) VALUES (?, ?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['ind'], $row['col'], $row['v_ind']]);
+        $stmt = $connection->prepare("INSERT INTO `col` (`col`, `test`, `refTable`, `refCol`) VALUES (?, ?, ?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 4) {
+                    continue;
+                }
+                $col = (int)$row[0];
+                $test = $row[1] !== '' ? $row[1] : null;
+                $refTable = $row[2];
+                $refCol = $row[3];
+                $stmt->executeStatement([$col, $test, $refTable, $refCol]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
+            }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
         }
+        fclose($handle);
     }
 
-    private function parseCsvFileWithoutHeaders(UploadedFile $file): array
+    private function insertIndDataStream(string $filePath): void
     {
-        $handle = fopen($file->getPathname(), 'r');
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception('Could not open CSV file');
+        }
+        $stmt = $connection->prepare("INSERT INTO `ind` (`chr`, `nrow`, `ind`) VALUES (?, ?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 3) {
+                    continue;
+                }
+                $stmt->executeStatement([(int)$row[0], (int)$row[1], (int)$row[2]]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
+            }
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
+            throw $e;
+        }
+        fclose($handle);
+    }
+
+    private function insertValDataStream(string $filePath): void
+    {
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
         if (!$handle) {
             throw new \Exception('Could not open CSV file');
         }
 
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 2) {
-                $data[] = [
-                    'chr' => (int)$row[0],
-                    'chrname' => 'Chr' . $row[0], // Generate chrname from chr number
-                    'len' => (int)$row[1]
-                ];
+        $pvalStmt = $connection->prepare("INSERT INTO `pval` (`v_ind`, `pval`) VALUES (?, ?)");
+        $ratioStmt = $connection->prepare("INSERT INTO `ratio` (`v_ind`, `ratio`) VALUES (?, ?)");
+        $count = 0;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if (count($row) < 3) {
+                    continue;
+                }
+                $vInd = (int)$row[0];
+                $pval = (float)$row[1];
+                $ratio = (float)$row[2];
+                $pvalStmt->executeStatement([$vInd, $pval]);
+                $ratioStmt->executeStatement([$vInd, $ratio]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
-        }
-
-        fclose($handle);
-        return $data;
-    }
-
-    private function insertChrData(string $moduleId, array $data): void
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        $sql = "INSERT INTO `chr` (`chr`, `chrname`, `len`) VALUES (?, ?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['chr'], $row['chrname'], $row['len']]);
-        }
-    }
-
-    private function parseChrSuppCsvFile(UploadedFile $file): array
-    {
-        $handle = fopen($file->getPathname(), 'r');
-        if (!$handle) {
-            throw new \Exception('Could not open CSV file');
-        }
-
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 3) {
-                $data[] = [
-                    'chr' => (int)$row[0],
-                    'chroff' => (int)$row[1],
-                    'chrlen' => (int)$row[2]
-                ];
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
             }
+            fclose($handle);
+            throw $e;
         }
-
         fclose($handle);
-        return $data;
-    }
-
-    private function insertChrSuppData(string $moduleId, array $data): void
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        $sql = "INSERT INTO `chrsupp` (`chr`, `chroff`, `chrlen`) VALUES (?, ?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['chr'], $row['chroff'], $row['chrlen']]);
-        }
-    }
-
-    private function parseColCsvFile(UploadedFile $file): array
-    {
-        $handle = fopen($file->getPathname(), 'r');
-        if (!$handle) {
-            throw new \Exception('Could not open CSV file');
-        }
-
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 4) {
-                $data[] = [
-                    'col' => (int)$row[0],
-                    'test' => $row[1] ?: null,  // test can be null
-                    'refTable' => $row[2],
-                    'refCol' => $row[3]
-                ];
-            }
-        }
-
-        fclose($handle);
-        return $data;
-    }
-
-    private function insertColData(string $moduleId, array $data): void
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        $sql = "INSERT INTO `col` (`col`, `test`, `refTable`, `refCol`) VALUES (?, ?, ?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['col'], $row['test'], $row['refTable'], $row['refCol']]);
-        }
-    }
-
-    private function parseIndCsvFile(UploadedFile $file): array
-    {
-        $handle = fopen($file->getPathname(), 'r');
-        if (!$handle) {
-            throw new \Exception('Could not open CSV file');
-        }
-
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 3) {
-                $data[] = [
-                    'chr' => (int)$row[0],
-                    'nrow' => (int)$row[1],
-                    'ind' => (int)$row[2]
-                ];
-            }
-        }
-
-        fclose($handle);
-        return $data;
-    }
-
-    private function insertIndData(string $moduleId, array $data): void
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        $sql = "INSERT INTO `ind` (`chr`, `nrow`, `ind`) VALUES (?, ?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([$row['chr'], $row['nrow'], $row['ind']]);
-        }
-    }
-
-    private function parseValCsvFile(UploadedFile $file): array
-    {
-        $handle = fopen($file->getPathname(), 'r');
-        if (!$handle) {
-            throw new \Exception('Could not open CSV file');
-        }
-
-        $data = [];
-        while (($row = fgetcsv($handle)) !== false) {
-            if (count($row) >= 2) {
-                $data[] = [
-                    'v_ind' => (int)$row[0],
-                    'pval' => (float)$row[1],
-                    'ratio' => (float)$row[2]
-                ];
-            }
-        }
-
-        fclose($handle);
-        return $data;
-    }
-
-    private function insertValData(string $moduleId, array $data): void
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        $pvalSql = "INSERT INTO `pval` (`v_ind`, `pval`) VALUES (?, ?)";
-        $pvalStmt = $this->entityManager->getConnection()->prepare($pvalSql);
-
-        $ratioSql = "INSERT INTO `ratio` (`v_ind`, `ratio`) VALUES (?, ?)";
-        $ratioStmt = $this->entityManager->getConnection()->prepare($ratioSql);
-        
-        foreach ($data as $row) {
-            $pvalStmt->executeStatement([$row['v_ind'], $row['pval']]);
-            $ratioStmt->executeStatement([$row['v_ind'], $row['ratio']]);
-        }
     }
 
     private function createRadiusIndTable(string $moduleId, UploadedFile $radiusIndFile): void
@@ -693,11 +651,8 @@ class ModuleCreationService
         // Create the radius_ind table using schema service
         $this->schemaService->createTable($this->entityManager->getConnection(), 'radius_ind');
 
-        // Parse and insert the CSV data
-        $csvData = $this->parseRadiusIndCsvFile($radiusIndFile);
-        if (!empty($csvData)) {
-            $this->insertRadiusIndData($moduleId, $csvData);
-        }
+        // Stream-insert the CSV data
+        $this->insertRadiusIndDataStream($radiusIndFile->getPathname());
     }
 
     private function createTopHitsTable(string $moduleId, array $densityFiles): void
@@ -712,10 +667,7 @@ class ModuleCreationService
             // Process each density file
             foreach ($densityFiles as $densityFile) {
                 if ($densityFile !== null) {
-                    $csvData = $this->parseDensityCsvFile($densityFile);
-                    if (!empty($csvData)) {
-                        $this->insertTopHitsData($moduleId, $csvData);
-                    }
+                    $this->insertTopHitsStream($densityFile->getClientOriginalName(), $densityFile->getPathname());
                 }
             }
         } catch (\Exception $e) {
@@ -724,152 +676,85 @@ class ModuleCreationService
         }
     }
 
-    private function parseDensityCsvFile(UploadedFile $file): array
+    private function insertTopHitsStream(string $originalName, string $filePath): void
     {
+        $connection = $this->entityManager->getConnection();
+        if (!preg_match('/density_(\d+)\.csv$/', $originalName, $matches)) {
+            throw new \Exception('Density file must be named like density_X.csv');
+        }
+        $radiusInd = (int)$matches[1];
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception('Could not open density CSV file');
+        }
+        $stmt = $connection->prepare("INSERT INTO `top_hits` (`bits`, `radius_ind`, `v_ind`, `r_density`, `r_naive_p`, `left_ind`, `right_ind`, `left_cnt`, `right_cnt`, `density`, `naive_p`, `adj_p`, `cal_p`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL)");
+        $count = 0;
+        $first = true;
+        $connection->beginTransaction();
         try {
-            $handle = fopen($file->getPathname(), 'r');
-            if (!$handle) {
-                throw new \Exception('Could not open density CSV file');
-            }
-
-            // Extract radius_ind from filename (e.g., density_7.csv -> 7)
-            $filename = $file->getClientOriginalName();
-            error_log("Parsing density file: " . $filename);
-            
-            if (!preg_match('/density_(\d+)\.csv$/', $filename, $matches)) {
-                throw new \Exception('Density file must be named in format: density_X.csv where X is the radius index');
-            }
-            $radiusInd = (int)$matches[1];
-            error_log("Extracted radius_ind: " . $radiusInd);
-
-            $data = [];
-            $firstRow = true;
-            $rowCount = 0;
             while (($row = fgetcsv($handle)) !== false) {
-                if ($firstRow) {
-                    $firstRow = false; // Skip header row
-                    error_log("Skipping header row: " . implode(',', $row));
-                    continue;
-                }
-                
-                if (count($row) >= 10) {
-                    $data[] = [
-                        'bits' => (int)$row[0],           // CSV column 1: bits
-                        'v_ind' => (int)$row[1],          // CSV column 2: v_ind
-                        'r_density' => (int)$row[2],      // CSV column 3: r_density
-                        'r_naive_p' => (int)$row[3],      // CSV column 4: r_naive_p
-                        'left_ind' => (int)$row[4],       // CSV column 5: left_ind
-                        'right_ind' => (int)$row[5],      // CSV column 6: right_ind
-                        'left_cnt' => (int)$row[6],       // CSV column 7: left_cnt
-                        'right_cnt' => (int)$row[7],      // CSV column 8: right_cnt
-                        'density' => $row[8] ? (float)$row[8] : null,    // CSV column 9: density
-                        'naive_p' => $row[9] ? (float)$row[9] : null,   // CSV column 10: naive_p
-                        'radius_ind' => $radiusInd,       // From filename (e.g., density_7.csv -> 7)
-                        'adj_p' => null,                  // Not in CSV, set to null
-                        'cal_p' => null                   // Not in CSV, set to null
-                    ];
-                    $rowCount++;
-                } else {
-                    error_log("Skipping row with insufficient columns: " . count($row) . " columns found, need 10");
-                }
-            }
-
-            fclose($handle);
-            error_log("Parsed " . $rowCount . " data rows from density file");
-            return $data;
-        } catch (\Exception $e) {
-            error_log("Error in parseDensityCsvFile: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    private function insertTopHitsData(string $moduleId, array $data): void
-    {
-        try {
-            if (empty($data)) {
-                error_log("No data to insert for top_hits table in module: " . $moduleId);
-                return;
-            }
-
-            error_log("Inserting " . count($data) . " rows into top_hits table for module: " . $moduleId);
-
-            $sql = "INSERT INTO `top_hits` (`bits`, `radius_ind`, `v_ind`, `r_density`, `r_naive_p`, `left_ind`, `right_ind`, `left_cnt`, `right_cnt`, `density`, `naive_p`, `adj_p`, `cal_p`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $this->entityManager->getConnection()->prepare($sql);
-            
-            $insertedCount = 0;
-            foreach ($data as $row) {
+                if ($first) { $first = false; continue; }
+                if (count($row) < 10) { continue; }
                 $stmt->executeStatement([
-                    $row['bits'],
-                    $row['radius_ind'],
-                    $row['v_ind'],
-                    $row['r_density'],
-                    $row['r_naive_p'],
-                    $row['left_ind'],
-                    $row['right_ind'],
-                    $row['left_cnt'],
-                    $row['right_cnt'],
-                    $row['density'],
-                    $row['naive_p'],
-                    $row['adj_p'],
-                    $row['cal_p']
+                    (int)$row[0],
+                    $radiusInd,
+                    (int)$row[1],
+                    (int)$row[2],
+                    (int)$row[3],
+                    (int)$row[4],
+                    (int)$row[5],
+                    (int)$row[6],
+                    (int)$row[7],
+                    $row[8] !== '' ? (float)$row[8] : null,
+                    $row[9] !== '' ? (float)$row[9] : null,
                 ]);
-                $insertedCount++;
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
-            
-            error_log("Successfully inserted " . $insertedCount . " rows into top_hits table for module: " . $moduleId);
-        } catch (\Exception $e) {
-            error_log("Error in insertTopHitsData: " . $e->getMessage() . " for module: " . $moduleId);
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+            fclose($handle);
             throw $e;
         }
+        fclose($handle);
     }
 
-    private function parseRadiusIndCsvFile(UploadedFile $file): array
+    private function insertRadiusIndDataStream(string $filePath): void
     {
-        $handle = fopen($file->getPathname(), 'r');
+        $connection = $this->entityManager->getConnection();
+        $handle = fopen($filePath, 'r');
         if (!$handle) {
             throw new \Exception('Could not open radius index CSV file');
         }
-
-        $data = [];
-        $firstRow = true;
-        while (($row = fgetcsv($handle)) !== false) {
-            if ($firstRow) {
-                $firstRow = false; // Skip header row
-                continue;
+        $stmt = $connection->prepare("INSERT INTO `radius_ind` (`radius_ind`, `radius_type`, `radius_val`) VALUES (?, ?, ?)");
+        $count = 0; $first = true;
+        $connection->beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                if ($first) { $first = false; continue; }
+                if (count($row) < 3) { continue; }
+                $stmt->executeStatement([(int)$row[0], $row[1], (int)$row[2]]);
+                $count++;
+                if ($count % $this->batchSize === 0) {
+                    $connection->commit();
+                    $connection->beginTransaction();
+                }
             }
-            
-            if (count($row) >= 3) {
-                $data[] = [
-                    'radius_ind' => (int)$row[0],     // CSV column 1: radius_ind
-                    'radius_type' => $row[1],         // CSV column 2: radius_type
-                    'radius_val' => (int)$row[2]      // CSV column 3: radius_val
-                ];
+            $connection->commit();
+        } catch (\Throwable $e) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
             }
+            fclose($handle);
+            throw $e;
         }
-
         fclose($handle);
-        return $data;
-    }
-
-    private function insertRadiusIndData(string $moduleId, array $data): void
-    {
-        if (empty($data)) {
-            return;
-        }
-
-        // Ensure we're using the correct module database
-        $this->entityManager->getConnection()->executeStatement("USE `{$moduleId}`");
-
-        $sql = "INSERT INTO `radius_ind` (`radius_ind`, `radius_type`, `radius_val`) VALUES (?, ?, ?)";
-        $stmt = $this->entityManager->getConnection()->prepare($sql);
-        
-        foreach ($data as $row) {
-            $stmt->executeStatement([
-                $row['radius_ind'],
-                $row['radius_type'],
-                $row['radius_val']
-            ]);
-        }
     }
 
     /**
