@@ -304,17 +304,13 @@ class UploadController extends AbstractController
      */
     private function createTempUploadedFile(string $path, string $originalName): UploadedFile
     {
-        // Create a temporary copy of the file with a proper name
-        $tempPath = tempnam(sys_get_temp_dir(), 'gwatch_csv_');
-        copy($path, $tempPath);
-        
-        // Create a proper UploadedFile object
+        // Wrap the extracted file directly to avoid copying large files
         return new UploadedFile(
-            $tempPath,
+            $path,
             $originalName,
             mime_content_type($path) ?: 'text/csv',
-            UPLOAD_ERR_OK,
-            true // Move the file instead of copying
+            null,
+            true
         );
     }
     

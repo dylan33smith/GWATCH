@@ -40,7 +40,7 @@ class DataUploadType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new File([
-                        'maxSize' => '100M',
+                        'maxSize' => '20G',
                         'mimeTypes' => [
                             'application/zip',
                             'application/x-zip-compressed',
@@ -49,7 +49,7 @@ class DataUploadType extends AbstractType
                         'mimeTypesMessage' => 'Please upload a valid ZIP file containing your CSV files.',
                     ]),
                 ],
-                'help' => 'Upload a ZIP file containing all required CSV files. The ZIP should contain files like chr.csv, chrsupp.csv, col.csv, ind.csv, r_pval.csv, r_ratio.csv, row.csv, v_ind.csv, val.csv, and at least one density_#.csv file.',
+                'help' => 'Upload a ZIP file containing all required CSV files. Supports very large archives. For >2GB files, ensure PHP upload limits are configured or use CLI.',
             ])
             ->add('makePublic', CheckboxType::class, [
                 'label' => 'Make this module public',
